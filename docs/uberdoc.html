@@ -2583,7 +2583,7 @@ javascript equivalent.</p>
   (str/replace (str s) #&quot;-&quot; &quot;_&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn convert-map [m]
-  (str &quot;{&quot; (apply str (interpose &quot;,&quot; (map #(str (name (key %)) &quot;:&quot; (handle-thing (val %))) m))) &quot;}&quot;))</pre></td></tr><tr><td class="docs">
+  (str &quot;{&quot; (apply str (interpose &quot;,&quot; (map #(str (name (key %)) &quot;:&quot; (convert-el (val %))) m))) &quot;}&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn convert-string [s]
   (str \&quot; s \&quot;))</pre></td></tr><tr><td class="docs">
@@ -2592,7 +2592,7 @@ javascript equivalent.</p>
   (str n))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn convert-vector [v]
-  (str &quot;[&quot; (apply str (interpose &quot;,&quot; (map handle-thing v))) &quot;]&quot;))</pre></td></tr><tr><td class="docs">
+  (str &quot;[&quot; (apply str (interpose &quot;,&quot; (map convert-el v))) &quot;]&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn emit-function [arglist body-seq]
   (let [body-seq (map convert-el body-seq)
@@ -2750,25 +2750,29 @@ to a handler (i.e. <code>handle-+</code>).</p>
 set it's dimensions to 100x100, set it's background color to red, pop up
 an alert box, with the message "I was clicked", when clicked, and insert
 it as a child of <code>&lt;body /&gt;</code>.</p>
-</td><td class="codes"><pre class="brush: clojure">
-(map js '(</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-          (defn click-handler []
-            (alert &quot;I was clicked!&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-          (def body ($ &quot;body&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-          (defn clickable-div []
-            (-&gt; ($ &quot;&lt;div /&gt;&quot;)
-                (.click click-handler)
-                (.css {:width 100
-                       :height 100
-                       :backgroundColor &quot;red&quot;})
-                (.append &quot;Click Me!&quot;)))
 
-          (.append body (clickable-div))
+<p>See the example <a href="http://zkim.github.com/cljs/examples/red-clickable-box.html">here</a>.</p>
+</td><td class="codes"><pre class="brush: clojure">
+(println (map js '(</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+                   (defn click-handler []
+                     (alert &quot;I was clicked!&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+                   (defn body [] ($ &quot;body&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+                   (defn clickable-div []
+                     (-&gt; ($ &quot;&lt;div /&gt;&quot;)
+                         (.click click-handler)
+                         (.css {:width 100
+                                :height 100
+                                :backgroundColor &quot;red&quot;})
+                         (.append &quot;Click Me!&quot;)))
 
-          ))</pre></td></tr><tr><td class="docs">
+                   (.ready ($ document)
+                           (fn []
+                             (.append (body) (clickable-div))))
+                   
+                   )))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-handle-println
   (is (= &quot;console.log(\&quot;hello world\&quot;)&quot; (handle-println '(println &quot;hello world&quot;)))))
@@ -2792,9 +2796,6 @@ it as a child of <code>&lt;body /&gt;</code>.</p>
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-emit-function
   (is (= &quot;function(x,y){\n5;\n6;\nreturn 7;\n}&quot; (emit-function '[x y] '(5 6 7)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(deftest test-convert-anon-fn
-  (is (= &quot;function(x){\nreturn 5;\n}&quot; (convert-anon-fn '(fn [x] 5)))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-dot-function
   (is (= &quot;x.stuff(1,2,3)&quot; (convert-dot-function '(.stuff x 1 2 3)))))</pre></td></tr><tr><td class="docs">
