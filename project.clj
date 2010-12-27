@@ -6,7 +6,7 @@
    # Usage
 
    Use the `cljs.core/js` function to turn a list (representing some
-   code) to spit out javascript like so:
+   code) into javascript, like so:
 
        (js '((fn [x] (alert x)) \"hello world\"))
 
