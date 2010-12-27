@@ -1,10 +1,8 @@
 # cljs
 
-FIXME: write description
+An experimental Clojure(ish) to Javascript compiler.
 
-## Usage
-
-FIXME: write
+Docs: [http://zkim.github.com/cljs/](http://zkim.github.com/cljs/)
 
 ## License
 
