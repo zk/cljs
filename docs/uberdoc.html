@@ -2701,7 +2701,7 @@ to a handler (i.e. <code>handle-+</code>).</p>
      &quot;}())&quot;)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn handle-def [[_ v body]]
-  (str &quot;var &quot; (convert-el v) &quot; = &quot; (convert-el body) &quot;;&quot;))</pre></td></tr><tr><td class="docs">
+  (str &quot;var &quot; (convert-el v) &quot; = &quot; (convert-el body) &quot;;\n&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn handle-defn [col]
   (let [[_ name &amp; fndef] col]
@@ -2731,7 +2731,7 @@ to a handler (i.e. <code>handle-+</code>).</p>
 </td><td class="codes"><pre class="brush: clojure">
 (defn js [form] (convert-el form))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
-(defn compile [path]
+(defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))]
     (apply str (interpose &quot;\n&quot; (map js forms)))))</pre></td></tr><tr><td class="docs">
@@ -2745,10 +2745,34 @@ to a handler (i.e. <code>handle-+</code>).</p>
 
 <p>Start here if you'd like to get an idea of what
 <strong>cljs</strong> is capable of.</p>
-</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+</pre></td></tr><tr><td class="docs"><p>This will (with jquery) create a <code>&lt;div /&gt;</code>, set it's text to "Click Me!",
+set it's dimensions to 100x100, set it's background color to red, pop up
+an alert box, with the message "I was clicked", when clicked, and insert
+it as a child of <code>&lt;body /&gt;</code>.</p>
+</td><td class="codes"><pre class="brush: clojure">
+(map js '(</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+          (defn click-handler []
+            (alert &quot;I was clicked!&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+          (def body ($ &quot;body&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+          (defn clickable-div []
+            (-&gt; ($ &quot;&lt;div /&gt;&quot;)
+                (.click click-handler)
+                (.css {:width 100
+                       :height 100
+                       :backgroundColor &quot;red&quot;})
+                (.append &quot;Click Me!&quot;)))
+
+          (.append body (clickable-div))
+
+          ))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-handle-println
-  (is (= &quot;console.log(\&quot;hello world\&quot;)&quot; (handle-println '(println &quot;hello world&quot;)))))</pre></td></tr><tr><td class="docs"><h1>Low-Level Converters</h1>
+  (is (= &quot;console.log(\&quot;hello world\&quot;)&quot; (handle-println '(println &quot;hello world&quot;)))))
+</pre></td></tr><tr><td class="docs"><h1>Low-Level Converters</h1>
 </td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-map

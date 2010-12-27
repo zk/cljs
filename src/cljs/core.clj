@@ -32,7 +32,7 @@
   (str/replace (str s) #"-" "_"))
 
 (defn convert-map [m]
-  (str "{" (apply str (interpose "," (map #(str (name (key %)) ":" (handle-thing (val %))) m))) "}"))
+  (str "{" (apply str (interpose "," (map #(str (name (key %)) ":" (convert-el (val %))) m))) "}"))
 
 (defn convert-string [s]
   (str \" s \"))
@@ -41,7 +41,7 @@
   (str n))
 
 (defn convert-vector [v]
-  (str "[" (apply str (interpose "," (map handle-thing v))) "]"))
+  (str "[" (apply str (interpose "," (map convert-el v))) "]"))
 
 (defn emit-function [arglist body-seq]
   (let [body-seq (map convert-el body-seq)
@@ -149,7 +149,7 @@
      "}())")))
 
 (defn handle-def [[_ v body]]
-  (str "var " (convert-el v) " = " (convert-el body) ";"))
+  (str "var " (convert-el v) " = " (convert-el body) ";\n"))
 
 (defn handle-defn [col]
   (let [[_ name & fndef] col]
@@ -182,7 +182,7 @@
 
 (defn js [form] (convert-el form))
 
-(defn compile [path]
+(defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))]
     (apply str (interpose "\n" (map js forms)))))

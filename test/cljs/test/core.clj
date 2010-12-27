@@ -8,6 +8,34 @@
 ;; Start here if you'd like to get an idea of what
 ;; **cljs** is capable of.
 
+
+;; This will (with jquery) create a `<div />`, set it's text to "Click Me!",
+;; set it's dimensions to 100x100, set it's background color to red, pop up
+;; an alert box, with the message "I was clicked", when clicked, and insert
+;; it as a child of `<body />`.
+;;
+;; See the example [here](http://zkim.github.com/cljs/examples/red-clickable-box.html).
+(println (map js '(
+
+                   (defn click-handler []
+                     (alert "I was clicked!"))
+
+                   (defn body [] ($ "body"))
+
+                   (defn clickable-div []
+                     (-> ($ "<div />")
+                         (.click click-handler)
+                         (.css {:width 100
+                                :height 100
+                                :backgroundColor "red"})
+                         (.append "Click Me!")))
+
+                   (.ready ($ document)
+                           (fn []
+                             (.append (body) (clickable-div))))
+                   
+                   )))
+
 (deftest test-handle-println
   (is (= "console.log(\"hello world\")" (handle-println '(println "hello world")))))
 
@@ -31,9 +59,6 @@
 
 (deftest test-emit-function
   (is (= "function(x,y){\n5;\n6;\nreturn 7;\n}" (emit-function '[x y] '(5 6 7)))))
-
-(deftest test-convert-anon-fn
-  (is (= "function(x){\nreturn 5;\n}" (convert-anon-fn '(fn [x] 5)))))
 
 (deftest test-convert-dot-function
   (is (= "x.stuff(1,2,3)" (convert-dot-function '(.stuff x 1 2 3)))))
