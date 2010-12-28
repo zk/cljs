@@ -63,15 +63,18 @@
 (defn hook-compile-out [out-dir]
   (hook-change
    (fn [cljss]
-     (when (empty? cljss) (println "Nothing to compile"))
+     (when (empty? cljss) #_(println "Nothing to compile"))
      (doseq [cljs cljss]
        (try
          (println "Compiling" (.getAbsolutePath cljs) "to" out-dir)
          (spit-equiv-js cljs (file out-dir))
-         (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs))))))))
+         (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))
 
 
 (def *run* (atom true))
+
+(defn stop-watch []
+  (reset! *run* false))
 
 (defn start-watch [watch-path js-out-path]
   (clear-hooks)
@@ -81,8 +84,5 @@
            (fn []
              (while @*run*
                (check-and-run! watch-path)
-               (Thread/sleep 1000))))))
+               (Thread/sleep 500))))))
 
-(start-watch "./" "./js-output")
-
-(check-and-run! "./")

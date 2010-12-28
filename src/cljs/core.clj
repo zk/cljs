@@ -30,7 +30,12 @@
      :else (map convert-el l))))
 
 (defn convert-symbol [s]
-  (str/replace (str s) #"-" "_"))
+  (if (re-find #"\/" (str s))
+    (str/replace (str s) #"\/" ".")
+    (str/replace (str s) #"-" "_")))
+
+(js '(cond
+      (= kc 13) (println "ENTER")))
 
 (defn convert-map [m]
   (str "{" (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m))) "}"))
@@ -89,8 +94,8 @@
    (symbol? el) (convert-symbol el)
    (map? el) (convert-map el)
    (vector? el) (convert-vector el)
-   (number? el) (convert-number el)))
-
+   (number? el) (convert-number el)
+   (= java.lang.Boolean (class el)) (if el 'true 'false)))
 
 ;; # Specific Function Handlers
 ;;
@@ -126,12 +131,14 @@
     (emit-function arglist body)))
 
 (defn handle-binding [[v binding]]
-  (str "var " v " = " (convert-el binding) ";\n"))
+  (str "var " (convert-el v) " = " (convert-el binding) ";\n"))
 
 (defn handle-let [[_ bindings & body]]
-  (str (apply str (map handle-binding (partition 2 bindings)))
-       (apply str (map convert-el body))
-       ";"))
+  (str
+   "(function(){"
+   (apply str (map handle-binding (partition 2 bindings)))
+   (apply str (interpose ";" (add-return (map convert-el body))))
+   "}())"))
 
 (defn handle-doto [[_ & body]]
   (let [pivot (first body)
@@ -182,6 +189,49 @@
      (when f
        (str "else{\n" f "\n}")))))
 
+(defn handle-map [[_ f col]]
+  (str
+   "_.map("
+   (convert-el col)
+   \,
+   (convert-el f)
+   ")"))
+
+(js '(defn chapters-overview [chapters]
+       (map render-chapter-overview chapters)))
+
+(js '(cond
+      (= 1 1) (println "foo")
+      (= 1 2) (println "bar")
+      :else (println "stuff")))
+
+(defn handle-cond [[_ & conds]]
+  (let [pairs (partition 2 conds)]
+    (str
+     "(function(){"
+     (->> pairs
+          (map #(str
+                 (when (not (keyword? (first %)))
+                   (str "if("
+                        (convert-el (first %))
+                        ")"))
+                 "{"
+                 "return "
+                 (convert-el (second %))
+                 ";"
+                 "}"))
+          (interpose " else ")
+          (apply str))
+     "})();")))
+
+(defn handle-do [[_ & statements]]
+  (str
+   "(function(){"
+   (apply str
+          (interpose ";" (add-return (map convert-el statements))))
+   "})()"))
+
+
 (defn fn-handlers []
   {'println handle-println
    'fn      handle-fn
@@ -192,13 +242,16 @@
    'str     handle-str
    '+       handle-+
    '=       handle-=
-   'if      handle-if})
+   'if      handle-if
+   'map     handle-map
+   'cond    handle-cond
+   'do      handle-do})
 
 ;;
 ;;
 ;;
 
-(defn js [form] (convert-el form))
+(defn js [form] (str (convert-el form) ";"))
 
 (defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))

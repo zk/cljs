@@ -55,7 +55,10 @@
   (is (= "[1,2,3]" (convert-vector [1 2 3]))))
 
 (deftest test-convert-symbol
-  (is (= "hello_world" (convert-symbol 'hello-world))))
+  (is (= "hello_world" (convert-symbol 'hello-world)))
+  (is (= "hello.world" (convert-symbol 'hello/world))))
+
+(convert-symbol 'hello/world)
 
 (deftest test-emit-function
   (is (= "function(x,y){\n5;\n6;\nreturn 7;\n}" (emit-function '[x y] '(5 6 7)))))
@@ -69,6 +72,10 @@
 (deftest test-convert-function
   (is (= "x.stuff(1,2,3)" (convert-function '(.stuff x 1 2 3))))
   (is (= "stuff(1,2,3)" (convert-function '(stuff 1 2 3)))))
+
+#_(js '(let [y 5] (println y)))
+
+
 
 
 (comment
