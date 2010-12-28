@@ -16,14 +16,14 @@
     (->> (file-seq f)
          (filter #(.endsWith (.getName %) ".cljs")))))
 
+(defn last-mod [file]
+  (.lastModified file))
+
 (defn has-file-changed? [f last-change]
   (cond
    (nil? last-change) true
    (> (last-mod f) last-change) true
    :else false))
-
-(defn last-mod [file]
-  (.lastModified file))
 
 (defn last-mod-map [f-seq]
   (reduce #(assoc %1 %2 (last-mod %2))

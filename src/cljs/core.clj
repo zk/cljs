@@ -9,6 +9,7 @@
 ;; javascript equivalent.
 
 (declare convert-el)
+(declare convert-function)
 (declare fn-handlers)
 
 (defn add-return [statements]
