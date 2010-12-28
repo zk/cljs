@@ -32,7 +32,7 @@
   (str/replace (str s) #"-" "_"))
 
 (defn convert-map [m]
-  (str "{" (apply str (interpose "," (map #(str (name (key %)) ":" (convert-el (val %))) m))) "}"))
+  (str "{" (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m))) "}"))
 
 (defn convert-string [s]
   (str \" s \"))
@@ -132,7 +132,7 @@
        (apply str (map convert-el body))
        ";"))
 
-(defn handle--> [[_ & body]]
+(defn handle-doto [[_ & body]]
   (let [pivot (first body)
         forms (rest body)]
     (str
@@ -166,15 +166,32 @@
      (apply str (interpose "+" forms))
      \))))
 
+(defn handle-= [[_ pivot & others]]
+  (let [pivot (convert-el pivot)]
+    (str
+     \(
+     (apply str (interpose " && " (map #(str pivot " == " %) others)))
+     \))))
+
+(defn handle-if [[_ pred t f]]
+  (let [pred (convert-el pred)
+        t (convert-el t)
+        f (convert-el f)]
+    (str "if(" pred "){\n" t "\n}"
+     (when f
+       (str "else{\n" f "\n}")))))
+
 (defn fn-handlers []
   {'println handle-println
    'fn      handle-fn
    'let     handle-let
-   '->      handle-->
+   'doto    handle-doto
    'def     handle-def
    'defn    handle-defn
    'str     handle-str
-   '+       handle-+})
+   '+       handle-+
+   '=       handle-=
+   'if      handle-if})
 
 ;;
 ;;
@@ -188,4 +205,4 @@
     (apply str (interpose "\n" (map js forms)))))
 
 (defn compile-to [cljs-path output-path]
-  (spit output-path (compile cljs-path)))
+  (spit output-path (compile-cljs cljs-path)))

@@ -1,4 +1,6 @@
 (defn greet [x y]
   (println (str x y)))
 
-(greet "hello" "world")
+(.ready ($ document)
+(.click ($ document)
+  (fn [] (alert "hi"))))

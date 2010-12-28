@@ -23,7 +23,7 @@
                    (defn body [] ($ "body"))
 
                    (defn clickable-div []
-                     (-> ($ "<div />")
+                     (doto ($ "<div />")
                          (.click click-handler)
                          (.css {:width 100
                                 :height 100
@@ -43,7 +43,7 @@
 ;; # Low-Level Converters
 
 (deftest test-convert-map
-  (is (= "{hello:\"world\"}" (convert-map {:hello "world"}))))
+  (is (= "{'hello':\"world\"}" (convert-map {:hello "world"}))))
 
 (deftest test-convert-string
   (is (= "\"hello world\"" (convert-string "hello world"))))
@@ -131,11 +131,11 @@
   (js-form x)
 
   (js-form '(defn onready []
-              (-> ($ "body")
+              (doto ($ "body")
                   (.css {:backgroundColor "red"})
                   (.append ($ "<h1>HI!</h1>")))))
 
-  (js-form '(dostuff (-> ($ "<div />")
+  (js-form '(dostuff (doto ($ "<div />")
                          (.append ($ "<span />")))))
 
   (js-form '(defn log-stuff [s] (println [1 2 s])))
