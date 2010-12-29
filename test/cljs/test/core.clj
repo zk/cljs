@@ -73,6 +73,9 @@
   (is (= "x.stuff(1,2,3)" (convert-function '(.stuff x 1 2 3))))
   (is (= "stuff(1,2,3)" (convert-function '(stuff 1 2 3)))))
 
+(deftest test-handle-if
+  (is (= "(function(){if((x==1)){return x;}})()" (handle-if '(if (= x 1) x)))))
+
 #_(js '(let [y 5] (println y)))
 
 

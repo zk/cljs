@@ -1,6 +1,8 @@
+(ns basic)
+
 (defn greet [x y]
   (println (str x y)))
 
-(.ready ($ document)
-(.click ($ document)
-  (fn [] (alert "hi"))))
+(greet "hello" "world")
+
+(def x 5)

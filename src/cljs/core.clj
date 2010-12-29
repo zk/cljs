@@ -12,6 +12,19 @@
 (declare convert-function)
 (declare fn-handlers)
 
+(def *current-ns* (atom nil))
+
+(defn cns []
+  (-> (str @*current-ns*)
+      (str/replace #"\." "_DOT_")))
+
+(defn set-current-ns [ns]
+  (reset! *current-ns* ns))
+
+(defn cns-with-dot []
+  (if (not (empty? (cns)))
+    (str (cns) ".")))
+
 (defn add-return [statements]
   (let [count (dec (count statements))
         before-ret (take count statements)
@@ -29,13 +42,17 @@
      (funcall? f) (str (convert-function (first l)) "()")
      :else (map convert-el l))))
 
+(defn convert-symbol-with-ns [s]
+  (let [[ns var] (-> (str s)
+                     (str/split #"\/" 2))]
+    (str (str/replace ns #"\." "_DOT_") "." var)))
+
 (defn convert-symbol [s]
   (if (re-find #"\/" (str s))
-    (str/replace (str s) #"\/" ".")
-    (str/replace (str s) #"-" "_")))
-
-(js '(cond
-      (= kc 13) (println "ENTER")))
+    (convert-symbol-with-ns s)
+    (-> (str s)
+        (str/replace #"-" "_")
+        (str/replace #"\?" "_QM_"))))
 
 (defn convert-map [m]
   (str "{" (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m))) "}"))
@@ -95,7 +112,8 @@
    (map? el) (convert-map el)
    (vector? el) (convert-vector el)
    (number? el) (convert-number el)
-   (= java.lang.Boolean (class el)) (if el 'true 'false)))
+   (= java.lang.Boolean (class el)) (if el 'true 'false)
+   (keyword? el) (name el)))
 
 ;; # Specific Function Handlers
 ;;
@@ -157,11 +175,14 @@
      "}())")))
 
 (defn handle-def [[_ v body]]
-  (str "var " (convert-el v) " = " (convert-el body) ";\n"))
+  (str "var " (convert-el v) " = " (convert-el body) ";\n"
+       "var " (cns-with-dot) (convert-el v) " = " (convert-el v)))
 
 (defn handle-defn [col]
   (let [[_ name & fndef] col]
-    (str "var " (convert-el name) " = " (emit-function (first fndef) (rest fndef)) ";")))
+    (str "var " (convert-el name) " = " (emit-function (first fndef) (rest fndef))
+         ";\n"
+         "var " (cns-with-dot) (convert-el name) " = " (convert-el name))))
 
 (defn handle-str [[_ & body]]
   (let [jsforms (map convert-el body)]
@@ -185,9 +206,12 @@
   (let [pred (convert-el pred)
         t (convert-el t)
         f (convert-el f)]
-    (str "if(" pred "){\n" t "\n}"
+    (str
+     "(function(){"
+     "if(" pred "){\n return " t ";\n}"
      (when f
-       (str "else{\n" f "\n}")))))
+       (str "else{\n return " f ";\n}"))
+     "})()")))
 
 (defn handle-map [[_ f col]]
   (str
@@ -196,14 +220,6 @@
    \,
    (convert-el f)
    ")"))
-
-(js '(defn chapters-overview [chapters]
-       (map render-chapter-overview chapters)))
-
-(js '(cond
-      (= 1 1) (println "foo")
-      (= 1 2) (println "bar")
-      :else (println "stuff")))
 
 (defn handle-cond [[_ & conds]]
   (let [pairs (partition 2 conds)]
@@ -231,6 +247,16 @@
           (interpose ";" (add-return (map convert-el statements))))
    "})()"))
 
+(defn handle-first [[_ & arr]]
+  (str arr "[0]"))
+
+(defn handle-ns [[_ ns & args]]
+  (set-current-ns ns)
+  (str
+   "var " (cns) " = " (cns) " || {};"))
+
+(defn handle-quote [[_ arg]]
+  arg)
 
 (defn fn-handlers []
   {'println handle-println
@@ -245,7 +271,10 @@
    'if      handle-if
    'map     handle-map
    'cond    handle-cond
-   'do      handle-do})
+   'do      handle-do
+   'first   handle-first
+   'ns      handle-ns
+   'quote   handle-quote})
 
 ;;
 ;;
@@ -255,8 +284,25 @@
 
 (defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
-        forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))]
-    (apply str (interpose "\n" (map js forms)))))
+        forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))
+        first-form (first forms)
+        ns-decl (when (= 'ns (first first-form))
+                  first-form)
+        forms (if ns-decl (rest forms) forms)]
+    (when ns-decl)
+         (set-current-ns (second ns-decl))
+    (str "var " (cns) " = " (cns) " || {};\n"
+         "(function() {\n"
+         (apply str (interpose "\n" (map js forms)))
+         "})();")))
 
 (defn compile-to [cljs-path output-path]
   (spit output-path (compile-cljs cljs-path)))
+
+(defn stich-cljs-output [js-path]
+  (->> (java.io.File. js-path)
+       (file-seq)
+       (filter #(.endsWith (.getName %) ".cljs.js"))
+       #_(map slurp)
+       #_(apply str)))
+
