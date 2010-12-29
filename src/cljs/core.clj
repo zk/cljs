@@ -177,7 +177,7 @@
 
 (defn handle-->> [[_ pivot & forms]]
   (let [pivot (convert-el pivot)
-        forms (map #(concat % [pivot])
+        forms (map #(concat % ['out])
                    forms)]
     (str
      "(function(){"
@@ -292,6 +292,26 @@
    (apply str (interpose " && " (map convert-el stmts)))
    ")"))
 
+(defn handle-reduce [[_ f init col]]
+  (str
+   "(function(){"
+   (if (not col)
+     (str "var col = " (convert-el init) ";\n"
+          "var memo = col[0];\n"
+          "col = col.slice(1);\n")
+     (str "var col = " (convert-el col) ";\n"
+          "var memo = " (convert-el init) ";\n"))
+   "return _.reduce("
+   "col"
+   \,
+   (convert-el f)
+   \,
+   "memo"
+   ");"
+   "})()"))
+
+
+
 (defn fn-handlers []
   {'println handle-println
    'fn      handle-fn
@@ -304,6 +324,7 @@
    '=       handle-=
    'if      handle-if
    'map     handle-map
+   'reduce  handle-reduce
    'cond    handle-cond
    'do      handle-do
    'first   handle-first
