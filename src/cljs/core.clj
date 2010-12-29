@@ -45,14 +45,15 @@
 (defn convert-symbol-with-ns [s]
   (let [[ns var] (-> (str s)
                      (str/split #"\/" 2))]
-    (str (str/replace ns #"\." "_DOT_") "." var)))
+    (str (str/replace ns #"\." "_DOT_") "." (convert-symbol var))))
 
 (defn convert-symbol [s]
   (if (re-find #"\/" (str s))
     (convert-symbol-with-ns s)
     (-> (str s)
         (str/replace #"-" "_")
-        (str/replace #"\?" "_QM_"))))
+        (str/replace #"\?" "_QM_")
+        (symbol))))
 
 (defn convert-map [m]
   (str "{" (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m))) "}"))
@@ -73,7 +74,7 @@
         after-ret (drop body-len body-seq)
         with-return (concat before-ret [(apply str "return " after-ret)])]
     (str "function("
-         (apply str (interpose "," arglist))
+         (apply str (interpose "," (map convert-el arglist)))
          "){\n"
          (apply str (interpose ";\n" with-return))
          ";\n}")))
@@ -174,15 +175,31 @@
           ['out]))))
      "}())")))
 
+(defn handle-->> [[_ pivot & forms]]
+  (let [pivot (convert-el pivot)
+        forms (map #(concat % [pivot])
+                   forms)]
+    (str
+     "(function(){"
+     "var out = "
+     pivot
+     ";\n"
+     (apply str (map #(str "out = " % ";") (map convert-el forms)))
+     "return out;"
+     "})()")))
+
+#_(js '(->> el
+          (map (fn [x] x))))
+
 (defn handle-def [[_ v body]]
   (str "var " (convert-el v) " = " (convert-el body) ";\n"
-       "var " (cns-with-dot) (convert-el v) " = " (convert-el v)))
+       (cns-with-dot) (convert-el v) " = " (convert-el v)))
 
 (defn handle-defn [col]
   (let [[_ name & fndef] col]
     (str "var " (convert-el name) " = " (emit-function (first fndef) (rest fndef))
          ";\n"
-         "var " (cns-with-dot) (convert-el name) " = " (convert-el name))))
+         (cns-with-dot) (convert-el name) " = " (convert-el name))))
 
 (defn handle-str [[_ & body]]
   (let [jsforms (map convert-el body)]
@@ -199,7 +216,7 @@
   (let [pivot (convert-el pivot)]
     (str
      \(
-     (apply str (interpose " && " (map #(str pivot " == " %) others)))
+     (apply str (interpose " && " (map #(str pivot " == " %) (map convert-el others))))
      \))))
 
 (defn handle-if [[_ pred t f]]
@@ -216,6 +233,14 @@
 (defn handle-map [[_ f col]]
   (str
    "_.map("
+   (convert-el col)
+   \,
+   (convert-el f)
+   ")"))
+
+(defn handle-filter [[_ f col]]
+  (str
+   "_.filter("
    (convert-el col)
    \,
    (convert-el f)
@@ -247,8 +272,8 @@
           (interpose ";" (add-return (map convert-el statements))))
    "})()"))
 
-(defn handle-first [[_ & arr]]
-  (str arr "[0]"))
+(defn handle-first [[_ arr]]
+  (str (convert-el arr) "[0]"))
 
 (defn handle-ns [[_ ns & args]]
   (set-current-ns ns)
@@ -257,6 +282,15 @@
 
 (defn handle-quote [[_ arg]]
   arg)
+
+(defn handle-not [[_ stmt]]
+  (str "(!" (convert-el stmt) ")"))
+
+(defn handle-and [[_ & stmts]]
+  (str
+   "("
+   (apply str (interpose " && " (map convert-el stmts)))
+   ")"))
 
 (defn fn-handlers []
   {'println handle-println
@@ -274,7 +308,11 @@
    'do      handle-do
    'first   handle-first
    'ns      handle-ns
-   'quote   handle-quote})
+   'quote   handle-quote
+   'filter  handle-filter
+   'not     handle-not
+   'and     handle-and
+   '->>     handle-->>})
 
 ;;
 ;;
