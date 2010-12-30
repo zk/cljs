@@ -136,6 +136,11 @@
 (deftest test-handle-println
   (is (= "console.log(\"hello world\")" (handle-println '(println "hello world")))))
 
+;; Javascript Interop
+
+(deftest test-new
+  (is (eval-js '(String. "foo"))))
+
 ;; # Low-Level Converters
 
 (deftest test-convert-map

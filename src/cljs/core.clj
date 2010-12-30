@@ -111,12 +111,30 @@
          (apply str (interpose "," (map convert-el args)))
          \))))
 
+(defn chop-trailing-period [sym]
+  (let [sym-str (str sym)
+        len (count sym-str)]
+    (->> sym-str
+         (take (dec len))
+         (apply str)
+         (symbol))))
+
+(defn convert-new-function [col]
+  (let [clazz  (chop-trailing-period (first col))
+        args (rest col)]
+    (str "(new "
+         clazz
+         "("
+         (apply str (interpose "," (map convert-el args)))
+         "))")))
+
 (defn convert-function [col]
   (let [f (first col)
         handler ((fn-handlers) f)]
     (cond
      handler (handler col)
      (= \. (first (str f))) (convert-dot-function col)
+     (re-find #"\.$" (str f)) (convert-new-function col)
      :else (convert-plain-function col))))
 
 

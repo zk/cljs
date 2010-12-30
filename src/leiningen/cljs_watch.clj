@@ -25,8 +25,6 @@
        (:cljs (apply hash-map (drop 3 (read rdr))))))
   ([] (parse-cljs-opts "project.clj")))
 
-(parse-cljs-opts)
-
 ;; Stolen from marginalia:
 (defn ls
   [path]
