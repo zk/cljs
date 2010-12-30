@@ -66,7 +66,7 @@
      (when (empty? cljss) #_(println "Nothing to compile"))
      (doseq [cljs cljss]
        (try
-         (println "Compiling" (.getAbsolutePath cljs) "to" out-dir)
+         (println "Compiling" (.getName cljs) "to" out-dir)
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))
 

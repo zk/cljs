@@ -142,13 +142,13 @@
   (is (= "(function(){return {'hello':\"world\"};})()" (convert-map {:hello "world"}))))
 
 (deftest test-convert-string
-  (is (= "\"hello world\"" (convert-string "hello world"))))
+  (is (= "hello world" (eval-js "hello world"))))
 
 (deftest test-convert-number
-  (is (= "5" (convert-number 5))))
+  (is (= 5 (eval-js 5))))
 
 (deftest test-convert-vector
-  (is (= "[1,2,3]" (convert-vector [1 2 3]))))
+  (is (= [1 2 3] (eval-js '[1 2 3]))))
 
 (deftest test-convert-symbol
   (is (= 'hello_world (convert-symbol 'hello-world)))

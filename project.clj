@@ -14,8 +14,8 @@
 
 
        (js '(-> ($ \"<div />\")
-                     (.css {:backgroundColor \"blue\" .
-                            :border \"dashed white 5px\"})
+                (.css {:backgroundColor \"blue\" .
+                       :border \"dashed white 5px\"})
 
        -> (function(){var out = $(\"<div />\");
                       out.css({backgroundColor:\"blue\",border:\"dashed white 5px\"});

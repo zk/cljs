@@ -2539,8 +2539,8 @@ $(document).ready(function() {
 
 
    (js '(-&gt; ($ "&lt;div /&gt;")
-                 (.css {:backgroundColor "blue" .
-                        :border "dashed white 5px"})
+            (.css {:backgroundColor "blue" .
+                   :border "dashed white 5px"})
 
    -&gt; (function(){var out = $("&lt;div /&gt;");
                   out.css({backgroundColor:"blue",border:"dashed white 5px"});
@@ -2550,7 +2550,7 @@ $(document).ready(function() {
 <p>   Neat, huh?</p>
 
 <p>   For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.2.2</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Experimental, very WIP so use at your own risk.</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.2.2</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Experimental, very WIP so use at your own risk.</p>
 </td><td class="codes"><pre class="brush: clojure">(ns cljs.core
   (:require [clojure.string :as str]))</pre></td></tr><tr><td class="docs"><h1>Low-Level Conversion Routines</h1>
 
@@ -2938,9 +2938,7 @@ to a handler (i.e. <code>handle-+</code>).</p>
    'assoc   handle-assoc})</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
-(defn js [form] (str (convert-el form) &quot;;&quot;))
-
-(convert-el '((:myfn x)))</pre></td></tr><tr><td class="docs">
+(defn js [form] (str (convert-el form) &quot;;&quot;))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
@@ -3054,7 +3052,7 @@ found in <code>file-or-path</code> including subdirs.</p>
      (when (empty? cljss) #_(println &quot;Nothing to compile&quot;))
      (doseq [cljs cljss]
        (try
-         (println &quot;Compiling&quot; (.getAbsolutePath cljs) &quot;to&quot; out-dir)
+         (println &quot;Compiling&quot; (.getName cljs) &quot;to&quot; out-dir)
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println &quot;Problem compiling &quot; (.getAbsolutePath cljs) &quot;: &quot; e)))))))
 </pre></td></tr><tr><td class="docs">
@@ -3072,7 +3070,64 @@ found in <code>file-or-path</code> including subdirs.</p>
            (fn []
              (while @*run*
                (check-and-run! watch-path)
-               (Thread/sleep 500))))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.core" name="cljs.test.core"><h1 class="project-name">cljs.test.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+               (Thread/sleep 500))))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
+
+<p>add to your project.clj (ignore periods):</p>
+
+<pre><code>(defproject my-project "1.0" .
+  :cljs {:source-path "src/cljs" .
+         :output-path "resources/public/js"})
+</code></pre>
+
+<p><code>src/cljs</code> and <code>resources/public/js</code> are the defaults.</p>
+
+<p>Then run <code>lein cljs-watch</code> from your project's root dir
+to enable automatic compilation of <code>.cljs</code> files when
+they are changed.</p>
+
+<p>Conversely, you can override these values from the command
+line like so:
+<code>$ lein cljs-watch :source-path ./path/to/cljs :output-path ./path/to/output/</code>.</p>
+</td><td class="codes"><pre class="brush: clojure">(ns leiningen.cljs-watch
+  (:use [cljs.watch])
+  (:require [clojure.java.io :as io]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs"><p>For REPL use</p>
+</td><td class="codes"><pre class="brush: clojure">(defn parse-cljs-opts
+  ([project-path]
+     (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-path))]
+       (:cljs (apply hash-map (drop 3 (read rdr))))))
+  ([] (parse-cljs-opts &quot;project.clj&quot;)))
+
+(parse-cljs-opts)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs"><p>Stolen from marginalia:</p>
+</td><td class="codes"><pre class="brush: clojure">(defn ls
+  [path]
+  (let [file (java.io.File. path)]
+    (if (.isDirectory file)
+      (seq (.list file))
+      (when (.exists file)
+        [path]))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+(defn mkdir [path]
+  (.mkdirs (io/file path)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+(defn ensure-directory!
+  [path]
+  (when-not (ls path)
+    (mkdir path)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">
+(defn cljs-watch [project &amp; args]
+  (let [cljs-opts (merge {:source-path &quot;src/cljs&quot;
+                          :output-path &quot;resources/public/js&quot;}
+                         (:cljs project)
+                         (apply hash-map args))
+        src-path (:source-path cljs-opts)
+        out-path (:output-path cljs-opts)]
+    (when-not (ls out-path)
+      (println &quot;Output directory&quot; out-path &quot;not found, creating.&quot;)
+      (ensure-directory! out-path))
+    (println &quot;Watching&quot; src-path &quot;for changes...&quot;)
+    (start-watch src-path out-path)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.core" name="cljs.test.core"><h1 class="project-name">cljs.test.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns cljs.test.core
   (:use [cljs.core] :reload)
   (:use [clojure.test])
@@ -3206,13 +3261,13 @@ it as a child of <code>&lt;body /&gt;</code>.</p>
   (is (= &quot;(function(){return {'hello':\&quot;world\&quot;};})()&quot; (convert-map {:hello &quot;world&quot;}))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-string
-  (is (= &quot;\&quot;hello world\&quot;&quot; (convert-string &quot;hello world&quot;))))</pre></td></tr><tr><td class="docs">
+  (is (= &quot;hello world&quot; (eval-js &quot;hello world&quot;))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-number
-  (is (= &quot;5&quot; (convert-number 5))))</pre></td></tr><tr><td class="docs">
+  (is (= 5 (eval-js 5))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-vector
-  (is (= &quot;[1,2,3]&quot; (convert-vector [1 2 3]))))</pre></td></tr><tr><td class="docs">
+  (is (= [1 2 3] (eval-js '[1 2 3]))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">
 (deftest test-convert-symbol
   (is (= 'hello_world (convert-symbol 'hello-world)))
@@ -3312,5 +3367,5 @@ it as a child of <code>&lt;body /&gt;</code>.</p>
 
   (compile-cljjs-to &quot;./resources/public/cljjs/test.clj.js&quot; &quot;./resources/public/js/test.js&quot;)
 
-)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>

@@ -391,8 +391,6 @@
 
 (defn js [form] (str (convert-el form) ";"))
 
-(convert-el '((:myfn x)))
-
 (defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))
