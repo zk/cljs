@@ -80,6 +80,31 @@
          (eval-js '(defn x [] "hello")
                   '(x)))))
 
+(deftest test-varargs
+  (is (= [2 3 4])
+      (eval-js '(defn x [& args]
+                  (map (fn [i] (+ i 1)) args))
+               '(x 1 2 3))))
+
+(deftest test-varargs-2
+  (is (= 10
+         (eval-js '(defn x [a b & args]
+                     (+ a b
+                        (reduce (fn [col i] (+ col i)) args)))
+                  '(x 1 2 3 4)))))
+
+;; Calling functions
+
+(deftest test-wrap-parens
+  (is (= 6
+         (eval-js '((fn [x y z] (+ x y z)) 1 2 3)))))
+
+(deftest test-apply
+  (is (= 6
+         (eval-js '(apply + [1 2 3]))))
+  (is (= 10
+         (eval-js '(apply + 1 2 [3 4])))))
+
 ;; ## Conditionals
 
 (deftest test-if
@@ -160,7 +185,7 @@
   (is (= 'hello.world (convert-symbol 'hello/world))))
 
 (deftest test-emit-function
-  (is (= "function(x,y){\n5;\n6;\nreturn 7;\n}" (emit-function '[x y] '(5 6 7)))))
+  (is (= "(function(x,y){\n5;\n6;\nreturn 7;\n})" (emit-function '[x y] '(5 6 7)))))
 
 (deftest test-convert-dot-function
   (is (= "x.stuff(1,2,3)" (convert-dot-function '(.stuff x 1 2 3)))))

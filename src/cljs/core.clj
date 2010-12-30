@@ -86,12 +86,17 @@
         body-len (dec (count body-seq))
         before-ret (take body-len body-seq)
         after-ret (drop body-len body-seq)
-        with-return (concat before-ret [(apply str "return " after-ret)])]
-    (str "function("
-         (apply str (interpose "," (map convert-el arglist)))
+        with-return (concat before-ret [(apply str "return " after-ret)])
+        before-amp (take-while #(not= '& %) arglist)
+        after-amp (first (drop 1 (drop-while #(not= '& %) arglist)))]
+    (str "(function("
+         (apply str (interpose "," (map convert-el before-amp)))
          "){\n"
+         (when after-amp
+           (str "var " (convert-el after-amp)
+                " = Array.prototype.slice.call(arguments," (count before-amp) ");"))
          (apply str (interpose ";\n" with-return))
-         ";\n}")))
+         ";\n})")))
 
 (defn convert-dot-function [col]
   (let [f (convert-el (first col))
@@ -174,7 +179,7 @@
 ;; to a handler (i.e. `handle-+`).
 
 (defn handle-println [[_ & body]]
-  (str "console.log(" (apply str (map convert-el body)) ")"))
+  (str "console.log(" (apply str (interpose "," (map convert-el body))) ")"))
 
 (defn handle-fn [col]
   (let [_ (first col)
@@ -234,6 +239,12 @@
 (defn handle-str [[_ & body]]
   (let [jsforms (map convert-el body)]
     (str "(" (apply str (interpose "+" jsforms)) ")")))
+
+(defn handle-apply [[_ f & args]]
+  (let [col (last args)
+        before-last (take (dec (count args)) args)
+        col (concat before-last col)]
+    (convert-el (concat [f] col))))
 
 (defn handle-+ [[_ & body]]
   (let [forms (map convert-el body)]
@@ -401,7 +412,8 @@
    'and     handle-and
    '->>     handle-->>
    'merge   handle-merge
-   'assoc   handle-assoc})
+   'assoc   handle-assoc
+   'apply   handle-apply})
 
 ;;
 ;;
