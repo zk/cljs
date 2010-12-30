@@ -1,6 +1,34 @@
 (ns cljs.test.core
   (:use [cljs.core] :reload)
-  (:use [clojure.test]))
+  (:use [clojure.test])
+  (:require [cljs.rhino :as rhino])
+  (:import (org.mozilla.javascript Context
+                                   Scriptable
+                                   NativeArray
+                                   NativeObject)))
+
+
+;; ## Test helpers
+
+(defn narr-to-seq [narr]
+  (->> narr
+    (.getIds)
+    (seq)
+    (map #(.get narr % nil))))
+
+(defn obj-to-map [obj]
+  (let [obj-ids (seq (.getIds obj))
+        vals (map #(.get obj % nil) obj-ids)
+        keys (map keyword obj-ids)]
+    (apply hash-map (interleave keys vals))))
+
+(defn eval-js [& stmt-or-stmts]
+  (let [res (rhino/eval-js
+             (apply str (interpose ";" (map js stmt-or-stmts))))]
+    (cond
+     (= NativeArray (class res)) (narr-to-seq res)
+     (= NativeObject (class res)) (obj-to-map res)
+     :else res)))
 
 
 ;; # Interesting Examples
@@ -15,35 +43,103 @@
 ;; it as a child of `<body />`.
 ;;
 ;; See the example [here](http://zkim.github.com/cljs/examples/red-clickable-box.html).
-(println (map js '(
+(map js '(
 
-                   (defn click-handler []
-                     (alert "I was clicked!"))
+          (defn click-handler []
+            (alert "I was clicked!"))
 
-                   (defn body [] ($ "body"))
+          (defn body [] ($ "body"))
 
-                   (defn clickable-div []
-                     (doto ($ "<div />")
-                         (.click click-handler)
-                         (.css {:width 100
-                                :height 100
-                                :backgroundColor "red"})
-                         (.append "Click Me!")))
+          (defn clickable-div []
+            (doto ($ "<div />")
+              (.click click-handler)
+              (.css {:width 100
+                     :height 100
+                     :backgroundColor "red"})
+              (.append "Click Me!")))
 
-                   (.ready ($ document)
-                           (fn []
-                             (.append (body) (clickable-div))))
+          (.ready ($ document)
+                  (fn []
+                    (.append (body) (clickable-div))))
                    
-                   )))
+          ))
+
+;; cljs code is represented wherever you see `(eval-js '...`.
+
+;; # Ops By Category
+
+;; ## Defining Variables and Functions
+
+(deftest test-var-definition
+  (is (= "hello"
+         (eval-js '(def x "hello")
+                  'x))))
+
+(deftest test-function-definition
+  (is (= "hello"
+         (eval-js '(defn x [] "hello")
+                  '(x)))))
+
+;; ## Conditionals
+
+(deftest test-if
+  (is (= "foo")
+      (eval-js '(if true "foo" "bar")))
+  (is (= "bar")
+      (eval-js '(if false "foo" "bar"))))
+
+;; ## Comparisons
+
+(deftest test-=
+  (is (eval-js '(= 1 1 1)))
+  (is (not (eval-js (= 1 1 2)))))
+
+(deftest test-<
+  (is (eval-js '(< 1 2)))
+  (is (eval-js '(< 1 2 3)))
+  (is (not (eval-js '(< 2 1)))))
+
+(deftest test->
+  (is (eval-js '(> 2 1)))
+  (is (eval-js '(> 3 2 1)))
+  (is (not (eval-js '(> 1 2)))))
+
+;; ## 'Hash Map' Ops
+
+(deftest test-basic-map
+  (is (= {:hello "world"}
+         (eval-js '{:hello "world"}))))
+
+(deftest test-merge-maps
+  "Define a variable x which is the combination of {:hello \"world\"} and
+   {:foo \"bar\"}, then output (:foo x), which should be \"bar\"."
+  (is (= {:hello "world" :foo "bar"}
+         (eval-js '(merge {:hello "world"} {:foo "bar"})))))
+
+(deftest test-assoc
+  (is (= {:hello "world" :foo "bar" :baz "bap"}
+         (eval-js '(assoc {:hello "world"} :foo "bar" :baz "bap")))))
+
+(deftest test-map-with-fn
+  (is (= 5
+         (eval-js '(def x {:myfn (fn [] (+ 2 3))})
+                  '((:myfn x))))))
+
+;; ## General Ops
+
+(deftest test-map-function
+  (is (= [2 3 4] (eval-js '(map (fn [x] (+ 1 x)) [1 2 3])))))
+
+(deftest test-reduce-function
+  (is (= 6 (eval-js '(reduce (fn [col val] (+ col val)) [1 2 3])))))
 
 (deftest test-handle-println
   (is (= "console.log(\"hello world\")" (handle-println '(println "hello world")))))
 
-
 ;; # Low-Level Converters
 
 (deftest test-convert-map
-  (is (= "{'hello':\"world\"}" (convert-map {:hello "world"}))))
+  (is (= "(function(){return {'hello':\"world\"};})()" (convert-map {:hello "world"}))))
 
 (deftest test-convert-string
   (is (= "\"hello world\"" (convert-string "hello world"))))
@@ -55,10 +151,8 @@
   (is (= "[1,2,3]" (convert-vector [1 2 3]))))
 
 (deftest test-convert-symbol
-  (is (= "hello_world" (convert-symbol 'hello-world)))
-  (is (= "hello.world" (convert-symbol 'hello/world))))
-
-(convert-symbol 'hello/world)
+  (is (= 'hello_world (convert-symbol 'hello-world)))
+  (is (= 'hello.world (convert-symbol 'hello/world))))
 
 (deftest test-emit-function
   (is (= "function(x,y){\n5;\n6;\nreturn 7;\n}" (emit-function '[x y] '(5 6 7)))))
@@ -74,16 +168,9 @@
   (is (= "stuff(1,2,3)" (convert-function '(stuff 1 2 3)))))
 
 (deftest test-handle-if
-  (is (= "(function(){if((x==1)){return x;}})()" (handle-if '(if (= x 1) x)))))
-
-#_(js '(let [y 5] (println y)))
-
-
-
+  (is (= "(function(){if((x == 1)){\n return x;\n}})()" (handle-if '(if (= x 1) x)))))
 
 (comment
-
-  
 
   (js-form '(fn [x] [1 2 x 3]))
 

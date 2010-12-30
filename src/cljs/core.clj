@@ -33,19 +33,28 @@
     with-return))
 
 (defn funcall? [col]
-  (= 'fn (first col)))
+  (or (= 'fn (first col))
+      (list? col)
+      (seq? col)))
+
+(defn convert-map-access-function [[keyword map]]
+  (let [keyword (convert-el keyword)
+        map (convert-el map)]
+    (str map "['" keyword "']")))
 
 (defn convert-list [l]
   (let [f (first l)]
     (cond
      (symbol? f) (convert-function l)
-     (funcall? f) (str (convert-function (first l)) "()")
-     :else (map convert-el l))))
+     (keyword? f) (str (convert-map-access-function l))
+     (string? f) (map convert-el l)
+     (funcall? f) (str (convert-function l)))))
 
+(declare convert-symbol)
 (defn convert-symbol-with-ns [s]
   (let [[ns var] (-> (str s)
                      (str/split #"\/" 2))]
-    (str (str/replace ns #"\." "_DOT_") "." (convert-symbol var))))
+    (symbol (str (str/replace ns #"\." "_DOT_") "." (convert-symbol var)))))
 
 (defn convert-symbol [s]
   (if (re-find #"\/" (str s))
@@ -56,7 +65,12 @@
         (symbol))))
 
 (defn convert-map [m]
-  (str "{" (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m))) "}"))
+  (str
+   "(function(){"
+   "return {"
+   (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m)))
+   "}"
+   ";})()"))
 
 (defn convert-string [s]
   (str \" s \"))
@@ -104,6 +118,7 @@
      handler (handler col)
      (= \. (first (str f))) (convert-dot-function col)
      :else (convert-plain-function col))))
+
 
 (defn convert-el [el]
   (cond
@@ -157,7 +172,7 @@
    "(function(){"
    (apply str (map handle-binding (partition 2 bindings)))
    (apply str (interpose ";" (add-return (map convert-el body))))
-   "}())"))
+   "})()"))
 
 (defn handle-doto [[_ & body]]
   (let [pivot (first body)
@@ -188,9 +203,6 @@
      "return out;"
      "})()")))
 
-#_(js '(->> el
-          (map (fn [x] x))))
-
 (defn handle-def [[_ v body]]
   (str "var " (convert-el v) " = " (convert-el body) ";\n"
        (cns-with-dot) (convert-el v) " = " (convert-el v)))
@@ -219,6 +231,20 @@
      (apply str (interpose " && " (map #(str pivot " == " %) (map convert-el others))))
      \))))
 
+(defn handle-< [[_ pivot & others]]
+  (let [pivot (convert-el pivot)]
+    (str
+     \(
+     (apply str (interpose " && " (map #(str pivot " < " %) (map convert-el others))))
+     \))))
+
+(defn handle-> [[_ pivot & others]]
+  (let [pivot (convert-el pivot)]
+    (str
+     \(
+     (apply str (interpose " && " (map #(str pivot " > " %) (map convert-el others))))
+     \))))
+
 (defn handle-if [[_ pred t f]]
   (let [pred (convert-el pred)
         t (convert-el t)
@@ -232,11 +258,13 @@
 
 (defn handle-map [[_ f col]]
   (str
-   "_.map("
+   "(function(){"
+   "return _.map("
    (convert-el col)
    \,
    (convert-el f)
-   ")"))
+   ")"
+   ";})()"))
 
 (defn handle-filter [[_ f col]]
   (str
@@ -310,7 +338,25 @@
    ");"
    "})()"))
 
+(defn handle-merge [[_ pivot & maps]]
+  (str
+   "(function(){"
+   "var out = " (convert-el pivot) ";"
+   "var target = " (convert-el (first maps)) ";"
+   "for(attrname in target){"
+   "out[attrname] = target[attrname];"
+   "}"
+   "return out;"
+   "})()"))
 
+(defn handle-assoc [[_ m & args]]
+  (let [pairs (partition 2 args)]
+    (str
+     "(function(){"
+     "var out = " (convert-el m) ";"
+     (apply str (map #(str "out['" (convert-el (first %)) "'] = " (convert-el (second %)) ";") pairs))
+     "return out;"
+     "})()")))
 
 (defn fn-handlers []
   {'println handle-println
@@ -322,6 +368,8 @@
    'str     handle-str
    '+       handle-+
    '=       handle-=
+   '>       handle->
+   '<       handle-<
    'if      handle-if
    'map     handle-map
    'reduce  handle-reduce
@@ -333,13 +381,17 @@
    'filter  handle-filter
    'not     handle-not
    'and     handle-and
-   '->>     handle-->>})
+   '->>     handle-->>
+   'merge   handle-merge
+   'assoc   handle-assoc})
 
 ;;
 ;;
 ;;
 
 (defn js [form] (str (convert-el form) ";"))
+
+(convert-el '((:myfn x)))
 
 (defn compile-cljs [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
