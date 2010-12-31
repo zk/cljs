@@ -10,7 +10,6 @@
 
 (declare convert-el)
 (declare convert-function)
-(declare fn-handlers)
 
 (def *current-ns* (atom nil))
 
@@ -42,13 +41,22 @@
         map (convert-el map)]
     (str map "['" keyword "']")))
 
+(defn convert-apply-function [[_ f & args]]
+  (str
+   "(function(){"
+   "})"))
+
+(declare js-call)
+(declare js-apply)
+
 (defn convert-list [l]
   (let [f (first l)]
     (cond
-     (symbol? f) (convert-function l)
-     (keyword? f) (str (convert-map-access-function l))
+     (= 'apply f) (js-apply l)
+     (symbol? f) (js-call l)
+     (keyword? f) (convert-map-access-function l)
      (string? f) (map convert-el l)
-     (funcall? f) (str (convert-function l)))))
+     (funcall? f) (js-call l))))
 
 (declare convert-symbol)
 (defn convert-symbol-with-ns [s]
@@ -56,13 +64,16 @@
                      (str/split #"\/" 2))]
     (symbol (str (str/replace ns #"\." "_DOT_") "." (convert-symbol var)))))
 
+(declare strict-handlers)
+
 (defn convert-symbol [s]
-  (if (re-find #"\/" (str s))
-    (convert-symbol-with-ns s)
-    (-> (str s)
-        (str/replace #"-" "_")
-        (str/replace #"\?" "_QM_")
-        (symbol))))
+  (cond ((strict-handlers) s) (((strict-handlers) s))
+        :else (if (re-find #"\/" (str s))
+                (convert-symbol-with-ns s)
+                (-> (str s)
+                    (str/replace #"-" "_")
+                    (str/replace #"\?" "_QM_")
+                    (symbol)))))
 
 (defn convert-map [m]
   (str
@@ -98,24 +109,6 @@
          (apply str (interpose ";\n" with-return))
          ";\n})")))
 
-(defn convert-dot-function [col]
-  (let [f (convert-el (first col))
-        obj (convert-el (second col))
-        args (drop 2 col)]
-    (str obj
-         f
-         \(
-         (apply str (interpose "," (map convert-el args)))
-         \))))
-
-(defn convert-plain-function [col]
-  (let [f (first col)
-        args (rest col)]
-    (str (convert-el f)
-         \(
-         (apply str (interpose "," (map convert-el args)))
-         \))))
-
 (defn chop-trailing-period [sym]
   (let [sym-str (str sym)
         len (count sym-str)]
@@ -124,23 +117,6 @@
          (apply str)
          (symbol))))
 
-(defn convert-new-function [col]
-  (let [clazz  (chop-trailing-period (first col))
-        args (rest col)]
-    (str "(new "
-         clazz
-         "("
-         (apply str (interpose "," (map convert-el args)))
-         "))")))
-
-(defn convert-function [col]
-  (let [f (first col)
-        handler ((fn-handlers) f)]
-    (cond
-     handler (handler col)
-     (= \. (first (str f))) (convert-dot-function col)
-     (re-find #"\.$" (str f)) (convert-new-function col)
-     :else (convert-plain-function col))))
 
 
 (defn convert-el [el]
@@ -153,6 +129,7 @@
    (number? el) (convert-number el)
    (= java.lang.Boolean (class el)) (if el 'true 'false)
    (keyword? el) (name el)))
+
 
 ;; # Specific Function Handlers
 ;;
@@ -174,12 +151,12 @@
 ;;     (js '(+ 1 1))
 ;;     -> (1 + 1)
 ;;
-;; `fn-handlers` (see the end of this section) provides the mechanism
-;; to support this behavoir by mapping the desired symbol (i.e. `+`)
+;; `strict-handlers` and `lazy-handlers` (see the end of this section) provide
+;; the mechanism to support this behavoir by mapping the desired symbol (i.e. `+`)
 ;; to a handler (i.e. `handle-+`).
 
-(defn handle-println [[_ & body]]
-  (str "console.log(" (apply str (interpose "," (map convert-el body))) ")"))
+(defn handle-println []
+  "console.log")
 
 (defn handle-fn [col]
   (let [_ (first col)
@@ -234,24 +211,79 @@
   (let [[_ name & fndef] col]
     (str "var " (convert-el name) " = " (emit-function (first fndef) (rest fndef))
          ";\n"
-         (cns-with-dot) (convert-el name) " = " (convert-el name))))
+         (cns-with-dot) (convert-el name) " = " (convert-el name) ";")))
 
-(defn handle-str [[_ & body]]
-  (let [jsforms (map convert-el body)]
-    (str "(" (apply str (interpose "+" jsforms)) ")")))
+(defn call-fn [f args]
+  (let [f (convert-el f)
+        args (map convert-el args)]
+    (str "("
+         f
+         "("
+         (apply str (interpose "," args))
+         "))")))
 
-(defn handle-apply [[_ f & args]]
-  (let [col (last args)
-        before-last (take (dec (count args)) args)
-        col (concat before-last col)]
-    (convert-el (concat [f] col))))
+(defn reduce-args [op init]
+  (str
+   "(function(){"
+   "return _.reduce(arguments,function(c,v){return c " op " v}," init ")"
+   "})"))
 
-(defn handle-+ [[_ & body]]
-  (let [forms (map convert-el body)]
-    (str
-     \(
-     (apply str (interpose "+" forms))
-     \))))
+(defn str-fn []
+  (reduce-args '+ "\"\""))
+
+(defn call-dot-fn [col]
+  (let [f (convert-el (first col))
+        obj (convert-el (second col))
+        args (drop 2 col)]
+    (call-fn (symbol (str obj f)) args)))
+
+(defn call-new-fn [col]
+  (let [clazz  (chop-trailing-period (first col))
+        args (rest col)]
+    (str "(new "
+         clazz
+         "("
+         (apply str (interpose "," (map convert-el args)))
+         "))")))
+
+
+(declare lazy-eval-fn-defs)
+(declare strict-eval-fn-defs)
+
+(defn js-call [fn]
+  (let [[f & args] fn]
+    (cond
+     (lazy-eval-fn-defs f) ((lazy-eval-fn-defs f) fn)
+     ((strict-handlers) f) (call-fn (first fn) (rest fn))
+     (= \. (first (str f))) (call-dot-fn fn)
+     (re-find #"\.$" (str f)) (call-new-fn fn)
+     (symbol? f) (call-fn (first fn) (rest fn))
+     :else (call-fn (first fn) (rest fn)))))
+
+(defn js-apply-fn [f args]
+  (let [l (last args)
+        before-l (take (dec (count args)) args)]
+    (str "("
+         f
+         ".apply(null,"
+         (when (not (empty? before-l))
+           (str "[" (apply str (interpose "," (map convert-el before-l))) "].concat("))
+         (convert-el l)
+         (when (not (empty? before-l))
+           (str ")"))
+         "))")))
+
+(defn js-apply [fn]
+  (let [[_ f & args] fn]
+    (when (lazy-eval-fn-defs f)
+      (throw (Exception. (str "Can't apply lazily evaluated fn: " f))))
+    (if ((strict-handlers) f)
+      (js-apply-fn (((strict-handlers) f)) args)
+      (js-apply-fn f args))))
+
+
+(defn handle-+ [& _]
+  (reduce-args '+ 0))
 
 (defn handle-= [[_ pivot & others]]
   (let [pivot (convert-el pivot)]
@@ -350,6 +382,8 @@
    ")"))
 
 (defn handle-reduce [[_ f init col]]
+  (when (not init)
+    (throw (Exception. "No collection provided to reduce over.")))
   (str
    "(function(){"
    (if (not col)
@@ -367,16 +401,22 @@
    ");"
    "})()"))
 
-(defn handle-merge [[_ pivot & maps]]
+(defn handle-merge []
   (str
    "(function(){"
-   "var out = " (convert-el pivot) ";"
-   "var target = " (convert-el (first maps)) ";"
-   "for(attrname in target){"
-   "out[attrname] = target[attrname];"
-   "}"
-   "return out;"
-   "})()"))
+   "var pivot = arguments[0];"
+   "var rest = Array.prototype.slice.call(arguments,1);"
+   "_.each(rest, function(el) {"
+   "_.each(el, function(v,k) {"
+   "pivot[k] = v;"
+   "});"
+   "});"
+   "return pivot;"
+   "})"))
+
+#_'(apply merge [{:hello "world"} {:foo "bar"}])
+
+
 
 (defn handle-assoc [[_ m & args]]
   (let [pairs (partition 2 args)]
@@ -387,15 +427,13 @@
      "return out;"
      "})()")))
 
-(defn fn-handlers []
-  {'println handle-println
-   'fn      handle-fn
+
+(def lazy-eval-fn-defs
+  {'fn      handle-fn
    'let     handle-let
    'doto    handle-doto
    'def     handle-def
    'defn    handle-defn
-   'str     handle-str
-   '+       handle-+
    '=       handle-=
    '>       handle->
    '<       handle-<
@@ -411,9 +449,15 @@
    'not     handle-not
    'and     handle-and
    '->>     handle-->>
-   'merge   handle-merge
    'assoc   handle-assoc
-   'apply   handle-apply})
+})
+
+(defn strict-handlers []
+  {'str     str-fn
+   '+       handle-+
+   'println handle-println
+   'merge   handle-merge})
+
 
 ;;
 ;;

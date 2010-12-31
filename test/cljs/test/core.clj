@@ -99,11 +99,30 @@
   (is (= 6
          (eval-js '((fn [x y z] (+ x y z)) 1 2 3)))))
 
+;; Javascript Interop
+
+(deftest test-new
+  (is (eval-js '(String. "hello"))))
+
+(deftest test-call-js-fn
+  (is (= "hello" (eval-js '(.toString "hello")))))
+
+;; Apply
+
 (deftest test-apply
   (is (= 6
          (eval-js '(apply + [1 2 3]))))
   (is (= 10
-         (eval-js '(apply + 1 2 [3 4])))))
+         (eval-js '(apply + 1 2 [3 4]))))
+  (is (= "123"
+         (eval-js '(apply str [1 2 3]))))
+  (is (= 6
+         (eval-js '(defn x [& args]
+                     (reduce (fn [col v] (+ col v)) args))
+                  '(apply x [1 2 3]))))
+  (is (= {:hello "world" :foo "bar"}
+         (eval-js '(apply merge [{:hello "world"} {:foo "bar"}]))))
+  (is (eval-js '(apply println ["foo" "bar"]))))
 
 ;; ## Conditionals
 
@@ -159,7 +178,7 @@
   (is (= 6 (eval-js '(reduce (fn [col val] (+ col val)) [1 2 3])))))
 
 (deftest test-handle-println
-  (is (= "console.log(\"hello world\")" (handle-println '(println "hello world")))))
+  (is (eval-js '(println "foo"))))
 
 ;; Javascript Interop
 
@@ -187,13 +206,13 @@
 (deftest test-emit-function
   (is (= "(function(x,y){\n5;\n6;\nreturn 7;\n})" (emit-function '[x y] '(5 6 7)))))
 
-(deftest test-convert-dot-function
+#_(deftest test-convert-dot-function
   (is (= "x.stuff(1,2,3)" (convert-dot-function '(.stuff x 1 2 3)))))
 
-(deftest test-convert-plain-function
+#_(deftest test-convert-plain-function
   (is (= "stuff(1,2,3)" (convert-plain-function '(stuff 1 2 3)))))
 
-(deftest test-convert-function
+#_(deftest test-convert-function
   (is (= "x.stuff(1,2,3)" (convert-function '(.stuff x 1 2 3))))
   (is (= "stuff(1,2,3)" (convert-function '(stuff 1 2 3)))))
 
