@@ -41,11 +41,6 @@
         map (convert-el map)]
     (str map "['" keyword "']")))
 
-(defn convert-apply-function [[_ f & args]]
-  (str
-   "(function(){"
-   "})"))
-
 (declare js-call)
 (declare js-apply)
 
@@ -73,6 +68,7 @@
                 (-> (str s)
                     (str/replace #"-" "_")
                     (str/replace #"\?" "_QM_")
+                    (str/replace #"#" "_HASH_")
                     (symbol)))))
 
 (defn convert-map [m]
@@ -164,6 +160,8 @@
         body (rest (drop 1 col))]
     (emit-function arglist body)))
 
+(identity '#(println "foo" %1))
+
 (defn handle-binding [[v binding]]
   (str "var " (convert-el v) " = " (convert-el binding) ";\n"))
 
@@ -193,6 +191,19 @@
 (defn handle-->> [[_ pivot & forms]]
   (let [pivot (convert-el pivot)
         forms (map #(concat % ['out])
+                   forms)]
+    (str
+     "(function(){"
+     "var out = "
+     pivot
+     ";\n"
+     (apply str (map #(str "out = " % ";") (map convert-el forms)))
+     "return out;"
+     "})()")))
+
+(defn handle--> [[_ pivot & forms]]
+  (let [pivot (convert-el pivot)
+        forms (map #(concat [(first %)] ['out] (rest %))
                    forms)]
     (str
      "(function(){"
@@ -245,7 +256,6 @@
          "("
          (apply str (interpose "," (map convert-el args)))
          "))")))
-
 
 (declare lazy-eval-fn-defs)
 (declare strict-eval-fn-defs)
@@ -381,6 +391,12 @@
    (apply str (interpose " && " (map convert-el stmts)))
    ")"))
 
+(defn handle-or [[_ & stmts]]
+  (str
+   "("
+   (apply str (interpose " || " (map convert-el stmts)))
+   ")"))
+
 (defn handle-reduce [[_ f init col]]
   (when (not init)
     (throw (Exception. "No collection provided to reduce over.")))
@@ -414,10 +430,6 @@
    "return pivot;"
    "})"))
 
-#_'(apply merge [{:hello "world"} {:foo "bar"}])
-
-
-
 (defn handle-assoc [[_ m & args]]
   (let [pairs (partition 2 args)]
     (str
@@ -427,9 +439,37 @@
      "return out;"
      "})()")))
 
+(defn handle-set! [[_ var val]]
+  (str
+   (convert-el var)
+   " = "
+   (convert-el val)
+   ";"))
+
+(defn handle-conj []
+  (str
+   "(function(){"
+   "var arr = arguments[0];"
+   "var items = Array.prototype.slice.call(arguments, 1);"
+   "_.each(items, function(el) { arr.push(el) });"
+   "return arr"
+   "})"))
+
+(defn handle-disj []
+  (str
+   "(function(){"
+   "var arr = arguments[0];"
+   "var el = arguments[1];"
+   "var idx = arr.indexOf(el);"
+   "if(idx != -1) {"
+   "arr.splice(idx,1);"
+   "}"
+   "return arr;"
+   "})"))
 
 (def lazy-eval-fn-defs
   {'fn      handle-fn
+   'fn*     handle-fn
    'let     handle-let
    'doto    handle-doto
    'def     handle-def
@@ -448,15 +488,20 @@
    'filter  handle-filter
    'not     handle-not
    'and     handle-and
+   'or      handle-or
    '->>     handle-->>
+   '->      handle-->
    'assoc   handle-assoc
-})
+   'set!    handle-set!
+   })
 
 (defn strict-handlers []
   {'str     str-fn
    '+       handle-+
    'println handle-println
-   'merge   handle-merge})
+   'merge   handle-merge
+   'conj    handle-conj
+   'disj    handle-disj})
 
 
 ;;
@@ -488,4 +533,5 @@
        (filter #(.endsWith (.getName %) ".cljs.js"))
        #_(map slurp)
        #_(apply str)))
+
 

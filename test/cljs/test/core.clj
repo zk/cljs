@@ -80,6 +80,10 @@
          (eval-js '(defn x [] "hello")
                   '(x)))))
 
+(deftest test-hash-definition
+  (is (= "hello"
+         (eval-js '(#(str "he" "llo"))))))
+
 (deftest test-varargs
   (is (= [2 3 4])
       (eval-js '(defn x [& args]
@@ -106,6 +110,10 @@
 
 (deftest test-call-js-fn
   (is (= "hello" (eval-js '(.toString "hello")))))
+
+(deftest test-set!
+  (is (= 5 (eval-js '(def x 0)
+                    '(set! x 5)))))
 
 ;; Apply
 
