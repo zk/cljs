@@ -97,6 +97,17 @@
                         (reduce (fn [col i] (+ col i)) args)))
                   '(x 1 2 3 4)))))
 
+(deftest test-let
+  (is (= 8 (eval-js '(let [x 5
+                           y 3]
+                       (+ x y))))))
+
+(deftest test-loop
+  (is (= 6 (eval-js '(loop [x 1]
+                       (if (> x 5)
+                         x
+                         (recur (+ 1 x))))))))
+
 ;; Calling functions
 
 (deftest test-wrap-parens
@@ -170,7 +181,7 @@
 
 (deftest test-assoc
   (is (= {:hello "world" :foo "bar" :baz "bap"}
-         (eval-js '(assoc {:hello "world"} :foo "bar" :baz "bap")))))
+         (eval-js '(assoc {hello "world"} :foo "bar" :baz "bap")))))
 
 (deftest test-map-with-fn
   (is (= 5

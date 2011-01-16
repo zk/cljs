@@ -37,7 +37,7 @@
       (seq? col)))
 
 (defn convert-map-access-function [[keyword map]]
-  (let [keyword (convert-el keyword)
+  (let [keyword (name keyword)
         map (convert-el map)]
     (str map "['" keyword "']")))
 
@@ -113,8 +113,6 @@
          (apply str)
          (symbol))))
 
-
-
 (defn convert-el [el]
   (cond
    (or (list? el) (seq? el)) (convert-list el)
@@ -125,7 +123,6 @@
    (number? el) (convert-number el)
    (= java.lang.Boolean (class el)) (if el 'true 'false)
    (keyword? el) (name el)))
-
 
 ;; # Specific Function Handlers
 ;;
@@ -160,17 +157,49 @@
         body (rest (drop 1 col))]
     (emit-function arglist body)))
 
-(identity '#(println "foo" %1))
-
 (defn handle-binding [[v binding]]
-  (str "var " (convert-el v) " = " (convert-el binding) ";\n"))
+  (str "" (convert-el v) " = " (convert-el binding)))
+
+(defn handle-bindings [col]
+  (str
+   "var "
+   (->> (partition 2 col)
+        (map handle-binding)
+        (interpose ",")
+        (apply str))
+   ";"))
 
 (defn handle-let [[_ bindings & body]]
   (str
    "(function(){"
-   (apply str (map handle-binding (partition 2 bindings)))
+   (handle-bindings bindings)
    (apply str (interpose ";" (add-return (map convert-el body))))
    "})()"))
+
+(defn handle-loop [[_ bindings & body]]
+  (let [vars (map first (partition 2 bindings))
+        initial-vals (map convert-el (map second (partition 2 bindings)))]
+    (str
+     "(function(){"
+     "var RECUR_TARGET = function("
+     (apply str (interpose "," vars))
+     "){ "
+     "return "
+     (apply str (interpose ";" (map convert-el body)))
+     "};"
+     "return RECUR_TARGET("
+     (apply str (interpose "," initial-vals))
+     ")"
+     "})()")))
+
+(defn handle-recur [[_ & args]]
+  (str
+   "RECUR_TARGET("
+   (->> args
+        (map convert-el)
+        (interpose ",")
+        (apply str))
+   ");"))
 
 (defn handle-doto [[_ & body]]
   (let [pivot (first body)
@@ -467,6 +496,10 @@
    "return arr;"
    "})"))
 
+(defn handle-nth []
+  (str
+   "(function(col,idx){return col[idx]})"))
+
 (def lazy-eval-fn-defs
   {'fn      handle-fn
    'fn*     handle-fn
@@ -493,7 +526,11 @@
    '->      handle-->
    'assoc   handle-assoc
    'set!    handle-set!
+   'loop    handle-loop
+   'recur   handle-recur
    })
+
+
 
 (defn strict-handlers []
   {'str     str-fn
@@ -501,8 +538,8 @@
    'println handle-println
    'merge   handle-merge
    'conj    handle-conj
-   'disj    handle-disj})
-
+   'disj    handle-disj
+   'nth     handle-nth})
 
 ;;
 ;;
