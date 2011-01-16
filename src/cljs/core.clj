@@ -184,8 +184,7 @@
      "var RECUR_TARGET = function("
      (apply str (interpose "," vars))
      "){ "
-     "return "
-     (apply str (interpose ";" (map convert-el body)))
+     (apply str (interpose ";" (add-return (map convert-el body))))
      "};"
      "return RECUR_TARGET("
      (apply str (interpose "," initial-vals))
