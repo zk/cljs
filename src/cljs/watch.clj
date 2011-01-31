@@ -1,6 +1,6 @@
 (ns cljs.watch
   "# Utilities for automatically compiing changed .cjls files."
-  (:use [cljs.core :only (compile-cljs compile-to)])
+  (:use [cljs.core2 :only (compile-cljs-file)])
   (:require [clojure.string :as str]))
 
 (defn file [file-or-path]
@@ -15,6 +15,8 @@
   (let [f (file file-or-path)]
     (->> (file-seq f)
          (filter #(.endsWith (.getName %) ".cljs")))))
+
+(find-cljs-files "./src")
 
 (defn last-mod [file]
   (.lastModified file))
@@ -58,7 +60,7 @@
         name (.getName cljs-file)
         base (str/replace name #"\.cljs$" "")
         js-path (str (.getAbsolutePath js-out-dir-file) "/" base ".js")]
-    (compile-to cljs-path js-path)))
+    (spit js-path (compile-cljs-file cljs-path))))
 
 (defn hook-compile-out [out-dir]
   (hook-change

@@ -3,6 +3,7 @@
 (defn greet [x y]
   (println (str x y)))
 
-(greet "hello" "world")
-
 (def x 5)
+
+(greet "hello" "world")
+  

@@ -216,6 +216,8 @@
           ['out]))))
      "}())")))
 
+
+
 (defn handle-->> [[_ pivot & forms]]
   (let [pivot (convert-el pivot)
         forms (map #(concat % ['out])
@@ -253,7 +255,9 @@
          (cns-with-dot) (convert-el name) " = " (convert-el name) ";")))
 
 (defn call-fn [f args]
-  (let [f (convert-el f)
+  (let [f (if (string? f)
+            f
+            (convert-el f))
         args (map convert-el args)]
     (str "("
          f
@@ -274,7 +278,7 @@
   (let [f (convert-el (first col))
         obj (convert-el (second col))
         args (drop 2 col)]
-    (call-fn (symbol (str obj f)) args)))
+    (call-fn (str obj f) args)))
 
 (defn call-new-fn [col]
   (let [clazz  (chop-trailing-period (first col))
@@ -319,9 +323,27 @@
       (js-apply-fn (((strict-handlers) f)) args)
       (js-apply-fn f args))))
 
+(defn interpose-op-fn [op]
+  (str
+   "(function() {"
+   "var out = arguments[0];"
+   "for(var i=1; i<arguments.length; i++){"
+   "out = out " op " arguments[i];"
+   "}"
+   "return out;"
+   "})"))
 
-(defn handle-+ [& _]
-  (reduce-args '+ 0))
+(defn handle-+ []
+  (interpose-op-fn '+))
+
+(defn handle-* []
+  (interpose-op-fn '*))
+
+(defn handle-- [& args]
+  (interpose-op-fn '-))
+
+(defn handle-div [& args]
+  (interpose-op-fn '/))
 
 (defn handle-= [[_ pivot & others]]
   (let [pivot (convert-el pivot)]
@@ -358,20 +380,24 @@
 (defn handle-map [[_ f col]]
   (str
    "(function(){"
+   "if(" (convert-el col) ") {"
    "return _.map("
    (convert-el col)
    \,
    (convert-el f)
    ")"
-   ";})()"))
+   ";}})()"))
 
 (defn handle-filter [[_ f col]]
   (str
-   "_.filter("
-   (convert-el col)
-   \,
+   "(function(){"
+   "var col = " (convert-el col) ";"
+   "if(!col) return;"
+   "return _.filter("
+   "col,"
    (convert-el f)
-   ")"))
+   ");"
+   "})()"))
 
 (defn handle-cond [[_ & conds]]
   (let [pairs (partition 2 conds)]
@@ -408,7 +434,7 @@
    "var " (cns) " = " (cns) " || {};"))
 
 (defn handle-quote [[_ arg]]
-  arg)
+  (convert-el arg))
 
 (defn handle-not [[_ stmt]]
   (str "(!" (convert-el stmt) ")"))
@@ -495,6 +521,7 @@
    "return arr;"
    "})"))
 
+
 (defn handle-nth []
   (str
    "(function(col,idx){return col[idx]})"))
@@ -534,6 +561,9 @@
 (defn strict-handlers []
   {'str     str-fn
    '+       handle-+
+   '-       handle--
+   '*       handle-*
+   '/       handle-div
    'println handle-println
    'merge   handle-merge
    'conj    handle-conj
@@ -554,7 +584,7 @@
                   first-form)
         forms (if ns-decl (rest forms) forms)]
     (when ns-decl)
-         (set-current-ns (second ns-decl))
+    (set-current-ns (second ns-decl))
     (str "var " (cns) " = " (cns) " || {};\n"
          "(function() {\n"
          (apply str (interpose "\n" (map js forms)))
@@ -569,5 +599,3 @@
        (filter #(.endsWith (.getName %) ".cljs.js"))
        #_(map slurp)
        #_(apply str)))
-
-

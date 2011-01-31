@@ -6,8 +6,6 @@
                                    Scriptable
                                    NativeArray
                                    NativeObject)))
-
-
 ;; ## Test helpers
 
 (defn narr-to-seq [narr]
@@ -237,6 +235,13 @@
 
 (deftest test-handle-if
   (is (= "(function(){if((x == 1)){\n return x;\n}})()" (handle-if '(if (= x 1) x)))))
+
+(deftest test-symbol-hash
+  (is (= 'stuff_HASH_ (convert-el 'stuff#)))
+  (is (= "(($(\"#foo\")).empty())" (convert-el '(.empty ($ "#foo"))))))
+
+(deftest test-quoting
+  (is (= "[ch_el.content]" (convert-el '['ch-el.content]))))
 
 (comment
 
