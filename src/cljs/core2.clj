@@ -167,7 +167,7 @@
    "var "
    (->> (partition 2 col)
         (map handle-binding)
-        (interpose (str "," nl nl))
+        (interpose (str "," nl))
         (apply str))
    ";"))
 
@@ -199,6 +199,15 @@
    "("
    (to-js col)
    "[" (to-js idx) "]"
+   ")"))
+
+(defn handle-aset [[_ col idx val]]
+  (ind-str
+   "("
+   (to-js col)
+   "[" (to-js idx) "]"
+   " = "
+   (to-js val)
    ")"))
 
 (defn handle-if [[_ pred t f]]
@@ -310,6 +319,24 @@
   (fn [[_ & args]]
     (boolean-op-fn op args)))
 
+(defn handle-doseq [[_ bdg & body]]
+  (let [colsym (gensym)]
+    (ind-str
+     "(function() {" nl
+     (inc-ind-str
+      "var " colsym " = " (to-js (second bdg)) ";" nl
+      "for(var i=0; i < " colsym  ".length; i++) {" nl
+      (inc-ind-str
+       "var " (to-identifier (first bdg)) " = " colsym "[i];" nl
+       (binding [*fn-params* (concat *fn-params* [(first bdg)])]
+         (->> body
+              (map to-js)
+              (interpose (str ";" nl))
+              (apply str))))
+      nl
+      "}") nl
+      "}.bind(this))()")))
+
 (defn special-forms []
   {'def     handle-def
    'fn      handle-fn
@@ -318,6 +345,7 @@
    'let     handle-let
    'defn    handle-defn
    'aget    handle-aget
+   'aset    handle-aset
    'if      handle-if
    'when    handle-when
    'doto    handle-doto
@@ -332,7 +360,8 @@
    '>=      (make-boolean-op '>=)
    '<=      (make-boolean-op '<=)
    'or      (make-boolean-op '||)
-   'and     (make-boolean-op '&&)})
+   'and     (make-boolean-op '&&)
+   'doseq   handle-doseq})
 
 (defn apply-able-special-forms []
   {'+       (make-handle-op '+)
@@ -436,6 +465,7 @@
    (map? element) (map-to-js element)
    (vector? element) (vec-to-js element)
    (symbol? element) (symbol-to-js element)
+   (keyword? element) (to-js (name element))
    (string? element) (str \" element \")
    (number? element) element
    (boolean? element) element
@@ -494,7 +524,7 @@
     (apply str (interpose ";\n\n" (map require-to-js (filter #(= :require (first %)) imports))))
     (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
    nl nl
-   "}).call(" (str name) ");"))
+   "}).call(" (to-identifier name) ");"))
 
 (def *core-lib*
   (str
@@ -539,7 +569,7 @@
               (.map _ c f)))))
 
      '(defn str [& args]
-        (reduce (fn [col el] (+ col el)) "" args))
+        (reduce (fn [col el] (+ col el)) "" (filter #(.identity _ %) args)))
 
      '(defn println [& args]
         (.log 'console args))
@@ -550,7 +580,69 @@
      '(defn filter [f col]
         (if col
           (.filter _ col f)))
+
+     '(defn concat [cola colb]
+        (let [out []]
+          (.push.apply out out cola)
+          (.push.apply out out colb)
+          out))
+
+     '(defn take [n col]
+        (.slice col 0 n))
+
+     '(defn drop [n col]
+        (.slice col n))
+
+     '(defn count [col]
+        col.length)
+
+     '(defn partition [n col]
+        (let [f (fn [out col]
+                  (if (= 0 (count col))
+                    out
+                    (f (concat out [(take n col)]) (drop n col))))]
+          (f [] col)))
+
+     '(defn assoc [obj & rest]
+        (let [pairs (partition 2 rest)]
+          (doseq [p pairs]
+            (aset obj (first p) (nth p 1)))
+          obj))
+
+     '(defn conj [col & rest]
+        (doseq [r rest]
+          (.push col r))
+        col)
+
+     '(defn array? [o]
+        (and o
+             (.isArray _ o)))
+
+     '(defn object? [o]
+        (and o
+             (not (array? o))
+             (not (string? o))))
+
+     '(defn string? [o]
+        (.isString _ o))
+
+     '(defn element? [o]
+        (and o
+             (or (.isElement _ o)
+                 (.isElement _ (first o)))))
+
+
+
+
      )))
+
+(println (to-js '(defn conj [col & rest]
+                   (doseq [r rest]
+                     (.push col r))
+                   col)))
+
+(defn spit-cljs-core [path]
+  (spit path *core-lib*))
 
 (defn compile-cljs-file [path]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
@@ -564,15 +656,20 @@
            imports
            forms)))
 
-(defn spit-cljs-core [path]
-  (spit path *core-lib*))
-
-(println
- (to-js
-  '(defn array? [o]
-  (and o
-       (.isArray _ o)))))
-
-(println (to-js '(defn render-ordered-list [chapter ch-el]
-                  ($html ["ul" {:class "ordered-list"}
-                          (map render-list-item ch-el.content)]))))
+(println (to-js '(defn make-router []
+  (let [routes []
+        on-change (fn []
+                    (let [match (.detect _ routes
+                                         (fn [r]
+                                           (.test (:route r) 'location.hash)))]
+                      (if match
+                        (do
+                          (.apply (:callback match) 'null (parse-params match 'location.hash))))))]
+    (.hashchange
+     ($ window)
+     on-change)
+    {:route (fn [route-str callback]
+              (let [route (str-to-route route-str)]
+                (conj routes {:route route
+                              :callback callback})))
+     :run on-change}))))

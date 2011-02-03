@@ -111,5 +111,19 @@
 (deftest test-core-reduce
   (is (= 6 (eval-js '(reduce #(+ %1 %2) [1 2 3])))))
 
+(deftest test-core-concat
+  (is (= [1 2 3 4] (eval-js '(concat [1 2] [3 4])))))
+
+(deftest test-core-take
+  (is (= [1 2] (eval-js '(take 2 [1 2 3 4])))))
+
+(deftest test-core-drop
+  (is (= [3 4] (eval-js '(drop 2 [1 2 3 4])))))
+
+(deftest test-core-partition
+  (is (= [3 4] (eval-js '(nth (partition 2 [1 2 3 4]) 1)))))
+
+(deftest test-core-assoc
+  (is (= "foo" (:bar (eval-js '(assoc {} :bar "foo"))))))
 
 
