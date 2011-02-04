@@ -327,15 +327,24 @@
       "var " colsym " = " (to-js (second bdg)) ";" nl
       "for(var i=0; i < " colsym  ".length; i++) {" nl
       (inc-ind-str
-       "var " (to-identifier (first bdg)) " = " colsym "[i];" nl
+       "(function(" (to-identifier (first bdg)) "){"
        (binding [*fn-params* (concat *fn-params* [(first bdg)])]
          (->> body
               (map to-js)
               (interpose (str ";" nl))
               (apply str))))
+      "}.bind(this))(" colsym "[i]);"
       nl
       "}") nl
       "}.bind(this))()")))
+
+(defn handle-instanceof [[_ obj type]]
+  (ind-str
+   "("
+   (to-js obj)
+   " instanceof "
+   (to-js type)
+   ")"))
 
 (defn special-forms []
   {'def     handle-def
@@ -361,7 +370,8 @@
    '<=      (make-boolean-op '<=)
    'or      (make-boolean-op '||)
    'and     (make-boolean-op '&&)
-   'doseq   handle-doseq})
+   'doseq   handle-doseq
+   'instanceof handle-instanceof})
 
 (defn apply-able-special-forms []
   {'+       (make-handle-op '+)
@@ -536,10 +546,12 @@
      '(defn count [col] 'col.length)
 
      '(defn first [col]
-        (aget col 0))
+        (when col
+          (aget col 0)))
 
      '(defn rest [col]
-        (.call Array.prototype.slice col 1))
+        (when col
+             (.call Array.prototype.slice col 1)))
 
      '(defn inc [n]
         (+ n 1))
@@ -548,7 +560,8 @@
         (- n 1))
 
      '(defn nth [col n]
-        (aget col n))
+        (when (and col (> col.length n))
+          (aget col n)))
 
      '(defn last [col]
         (aget col (dec col.length)))
@@ -591,7 +604,8 @@
         (.slice col 0 n))
 
      '(defn drop [n col]
-        (.slice col n))
+        (when col
+          (.slice col n)))
 
      '(defn count [col]
         col.length)
@@ -631,15 +645,12 @@
              (or (.isElement _ o)
                  (.isElement _ (first o)))))
 
-
-
+     '(defn merge [& objs]
+        (let [o {}]
+          (map #(.extend _ o %) objs))
+        o)
 
      )))
-
-(println (to-js '(defn conj [col & rest]
-                   (doseq [r rest]
-                     (.push col r))
-                   col)))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))
