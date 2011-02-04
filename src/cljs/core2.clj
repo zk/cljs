@@ -647,8 +647,8 @@
 
      '(defn merge [& objs]
         (let [o {}]
-          (map #(.extend _ o %) objs))
-        o)
+          (map #(.extend _ o %) objs)
+          o))
 
      )))
 
