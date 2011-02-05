@@ -396,7 +396,9 @@
 (defn object-member-call-to-js [[member obj & args]]
   (ind-str
    (to-js obj)
-   member
+   "[\""
+   (str/replace member #"\." "")
+   "\"]"
    "("
    (->> args
         (map to-js)
