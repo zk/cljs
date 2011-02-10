@@ -545,11 +545,17 @@
    "}"
    (wrap-with-ns "cljs.core" '[(:require _)]
     
-     '(defn count [col] 'col.length)
+     '(defn count [col]
+        (if col
+          'col.length
+          0))
 
      '(defn first [col]
         (when col
           (aget col 0)))
+
+     '(defn second [col]
+        (nth col 1))
 
      '(defn rest [col]
         (when col
@@ -598,8 +604,8 @@
 
      '(defn concat [cola colb]
         (let [out []]
-          (.push.apply out out cola)
-          (.push.apply out out colb)
+          (out.push.apply out cola)
+          (out.push.apply out colb)
           out))
 
      '(defn take [n col]
@@ -608,9 +614,6 @@
      '(defn drop [n col]
         (when col
           (.slice col n)))
-
-     '(defn count [col]
-        col.length)
 
      '(defn partition [n col]
         (let [f (fn [out col]
@@ -669,20 +672,4 @@
            imports
            forms)))
 
-(println (to-js '(defn make-router []
-  (let [routes []
-        on-change (fn []
-                    (let [match (.detect _ routes
-                                         (fn [r]
-                                           (.test (:route r) 'location.hash)))]
-                      (if match
-                        (do
-                          (.apply (:callback match) 'null (parse-params match 'location.hash))))))]
-    (.hashchange
-     ($ window)
-     on-change)
-    {:route (fn [route-str callback]
-              (let [route (str-to-route route-str)]
-                (conj routes {:route route
-                              :callback callback})))
-     :run on-change}))))
+

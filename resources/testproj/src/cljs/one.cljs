@@ -1,0 +1,2 @@
+(ns one
+  (:require two))

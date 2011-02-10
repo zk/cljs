@@ -1,7 +1,8 @@
 (ns cljs.watch
   "# Utilities for automatically compiing changed .cjls files."
   (:use [cljs.core2 :only (compile-cljs-file)])
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [cljs.stitch :as st]))
 
 (defn file [file-or-path]
   (if (string? file-or-path)
@@ -14,9 +15,8 @@
   [file-or-path]
   (let [f (file file-or-path)]
     (->> (file-seq f)
-         (filter #(.endsWith (.getName %) ".cljs")))))
-
-(find-cljs-files "./src")
+         (filter #(.endsWith (.getName %) ".cljs"))
+         (filter #(not (re-find #"\.#" (.getName %)))))))
 
 (defn last-mod [file]
   (.lastModified file))
@@ -72,6 +72,11 @@
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))
 
+(defn hook-re-stitch [project-clj-path]
+  (hook-change
+   (fn [cljss]
+     (if (not (empty? cljss))
+       (st/stitch-project project-clj-path)))))
 
 (def *run* (atom true))
 
@@ -87,3 +92,21 @@
              (while @*run*
                (check-and-run! watch-path)
                (Thread/sleep 500))))))
+
+(defn start-watch-project [project-clj-path]
+  (let [opts (st/cljs-opts project-clj-path)]
+    (when (not opts)
+      (throw (Exception. (str "Couldn't find cljs options in " project-clj-path))))
+    (clear-hooks)
+    (reset! *run* true)
+    (hook-re-stitch project-clj-path)
+    (println "Watching" (:source-path opts) "for changes.")
+    (st/stitch-project project-clj-path)
+    (.start (Thread.
+             (fn []
+               (while @*run*
+                 (try
+                   (check-and-run! (:source-path opts))
+                   (Thread/sleep 500)
+                   (catch Exception e (println e)))))))))
+
