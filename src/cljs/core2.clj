@@ -471,6 +471,11 @@
 (defn boolean? [o]
   (= java.lang.Boolean (type true)))
 
+(defn str-to-js [s]
+  (-> s
+      (str/replace #"\n" "\\\\n")
+      (str/replace #"\"" "\\\\\"")))
+
 (defn to-js [element]
   (cond
    (or (seq? element) (list? element)) (sexp-to-js element)
@@ -478,7 +483,7 @@
    (vector? element) (vec-to-js element)
    (symbol? element) (symbol-to-js element)
    (keyword? element) (to-js (name element))
-   (string? element) (str \" element \")
+   (string? element) (str \" (str-to-js element) \")
    (number? element) element
    (boolean? element) element
    (nil? element) ""
@@ -514,14 +519,15 @@
        (apply str)))
 
 (defn init-ns-object [name]
-  (let [parts (str/split (str name) #"\.")
-        num (count parts)]
-    (->> (map #(->> parts
-                    (take (inc %))
-                    (interpose ".")
-                    (apply str))
-              (range num))
-         (map #(str (when (not (re-find #"\." %)) "var ") (to-identifier %) " = " (to-identifier %) " || {};" nl)))))
+  (when name
+    (let [parts (str/split (str name) #"\.")
+          num (count parts)]
+      (->> (map #(->> parts
+                      (take (inc %))
+                      (interpose ".")
+                      (apply str))
+                (range num))
+           (map #(str (when (not (re-find #"\." %)) "var ") (to-identifier %) " = " (to-identifier %) " || {};" nl))))))
 
 
 (defn wrap-with-ns [name imports & body]
@@ -660,8 +666,8 @@
 (defn spit-cljs-core [path]
   (spit path *core-lib*))
 
-(defn compile-cljs-file [path]
-  (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
+(defn compile-cljs-reader [reader]
+  (let [rdr (clojure.lang.LineNumberingPushbackReader. reader)
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))
         ns-decl (when (= 'ns (first (first forms)))
                   (first forms))
@@ -672,4 +678,9 @@
            imports
            forms)))
 
+(defn compile-cljs-string [str]
+  (compile-cljs-reader (java.io.StringReader. str)))
 
+
+(defn compile-cljs-file [path]
+  (compile-cljs-reader (java.io.FileReader. path)))
