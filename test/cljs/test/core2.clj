@@ -96,6 +96,9 @@
                      '(set! x 10)
                      'x))))
 
+(deftest test--
+  (is (= 0 (eval-js '(- 3 2 1)))))
+
 ;; Scoping
 
 ;; Core Lib

@@ -40,13 +40,13 @@
   (ind-str
    "(function() {" nl
    (inc-ind-str
-    "var out = arguments[0];" nl
-    "for(var __i=1; __i<arguments.length; __i++) {" nl
+    "var _out = arguments[0];" nl
+    "for(var _i=1; _i<arguments.length; _i++) {" nl
     (inc-ind-str
-     "out = out " op " arguments[__i];")
+     "_out = _out " op " arguments[_i];")
     nl
     "}" nl
-    "return out;")
+    "return _out;")
    nl
    "})"))
 
@@ -55,13 +55,6 @@
    "("
    (apply str (interpose (str " " op " ") (map to-js stmts)))
    ")"))
-
-(defn create-scope []
-  (ind-str
-   "var __scope = __mk_scope(__scope);" nl))
-
-(def *mk-scope*
-  (str "__mk_scope = (function(__scope){ var __res = {}; __res.__proto__ = __scope; return __res;});"))
 
 (def *fn-params* #{})
 
@@ -181,7 +174,7 @@
      "(function(){" nl
      (inc-ind-str
       (handle-bindings bindings) nl nl
-      (apply str (interpose ";" (add-return (map to-js body)))))
+      (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
      ";"
      nl nl
      "}.bind(this))()")))
@@ -264,7 +257,7 @@
        "var out = "
        pivot
        ";\n"
-       (apply str (map #(str "out = " % ";") (map to-js forms)))
+       (apply str (map #(str "out = " % ";" nl) (map to-js forms)))
        "return out;"
        "}.bind(this))()"))))
 
@@ -273,13 +266,14 @@
         forms (map #(concat [(first %)] [''out] (rest %))
                    forms)]
     (binding [*fn-params* (concat *fn-params* ['out])]
-      (str
+      (ind-str
        "(function(){"
-       "var out = "
-       pivot
-       ";\n"
-       (apply str (map #(str "out = " % ";") (map to-js forms)))
-       "return out;"
+       (inc-ind-str
+        "var out = "
+        pivot
+        ";\n"
+        (apply str (map #(str "out = " % ";" nl) (map to-js forms)))
+        "return out;")
        "}.bind(this))()"))))
 
 (defn handle-not [[_ stmt]]
@@ -289,26 +283,28 @@
   (str
    "(function(){"
    (apply str
-          (interpose ";" (add-return (map to-js statements))))
+          (interpose (str ";" nl) (add-return (map to-js statements))))
    "}.bind(this))()"))
 
 (defn handle-cond [[_ & conds]]
   (let [pairs (partition 2 conds)]
-    (str
-     "(function(){"
-     (->> pairs
-          (map #(str
-                 (when (not (keyword? (first %)))
-                   (str "if("
-                        (to-js (first %))
-                        ")"))
-                 "{"
-                 "return "
-                 (to-js (second %))
-                 ";"
-                 "}"))
-          (interpose " else ")
-          (apply str))
+    (ind-str
+     "(function(){" nl
+     (inc-ind-str
+      (->> pairs
+           (map #(str
+                  (when (not (keyword? (first %)))
+                    (str "if("
+                         (to-js (first %))
+                         ")"))
+                  "{" nl
+                  (inc-ind-str
+                   "return "
+                   (to-js (second %))
+                   ";") nl
+                  "}"))
+           (interpose " else ")
+           (apply str)))
      "}.bind(this))();")))
 
 (defn make-handle-op [op]
@@ -440,7 +436,12 @@
   (ind-str
    "({" nl
    (inc-ind-str
-    (apply str (interpose (str "," nl (ind)) (map #(str \' (name (key %)) \' ":" (to-js (val %))) m))))
+    (->> m
+         (map #(str \' (name (key %)) \'
+                    ":"
+                    (to-js (val %))))
+         (interpose (str "," nl (ind)))
+         (apply str)))
    nl "})"))
 
 (defn vec-to-js [elements]
@@ -684,3 +685,5 @@
 
 (defn compile-cljs-file [path]
   (compile-cljs-reader (java.io.FileReader. path)))
+
+
