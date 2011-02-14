@@ -99,6 +99,22 @@
 (deftest test--
   (is (= 0 (eval-js '(- 3 2 1)))))
 
+(deftest test-->
+  (is (= "foobarbaz" (eval-js '(-> "foo"
+                                   (str "bar")
+                                   (str "baz"))))))
+
+(deftest test-->>
+  (is (= "bazbarfoo" (eval-js '(->> "foo"
+                                    (str "bar")
+                                    (str "baz"))))))
+
+(deftest test-doto
+  (is (= [1 2 3] (eval-js '(doto []
+                             (.push 1)
+                             (.push 2)
+                             (.push 3))))))
+
 ;; Scoping
 
 ;; Core Lib

@@ -233,7 +233,7 @@
 (defn handle-doto [[_ & body]]
   (let [pivot (first body)
         forms (rest body)]
-    (binding [*fn-params* (concat *fn-params* ['out])]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
       (str
        "(function(){"
        (apply
@@ -242,38 +242,38 @@
          ";\n"
          (add-return
           (concat
-           [(str "var out = " (to-js pivot))]
-           (map to-js (map #(concat (vector (first %) 'out) (rest %)) forms))
-           ['out]))))
+           [(str "var _out = " (to-js pivot))]
+           (map to-js (map #(concat (vector (first %) '_out) (rest %)) forms))
+           ['_out]))))
        "}.bind(this)())"))))
 
 (defn handle-->> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
-        forms (map #(concat % ['out])
+        forms (map #(concat % ['_out])
                    forms)]
-    (binding [*fn-params* (concat *fn-params* ['out])]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
       (str
        "(function(){"
-       "var out = "
+       "var _out = "
        pivot
        ";\n"
-       (apply str (map #(str "out = " % ";" nl) (map to-js forms)))
-       "return out;"
+       (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+       "return _out;"
        "}.bind(this))()"))))
 
 (defn handle--> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
-        forms (map #(concat [(first %)] [''out] (rest %))
+        forms (map #(concat [(first %)] [''_out] (rest %))
                    forms)]
-    (binding [*fn-params* (concat *fn-params* ['out])]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
       (ind-str
        "(function(){"
        (inc-ind-str
-        "var out = "
+        "var _out = "
         pivot
         ";\n"
-        (apply str (map #(str "out = " % ";" nl) (map to-js forms)))
-        "return out;")
+        (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+        "return _out;")
        "}.bind(this))()"))))
 
 (defn handle-not [[_ stmt]]
