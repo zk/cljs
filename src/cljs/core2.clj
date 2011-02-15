@@ -342,6 +342,12 @@
    (to-js type)
    ")"))
 
+(defn handle-gensym [_]
+  (to-identifier (gensym)))
+
+(defn handle-gensym-str [_]
+  (to-js (str (gensym))))
+
 (defn special-forms []
   {'def     handle-def
    'fn      handle-fn
@@ -367,7 +373,9 @@
    'or      (make-boolean-op '||)
    'and     (make-boolean-op '&&)
    'doseq   handle-doseq
-   'instanceof handle-instanceof})
+   'instanceof handle-instanceof
+   'gensym handle-gensym
+   'gensym-str handle-gensym-str})
 
 (defn apply-able-special-forms []
   {'+       (make-handle-op '+)
