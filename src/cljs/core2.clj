@@ -694,7 +694,10 @@
                              (.push out (aget col idx))
                              (.push out o)))
                          (set! idx (inc idx)))
-                       out))))))
+                       out)))
+
+     '(defn distinct [col]
+        (.uniq '_ col)))))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))

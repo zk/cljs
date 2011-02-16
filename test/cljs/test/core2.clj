@@ -147,3 +147,7 @@
 
 (deftest test-interpose
   (is (= [1 0 2 0 3] (eval-js '(interpose 0 [1 2 3])))))
+
+
+(deftest test-distinct
+  (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))
