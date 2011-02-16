@@ -216,6 +216,16 @@
      nl
      "}.bind(this))()")))
 
+(defn handle-while [[_ pred & body]]
+  (ind-str
+   "while("
+   (to-js pred)
+   ") {"
+   (inc-ind-str
+    (apply str (interpose (str ";" nl) (map to-js body))))
+   nl
+   "}"))
+
 (defn handle-when [[_ pred & rest]]
   (let [pred (to-js pred)
         rest (add-return (map to-js rest))]
@@ -305,7 +315,7 @@
                   "}"))
            (interpose " else ")
            (apply str)))
-     "}.bind(this))();")))
+     "}.bind(this))()")))
 
 (defn make-handle-op [op]
   (fn [& _]
@@ -358,6 +368,7 @@
    'aget    handle-aget
    'aset    handle-aset
    'if      handle-if
+   'while   handle-while
    'when    handle-when
    'doto    handle-doto
    '->      handle-->
@@ -670,7 +681,20 @@
           (map #(.extend _ o %) objs)
           o))
 
-     )))
+     '(defn interpose [o col]
+                   (when col
+                     (let [out []
+                           idx 0
+                           len (count col)
+                           declen (dec len)]
+                       (while (< idx len)
+                         (if (= idx declen)
+                           (.push out (aget col idx))
+                           (do
+                             (.push out (aget col idx))
+                             (.push out o)))
+                         (set! idx (inc idx)))
+                       out))))))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))

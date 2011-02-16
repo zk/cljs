@@ -145,4 +145,5 @@
 (deftest test-core-assoc
   (is (= "foo" (:bar (eval-js '(assoc {} :bar "foo"))))))
 
-
+(deftest test-interpose
+  (is (= [1 0 2 0 3] (eval-js '(interpose 0 [1 2 3])))))
