@@ -44,21 +44,21 @@ cljs.core = cljs.core || {};
   
   this.inc = (function(n){
     return (function() {
-      var out = arguments[0];
-      for(var __i=1; __i<arguments.length; __i++) {
-        out = out + arguments[__i];
+      var _out = arguments[0];
+      for(var _i=1; _i<arguments.length; _i++) {
+        _out = _out + arguments[_i];
       }
-      return out;
+      return _out;
     }).call(this, n, 1);
   }.bind(this));
   
   this.dec = (function(n){
     return (function() {
-      var out = arguments[0];
-      for(var __i=1; __i<arguments.length; __i++) {
-        out = out - arguments[__i];
+      var _out = arguments[0];
+      for(var _i=1; _i<arguments.length; _i++) {
+        _out = _out - arguments[_i];
       }
-      return out;
+      return _out;
     }).call(this, n, 1);
   }.bind(this));
   
@@ -142,14 +142,14 @@ cljs.core = cljs.core || {};
     var args = Array.prototype.slice.call(arguments, 0);
     return this.reduce((function(col, el){
       return (function() {
-        var out = arguments[0];
-        for(var __i=1; __i<arguments.length; __i++) {
-          out = out + arguments[__i];
+        var _out = arguments[0];
+        for(var _i=1; _i<arguments.length; _i++) {
+          _out = _out + arguments[_i];
         }
-        return out;
+        return _out;
       }).call(this, col, el);
-    }.bind(this)), "", this.filter((function(p1__1793_HASH_){
-      return this._["identity"](p1__1793_HASH_);
+    }.bind(this)), "", this.filter((function(p1__2205_HASH_){
+      return this._["identity"](p1__2205_HASH_);
     }.bind(this)), args));
   }.bind(this));
   
@@ -174,7 +174,11 @@ cljs.core = cljs.core || {};
     return (function(){
       var out = [];
       
-      out.push.apply(out, cola);out.push.apply(out, colb);return out;
+      out.push.apply(out, cola);
+      
+      out.push.apply(out, colb);
+      
+      return out;
     
     }.bind(this))();
   }.bind(this));
@@ -218,11 +222,13 @@ cljs.core = cljs.core || {};
       var pairs = this.partition(2, rest);
       
       (function() {
-        var G__1795 = pairs;
-        for(var i=0; i < G__1795.length; i++) {
-          (function(p){(obj[this.first(p)] = this.nth(p, 1))}.bind(this))(G__1795[i]);
+        var G__2207 = pairs;
+        for(var i=0; i < G__2207.length; i++) {
+          (function(p){(obj[this.first(p)] = this.nth(p, 1))}.bind(this))(G__2207[i]);
         }
-      }.bind(this))();return obj;
+      }.bind(this))();
+      
+      return obj;
     
     }.bind(this))();
   }.bind(this));
@@ -230,9 +236,9 @@ cljs.core = cljs.core || {};
   this.conj = (function(col){
     var rest = Array.prototype.slice.call(arguments, 1);
     (function() {
-      var G__1796 = rest;
-      for(var i=0; i < G__1796.length; i++) {
-        (function(r){col["push"](r)}.bind(this))(G__1796[i]);
+      var G__2208 = rest;
+      for(var i=0; i < G__2208.length; i++) {
+        (function(r){col["push"](r)}.bind(this))(G__2208[i]);
       }
     }.bind(this))();
     return col;
@@ -254,17 +260,60 @@ cljs.core = cljs.core || {};
     return (o && (this._["isElement"](o) || this._["isElement"](this.first(o))));
   }.bind(this));
   
-  return this.merge = (function(){
+  this.merge = (function(){
     var objs = Array.prototype.slice.call(arguments, 0);
     return (function(){
       var o = ({
         
       });
       
-      this.map((function(p1__1794_HASH_){
-        return this._["extend"](o,p1__1794_HASH_);
-      }.bind(this)), objs);return o;
+      this.map((function(p1__2206_HASH_){
+        return this._["extend"](o,p1__2206_HASH_);
+      }.bind(this)), objs);
+      
+      return o;
     
+    }.bind(this))();
+  }.bind(this));
+  
+  this.interpose = (function(o, col){
+    return (function(){
+      
+      if(!col) return null;
+      
+      return (function(){
+        var out = [],
+        idx = 0,
+        len = this.count(col),
+        declen = this.dec(len);
+        
+        while((idx < len)) {  (function(){
+            if((idx == declen)){
+             return out["push"]((col[idx]));
+            } else {
+             return (function(){out["push"]((col[idx]));
+            return out["push"](o)}.bind(this))();
+            }
+          }.bind(this))();
+          (idx = this.inc(idx))
+        };
+        
+        return out;
+      
+      }.bind(this))();
+    
+    }.bind(this))();
+  }.bind(this));
+  
+  this.distinct = (function(col){
+    return _["uniq"](col);
+  }.bind(this));
+  
+  return this.identity = (function(arg){
+    return (function(){
+      if(arg){
+       return _["identity"](arg);
+      }
     }.bind(this))();
   }.bind(this))
 

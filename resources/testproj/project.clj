@@ -11,4 +11,5 @@
                            one]}
                 {:name bar.main
                  :sources [bar.stuff
-                           bar.core]}]})
+                           bar.core]}
+                {:name ns.main}]})

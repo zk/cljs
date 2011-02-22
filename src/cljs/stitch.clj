@@ -14,9 +14,12 @@
    Stich will stich together `src/cljs/one.cljs` and `src/cljs/subdir/two.cljs`
    into `resources/public/js/out-name.js`.
 "
-  (:use [clojure.contrib.string :only (as-str)])
+  (:use [clojure.contrib.string :only (as-str)]
+        [clojure.contrib.find-namespaces :only (read-ns-decl)]
+        [clojure.contrib.seq :only (find-first)]
+        [clojure.pprint :only (pprint)])
   (:require [clojure.string :as str]
-            [cljs.core2 :as core]))
+            [cljs.core :as core]))
 
 (defn cljs-opts
   "Pulls the :cljs map from the specified `project-clj`."
@@ -63,13 +66,59 @@
   (doseq [lib libs]
     (stitch-lib source-path output-path (as-str (:name lib)) (:sources lib))))
 
-(defn stitch-project [project-clj-path]
-  (let [opts (cljs-opts project-clj-path)
-        output-path (:output-path opts)
-        source-path (:source-path opts)
-        libs (:libs opts)]
-    (println "Stitching libs with" opts)
-    (stitch-libs output-path source-path libs)))
+(defn prefix-path [prefix path]
+  (str
+   (when prefix
+     prefix)
+   (when prefix
+     "/")
+   path))
+
+(defn stitch-project [project-clj-path & opts]
+  (time
+   (let [opts (apply hash-map opts)
+         copts (cljs-opts project-clj-path)
+         output-path (prefix-path
+                      (:project-root opts)
+                      (:output-path copts))
+         source-path (prefix-path
+                      (:project-root opts)
+                      (:source-path copts))
+         libs (:libs copts)]
+     (println "Stitching libs with")
+     (pprint copts)
+     (println)
+     (stitch-libs output-path source-path libs))))
+
+(defn ns-decl [file]
+  (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
+                   (java.io.FileReader. file))]
+    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
+      ns-decl)))
 
 
+(defn includes [type ns-decl]
+  (->> ns-decl
+       (filter #(or (seq? %) (vector? %)))
+       (filter #(= type (first %)))
+       (map #(drop 1 %))
+       (reduce concat)))
 
+(defn uses [ns-decl]
+  (includes :use ns-decl))
+
+(defn requires [ns-decl]
+  (includes :require ns-decl))
+
+#_(uses (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
+
+#_(ns-decl "./resources/testproj/src/cljs/ns/main.cljs")
+
+
+(defn find-dependencies [source-root source-file]
+  (ns-decl source-file))
+
+#_(find-dependencies "./resources/testproj/src/cljs"
+                   "./resources/testproj/src/cljs/ns/main.cljs")
+
+#_(time (stitch-project "./resources/testproj/project.clj" :project-root "./resources/testproj"))

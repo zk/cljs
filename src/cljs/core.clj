@@ -1,28 +1,30 @@
 (ns cljs.core
-  "Experimental, very WIP so use at your own risk."
   (:require [clojure.string :as str]))
 
-;; # Low-Level Conversion Routines
-;;
-;; The convert-* functions take in some clojure element
-;; and return a string representing the
-;; javascript equivalent.
+(def *indent* 0)
 
-(declare convert-el)
-(declare convert-function)
+(def nl "\n")
 
-(def *current-ns* (atom nil))
+(declare to-js)
+(declare special-forms)
+(declare apply-able-special-forms)
 
-(defn cns []
-  (-> (str @*current-ns*)
-      (str/replace #"\." "_DOT_")))
+(defn ind []
+  (apply str (take *indent* (repeat " "))))
 
-(defn set-current-ns [ns]
-  (reset! *current-ns* ns))
+(defn ind-str [& args]
+  (let [lines (-> (apply str args)
+                  (str/split #"\n"))
+        with-indent (interpose nl (map #(str (ind) %) lines))]
+    (apply str with-indent)))
 
-(defn cns-with-dot []
-  (if (not (empty? (cns)))
-    (str (cns) ".")))
+(defmacro with-inc-indent [& body]
+  `(binding [*indent* (+ *indent* 2)]
+     ~@body))
+
+(defn inc-ind-str [& body]
+  (with-inc-indent
+    (apply ind-str body)))
 
 (defn add-return [statements]
   (let [count (dec (count statements))
@@ -31,79 +33,394 @@
         with-return (concat before-ret [(apply str "return " after-ret)])]
     with-return))
 
-(defn funcall? [col]
-  (or (= 'fn (first col))
-      (list? col)
-      (seq? col)))
+(defn interpose-semi-colon [col]
+  (interpose ";" col))
 
-(defn convert-map-access-function [[keyword map]]
-  (let [keyword (name keyword)
-        map (convert-el map)]
-    (str map "['" keyword "']")))
+(defn interpose-op-fn [op]
+  (ind-str
+   "(function() {" nl
+   (inc-ind-str
+    "var _out = arguments[0];" nl
+    "for(var _i=1; _i<arguments.length; _i++) {" nl
+    (inc-ind-str
+     "_out = _out " op " arguments[_i];")
+    nl
+    "}" nl
+    "return _out;")
+   nl
+   "})"))
 
-(declare js-call)
-(declare js-apply)
+(defn boolean-op-fn [op stmts]
+  (str
+   "("
+   (apply str (interpose (str " " op " ") (map to-js stmts)))
+   ")"))
 
-(defn convert-list [l]
-  (let [f (first l)]
-    (cond
-     (= 'apply f) (js-apply l)
-     (symbol? f) (js-call l)
-     (keyword? f) (convert-map-access-function l)
-     (string? f) (map convert-el l)
-     (funcall? f) (js-call l))))
+(def *fn-params* #{})
 
-(declare convert-symbol)
-(defn convert-symbol-with-ns [s]
-  (let [[ns var] (-> (str s)
-                     (str/split #"\/" 2))]
-    (symbol (str (str/replace ns #"\." "_DOT_") "." (convert-symbol var)))))
+(defn prep-symbol [s]
+  (-> (str s)
+      (str/replace #"-" "_")
+      (str/replace #"\?" "_QM_")
+      (str/replace #"#" "_HASH_")
+      (str/replace #"!" "_BANG_")
+      (str/replace #"/" ".")
+      (str/replace #"\*" "_SPLAT_")
+      (symbol)))
 
-(declare strict-handlers)
+(defn to-identifier [sym]
+  (when sym
+    (prep-symbol sym)))
 
-(defn convert-symbol [s]
-  (cond ((strict-handlers) s) (((strict-handlers) s))
-        :else (if (re-find #"\/" (str s))
-                (convert-symbol-with-ns s)
-                (-> (str s)
-                    (str/replace #"-" "_")
-                    (str/replace #"\?" "_QM_")
-                    (str/replace #"#" "_HASH_")
-                    (symbol)))))
+(defn to-fn [[_ arglist & body-seq]]
+  (let [before-amp (take-while #(not= '& %) arglist)
+        after-amp (first (drop 1 (drop-while #(not= '& %) arglist)))
+        params (concat before-amp [after-amp])
+        before-amp (map to-identifier before-amp)
+        after-amp (to-identifier after-amp)]
+    (binding [*fn-params* (set (concat params *fn-params*))]
+      (let [body-seq (map to-js body-seq)
+            body-len (dec (count body-seq))
+            before-ret (take body-len body-seq)
+            after-ret (drop body-len body-seq)
+            with-return (concat before-ret [(apply str "return " after-ret)])]
+        (str "(function("
+             (apply str (interpose ", " before-amp))
+             "){\n"
+             (inc-ind-str
+              (when after-amp
+                (str "var " after-amp
+                     " = Array.prototype.slice.call(arguments, " (count before-amp) ");" nl))
+              (apply str (interpose (str ";" nl) with-return)))
+             ";\n}.bind(this))")))))
 
-(defn convert-map [m]
+
+(defn call-fn [[f & args]]
+  (ind-str
+   (to-js f)
+   "("
+   (->> args
+        (map to-js)
+        (interpose ", ")
+        (apply str))
+   ")"))
+
+
+(defn call-fn-using-call [[f & args]]
+  (ind-str
+   (to-js f)
+   #_".call(this"
+   "("
+   (->> args
+        (map to-js)
+        #_(interleave (repeat ", "))
+        (interpose ", ")
+        (apply str))
+   ")"))
+
+
+
+(defn call-special-form [sexp]
+  (let [f (first sexp)
+        args (rest sexp)
+        jsf (((apply-able-special-forms) f) sexp)]
+    (ind-str
+     jsf
+        ".call(this"
+   (->> args
+        (map to-js)
+        (interleave (repeat ", "))
+        #_(interpose ", ")
+        (apply str))
+   ")")))
+
+
+(defn js [form]
+  (to-js form))
+
+(defn handle-def [[_ name body]]
+  (ind-str
+   "this." (to-identifier name) " = " (to-js body) ";"))
+
+(defn handle-fn [sexp]
+  (to-fn sexp))
+
+(defn handle-set [[_ name val]]
+  (ind-str
+   "("
+   (to-js name)
+   " = "
+   (to-js val)
+   ")"))
+
+(defn handle-binding [[v binding]]
+  (str "" (to-identifier v) " = " (to-js binding)))
+
+(defn handle-bindings [col]
+  (str
+   "var "
+   (->> (partition 2 col)
+        (map handle-binding)
+        (interpose (str "," nl))
+        (apply str))
+   ";"))
+
+(defn binding-vars [bindings]
+  (->> (partition 2 bindings)
+      (map first)))
+
+(defn handle-let [[_ bindings & body]]
+  (binding [*fn-params* (concat *fn-params* (binding-vars bindings))]
+    (ind-str
+     "(function(){" nl
+     (inc-ind-str
+      (handle-bindings bindings) nl nl
+      (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
+     ";"
+     nl nl
+     "}.bind(this))()")))
+
+(defn handle-defn [[_ & rest]]
+  (let [name (first rest)
+        fn (drop 1 rest)]
+    (ind-str
+     "this." (to-identifier name) " = "
+     (to-fn rest)
+     )))
+
+(defn handle-aget [[_ col idx]]
+  (ind-str
+   "("
+   (to-js col)
+   "[" (to-js idx) "]"
+   ")"))
+
+(defn handle-aset [[_ col idx val]]
+  (ind-str
+   "("
+   (to-js col)
+   "[" (to-js idx) "]"
+   " = "
+   (to-js val)
+   ")"))
+
+(defn handle-if [[_ pred t f]]
+  (let [pred (to-js pred)
+        t (to-js t)
+        f (to-js f)]
+    (str
+     "(function(){" nl
+     (inc-ind-str
+      "if(" pred "){\n return " t ";\n}"
+      (when f
+        (str " else {\n return " f ";\n}")))
+     nl
+     "}.bind(this))()")))
+
+(defn handle-while [[_ pred & body]]
+  (ind-str
+   "while("
+   (to-js pred)
+   ") {"
+   (inc-ind-str
+    (apply str (interpose (str ";" nl) (map to-js body))))
+   nl
+   "}"))
+
+(defn handle-when [[_ pred & rest]]
+  (let [pred (to-js pred)
+        rest (add-return (map to-js rest))]
+    (ind-str
+     "(function(){" nl
+     (inc-ind-str
+      nl
+      "if(!" pred ") return null;" nl nl
+      (apply str (interpose (str ";" nl) rest))
+      ";")
+     nl nl
+     "}.bind(this))()")))
+
+
+(defn handle-doto [[_ & body]]
+  (let [pivot (first body)
+        forms (rest body)]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
+      (str
+       "(function(){"
+       (apply
+        str
+        (interpose
+         ";\n"
+         (add-return
+          (concat
+           [(str "var _out = " (to-js pivot))]
+           (map to-js (map #(concat (vector (first %) '_out) (rest %)) forms))
+           ['_out]))))
+       "}.bind(this)())"))))
+
+(defn handle-->> [[_ pivot & forms]]
+  (let [pivot (to-js pivot)
+        forms (map #(concat % ['_out])
+                   forms)]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
+      (str
+       "(function(){"
+       "var _out = "
+       pivot
+       ";\n"
+       (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+       "return _out;"
+       "}.bind(this))()"))))
+
+(defn handle--> [[_ pivot & forms]]
+  (let [pivot (to-js pivot)
+        forms (map #(concat [(first %)] [''_out] (rest %))
+                   forms)]
+    (binding [*fn-params* (concat *fn-params* ['_out])]
+      (ind-str
+       "(function(){"
+       (inc-ind-str
+        "var _out = "
+        pivot
+        ";\n"
+        (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+        "return _out;")
+       "}.bind(this))()"))))
+
+(defn handle-not [[_ stmt]]
+  (str "(!" (to-js stmt) ")"))
+
+(defn handle-do [[_ & statements]]
   (str
    "(function(){"
-   "return {"
-   (apply str (interpose "," (map #(str \' (name (key %)) \' ":" (convert-el (val %))) m)))
-   "}"
-   ";})()"))
+   (apply str
+          (interpose (str ";" nl) (add-return (map to-js statements))))
+   "}.bind(this))()"))
 
-(defn convert-string [s]
-  (str \" s \"))
+(defn handle-cond [[_ & conds]]
+  (let [pairs (partition 2 conds)]
+    (ind-str
+     "(function(){" nl
+     (inc-ind-str
+      (->> pairs
+           (map #(str
+                  (when (not (keyword? (first %)))
+                    (str "if("
+                         (to-js (first %))
+                         ")"))
+                  "{" nl
+                  (inc-ind-str
+                   "return "
+                   (to-js (second %))
+                   ";") nl
+                  "}"))
+           (interpose " else ")
+           (apply str)))
+     "}.bind(this))()")))
 
-(defn convert-number [n]
-  (str n))
+(defn make-handle-op [op]
+  (fn [& _]
+    (interpose-op-fn op)))
 
-(defn convert-vector [v]
-  (str "[" (apply str (interpose "," (map convert-el v))) "]"))
+(defn make-boolean-op [op]
+  (fn [[_ & args]]
+    (boolean-op-fn op args)))
 
-(defn emit-function [arglist body-seq]
-  (let [body-seq (map convert-el body-seq)
-        body-len (dec (count body-seq))
-        before-ret (take body-len body-seq)
-        after-ret (drop body-len body-seq)
-        with-return (concat before-ret [(apply str "return " after-ret)])
-        before-amp (take-while #(not= '& %) arglist)
-        after-amp (first (drop 1 (drop-while #(not= '& %) arglist)))]
-    (str "(function("
-         (apply str (interpose "," (map convert-el before-amp)))
-         "){\n"
-         (when after-amp
-           (str "var " (convert-el after-amp)
-                " = Array.prototype.slice.call(arguments," (count before-amp) ");"))
-         (apply str (interpose ";\n" with-return))
-         ";\n})")))
+(defn handle-doseq [[_ bdg & body]]
+  (let [colsym (gensym)]
+    (ind-str
+     "(function() {" nl
+     (inc-ind-str
+      "var " colsym " = " (to-js (second bdg)) ";" nl
+      "for(var i=0; i < " colsym  ".length; i++) {" nl
+      (inc-ind-str
+       "(function(" (to-identifier (first bdg)) "){"
+       (binding [*fn-params* (concat *fn-params* [(first bdg)])]
+         (->> body
+              (map to-js)
+              (interpose (str ";" nl))
+              (apply str))))
+      "}.bind(this))(" colsym "[i]);"
+      nl
+      "}") nl
+      "}.bind(this))()")))
+
+(defn handle-instanceof [[_ obj type]]
+  (ind-str
+   "("
+   (to-js obj)
+   " instanceof "
+   (to-js type)
+   ")"))
+
+(defn handle-gensym [_]
+  (to-identifier (gensym)))
+
+(defn handle-gensym-str [_]
+  (to-js (str (gensym))))
+
+(defn special-forms []
+  {'def     handle-def
+   'fn      handle-fn
+   'fn*     handle-fn
+   'set!    handle-set
+   'let     handle-let
+   'defn    handle-defn
+   'aget    handle-aget
+   'aset    handle-aset
+   'if      handle-if
+   'while   handle-while
+   'when    handle-when
+   'doto    handle-doto
+   '->      handle-->
+   '->>     handle-->>
+   'not     handle-not
+   'do      handle-do
+   'cond    handle-cond
+   '=       (make-boolean-op '==)
+   '>       (make-boolean-op '>)
+   '<       (make-boolean-op '<)
+   '>=      (make-boolean-op '>=)
+   '<=      (make-boolean-op '<=)
+   'or      (make-boolean-op '||)
+   'and     (make-boolean-op '&&)
+   'doseq   handle-doseq
+   'instanceof handle-instanceof
+   'gensym handle-gensym
+   'gensym-str handle-gensym-str})
+
+(defn apply-able-special-forms []
+  {'+       (make-handle-op '+)
+   '-       (make-handle-op '-)
+   '*       (make-handle-op '*)
+   '/       (make-handle-op '/)})
+
+(defn map-accessor? [sexp]
+  (and (= 2 (count sexp))
+       (or (seq? sexp)
+           (list? sexp))
+       (keyword? (first sexp))))
+
+(defn map-accessor-to-js [sexp]
+  (let [kw (name (first sexp))
+        obj (to-js (second sexp))]
+    (str "(" obj "['" kw "'])")))
+
+(defn object-member? [[f & _]]
+  (= \. (first (str f))))
+
+(defn object-member-call-to-js [[member obj & args]]
+  (ind-str
+   (to-js obj)
+   "[\""
+   (str/replace member #"\." "")
+   "\"]"
+   "("
+   (->> args
+        (map to-js)
+        (interpose ",")
+        (apply str))
+   ")"))
 
 (defn chop-trailing-period [sym]
   (let [sym-str (str sym)
@@ -113,489 +430,301 @@
          (apply str)
          (symbol))))
 
-(defn convert-el [el]
-  (cond
-   (or (list? el) (seq? el)) (convert-list el)
-   (string? el) (convert-string el)
-   (symbol? el) (convert-symbol el)
-   (map? el) (convert-map el)
-   (vector? el) (convert-vector el)
-   (number? el) (convert-number el)
-   (= java.lang.Boolean (class el)) (if el 'true 'false)
-   (keyword? el) (name el)))
+(defn new-object? [[obj & _]]
+  (re-find #"\.$" (str obj)))
 
-;; # Specific Function Handlers
-;;
-;; When **cljs** encounters a symbol in the first position of
-;; a list, it assumes you're making a function call.
-;; Usually **cljs** will do a straight translation:
-;;
-;;     (js '(foo "bar" "baz"))
-;;     -> foo("bar","baz")
-;;
-;; In certain situations, we'd like to override this behavior,
-;; as in the case of `+`.
-;;
-;;     Wrong:
-;;     (js '(+ 1 1))
-;;     -> +(1,1)
-;;
-;;     Right:
-;;     (js '(+ 1 1))
-;;     -> (1 + 1)
-;;
-;; `strict-handlers` and `lazy-handlers` (see the end of this section) provide
-;; the mechanism to support this behavoir by mapping the desired symbol (i.e. `+`)
-;; to a handler (i.e. `handle-+`).
-
-(defn handle-println []
-  "console.log")
-
-(defn handle-fn [col]
-  (let [_ (first col)
-        arglist (second col)
-        body (rest (drop 1 col))]
-    (emit-function arglist body)))
-
-(defn handle-binding [[v binding]]
-  (str "" (convert-el v) " = " (convert-el binding)))
-
-(defn handle-bindings [col]
-  (str
-   "var "
-   (->> (partition 2 col)
-        (map handle-binding)
-        (interpose ",")
-        (apply str))
-   ";"))
-
-(defn handle-let [[_ bindings & body]]
-  (str
-   "(function(){"
-   (handle-bindings bindings)
-   (apply str (interpose ";" (add-return (map convert-el body))))
-   "})()"))
-
-(defn handle-loop [[_ bindings & body]]
-  (let [vars (map first (partition 2 bindings))
-        initial-vals (map convert-el (map second (partition 2 bindings)))]
-    (str
-     "(function(){"
-     "var RECUR_TARGET = function("
-     (apply str (interpose "," vars))
-     "){ "
-     (apply str (interpose ";" (add-return (map convert-el body))))
-     "};"
-     "return RECUR_TARGET("
-     (apply str (interpose "," initial-vals))
-     ")"
-     "})()")))
-
-(defn handle-recur [[_ & args]]
-  (str
-   "RECUR_TARGET("
-   (->> args
-        (map convert-el)
-        (interpose ",")
-        (apply str))
-   ");"))
-
-(defn handle-doto [[_ & body]]
-  (let [pivot (first body)
-        forms (rest body)]
-    (str
-     "(function(){"
-     (apply
-      str
-      (interpose
-       ";\n"
-       (add-return
-         (concat
-          [(str "var out = " (convert-el pivot))]
-          (map convert-el (map #(concat (vector (first %) 'out) (rest %)) forms))
-          ['out]))))
-     "}())")))
-
-
-
-(defn handle-->> [[_ pivot & forms]]
-  (let [pivot (convert-el pivot)
-        forms (map #(concat % ['out])
-                   forms)]
-    (str
-     "(function(){"
-     "var out = "
-     pivot
-     ";\n"
-     (apply str (map #(str "out = " % ";") (map convert-el forms)))
-     "return out;"
-     "})()")))
-
-(defn handle--> [[_ pivot & forms]]
-  (let [pivot (convert-el pivot)
-        forms (map #(concat [(first %)] ['out] (rest %))
-                   forms)]
-    (str
-     "(function(){"
-     "var out = "
-     pivot
-     ";\n"
-     (apply str (map #(str "out = " % ";") (map convert-el forms)))
-     "return out;"
-     "})()")))
-
-(defn handle-def [[_ v body]]
-  (str "var " (convert-el v) " = " (convert-el body) ";\n"
-       (cns-with-dot) (convert-el v) " = " (convert-el v)))
-
-(defn handle-defn [col]
-  (let [[_ name & fndef] col]
-    (str "var " (convert-el name) " = " (emit-function (first fndef) (rest fndef))
-         ";\n"
-         (cns-with-dot) (convert-el name) " = " (convert-el name) ";")))
-
-(defn call-fn [f args]
-  (let [f (if (string? f)
-            f
-            (convert-el f))
-        args (map convert-el args)]
-    (str "("
-         f
-         "("
-         (apply str (interpose "," args))
-         "))")))
-
-(defn reduce-args [op init]
-  (str
-   "(function(){"
-   "return _.reduce(arguments,function(c,v){return c " op " v}," init ")"
-   "})"))
-
-(defn str-fn []
-  (reduce-args '+ "\"\""))
-
-(defn call-dot-fn [col]
-  (let [f (convert-el (first col))
-        obj (convert-el (second col))
-        args (drop 2 col)]
-    (call-fn (str obj f) args)))
-
-(defn call-new-fn [col]
-  (let [clazz  (chop-trailing-period (first col))
-        args (rest col)]
+(defn new-object [[obj & args]]
+  (let [clazz (chop-trailing-period obj)]
     (str "(new "
+         "this."
          clazz
          "("
-         (apply str (interpose "," (map convert-el args)))
+         (apply str (interpose "," (map to-js args)))
          "))")))
 
-(declare lazy-eval-fn-defs)
-(declare strict-eval-fn-defs)
+(defn sexp-to-js [sexp]
+  (cond
+   (= 'quote (first sexp)) (str (second sexp))
+   (object-member? sexp) (object-member-call-to-js sexp)
+   (new-object? sexp) (new-object sexp)
+   ((special-forms) (first sexp)) (((special-forms) (first sexp)) sexp)
+   ((apply-able-special-forms) (first sexp)) (call-special-form sexp)
+   (map-accessor? sexp) (map-accessor-to-js sexp)
+   :else (call-fn-using-call sexp)))
 
-(defn js-call [fn]
-  (let [[f & args] fn]
-    (cond
-     (lazy-eval-fn-defs f) ((lazy-eval-fn-defs f) fn)
-     ((strict-handlers) f) (call-fn (first fn) (rest fn))
-     (= \. (first (str f))) (call-dot-fn fn)
-     (re-find #"\.$" (str f)) (call-new-fn fn)
-     (symbol? f) (call-fn (first fn) (rest fn))
-     :else (call-fn (first fn) (rest fn)))))
+(defn map-to-js [m]
+  (ind-str
+   "({" nl
+   (inc-ind-str
+    (->> m
+         (map #(str \' (name (key %)) \'
+                    ":"
+                    (to-js (val %))))
+         (interpose (str "," nl (ind)))
+         (apply str)))
+   nl "})"))
 
-(defn js-apply-fn [f args]
-  (let [l (last args)
-        before-l (take (dec (count args)) args)]
-    (str "("
-         f
-         ".apply(null,"
-         (when (not (empty? before-l))
-           (str "[" (apply str (interpose "," (map convert-el before-l))) "].concat("))
-         (convert-el l)
-         (when (not (empty? before-l))
-           (str ")"))
-         "))")))
+(defn vec-to-js [elements]
+  (if (empty? elements) "[]"
+      (ind-str
+       "[" nl
+       (inc-ind-str
+        (->> elements
+             (map to-js)
+             (interpose ",\n")
+             (apply str)))
+       nl "]")))
 
-(defn js-apply [fn]
-  (let [[_ f & args] fn]
-    (when (lazy-eval-fn-defs f)
-      (throw (Exception. (str "Can't apply lazily evaluated fn: " f))))
-    (if ((strict-handlers) f)
-      (js-apply-fn (((strict-handlers) f)) args)
-      (js-apply-fn f args))))
+(defn scope-symbol [sym]
+  (if (seq? sym)
+    sym
+    (let [before-dot (symbol (second (re-find #"^([^.]*)" (str sym))))
+          sym (prep-symbol sym)]
+      (if (some #(= before-dot %) *fn-params*)
+        sym
+        (str "this." sym)))))
 
-(defn interpose-op-fn [op]
+(defn symbol-to-js [sym]
+  (cond
+   ((apply-able-special-forms) sym) (((apply-able-special-forms) sym))
+   :else (scope-symbol sym)))
+
+(defn boolean? [o]
+  (= java.lang.Boolean (type true)))
+
+(defn str-to-js [s]
+  (-> s
+      (str/replace #"\n" "\\\\n")
+      (str/replace #"\"" "\\\\\"")))
+
+(defn to-js [element]
+  (cond
+   (or (seq? element) (list? element)) (sexp-to-js element)
+   (map? element) (map-to-js element)
+   (vector? element) (vec-to-js element)
+   (symbol? element) (symbol-to-js element)
+   (keyword? element) (to-js (name element))
+   (string? element) (str \" (str-to-js element) \")
+   (number? element) element
+   (boolean? element) element
+   (nil? element) ""
+   :else (throw (Exception. (str "Don't know how to handle " element " of type " (:type element))))))
+
+(def default-includes ['Array])
+
+(defn use-to-js [u]
+  (->> u
+       (drop 1)
+       (map #(str "for("
+                      "var prop in " (to-identifier %)
+                      ")"
+                      "{ this[prop] = " (to-identifier %) "[prop] };" nl nl))
+       (apply str)))
+
+(defn seq-require-to-js [col]
+  (let [name (first col)
+        as (nth col 2)]
+    (str
+     "this." (to-identifier as) " = " (to-identifier name) ";" nl nl)))
+
+(defn sym-require-to-js [sym]
   (str
-   "(function() {"
-   "var out = arguments[0];"
-   "for(var i=1; i<arguments.length; i++){"
-   "out = out " op " arguments[i];"
+   "this." (to-identifier sym) " = " (to-identifier sym) ";" nl nl))
+
+(defn require-to-js [r]
+  (->> r
+       (drop 1)
+       (map #(cond
+              (or (vector? %) (seq? %)) (seq-require-to-js %)
+              :else (sym-require-to-js %)))
+       (apply str)))
+
+(defn import-to-js [r]
+  (require-to-js r))
+
+(defn init-ns-object [name]
+  (when name
+    (let [parts (str/split (str name) #"\.")
+          num (count parts)]
+      (->> (map #(->> parts
+                      (take (inc %))
+                      (interpose ".")
+                      (apply str))
+                (range num))
+           (map #(str (when (not (re-find #"\." %)) "var ") (to-identifier %) " = " (to-identifier %) " || {};" nl))))))
+
+
+(defn wrap-with-ns [name imports & body]
+  (ind-str
+   (apply str (init-ns-object name))
+   "(function() {" nl nl
+   (inc-ind-str
+    (apply str (interpose ";\n" (map #(str "this." % " = " %) default-includes)))
+    ";\n\n"
+    (use-to-js '(:use cljs.core))
+    (apply str (interpose ";\n\n" (map use-to-js (filter #(= :use (first %)) imports))))
+    (apply str (interpose ";\n\n" (map require-to-js (filter #(= :require (first %)) imports))))
+    (apply str (interpose ";\n\n" (map import-to-js (filter #(= :import (first %)) imports))))
+    (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
+   nl nl
+   "}).call(" (to-identifier name) ");"))
+
+(def *core-lib*
+  (str
+   "if(!Function.prototype.bind){"
+   "Function.prototype.bind = function(scope) {var _function = this;return function() { return _function.apply(scope, arguments); } }"
    "}"
-   "return out;"
-   "})"))
+   (wrap-with-ns "cljs.core" '[(:require _)]
+    
+     '(defn count [col]
+        (if col
+          'col.length
+          0))
 
-(defn handle-+ []
-  (interpose-op-fn '+))
+     '(defn first [col]
+        (when col
+          (aget col 0)))
 
-(defn handle-* []
-  (interpose-op-fn '*))
+     '(defn second [col]
+        (nth col 1))
 
-(defn handle-- [& args]
-  (interpose-op-fn '-))
+     '(defn rest [col]
+        (when col
+          (.call Array.prototype.slice col 1)))
 
-(defn handle-div [& args]
-  (interpose-op-fn '/))
+     '(defn inc [n]
+        (+ n 1))
 
-(defn handle-= [[_ pivot & others]]
-  (let [pivot (convert-el pivot)]
-    (str
-     \(
-     (apply str (interpose " && " (map #(str pivot " == " %) (map convert-el others))))
-     \))))
+     '(defn dec [n]
+        (- n 1))
 
-(defn handle-< [[_ pivot & others]]
-  (let [pivot (convert-el pivot)]
-    (str
-     \(
-     (apply str (interpose " && " (map #(str pivot " < " %) (map convert-el others))))
-     \))))
+     '(defn nth [col n]
+        (when (and col (> col.length n))
+          (aget col n)))
 
-(defn handle-> [[_ pivot & others]]
-  (let [pivot (convert-el pivot)]
-    (str
-     \(
-     (apply str (interpose " && " (map #(str pivot " > " %) (map convert-el others))))
-     \))))
+     '(defn last [col]
+        (aget col (dec col.length)))
 
-(defn handle-if [[_ pred t f]]
-  (let [pred (convert-el pred)
-        t (convert-el t)
-        f (convert-el f)]
-    (str
-     "(function(){"
-     "if(" pred "){\n return " t ";\n}"
-     (when f
-       (str "else{\n return " f ";\n}"))
-     "})()")))
+     '(defn reduce [f initial col]
+        (let [i (if col initial 'null)
+              c (if col col initial)]
+          (if i
+            (.reduce _ c f i)
+            (.reduce _ c f))))
 
-(defn handle-map [[_ f col]]
-  (str
-   "(function(){"
-   "if(" (convert-el col) ") {"
-   "return _.map("
-   (convert-el col)
-   \,
-   (convert-el f)
-   ")"
-   ";}})()"))
+     '(defn map [f initial col]
+        (let [i (if col initial 'null)
+              c (if col col initial)]
+          (when c
+            (if i
+              (.map _ c f i)
+              (.map _ c f)))))
 
-(defn handle-filter [[_ f col]]
-  (str
-   "(function(){"
-   "var col = " (convert-el col) ";"
-   "if(!col) return;"
-   "return _.filter("
-   "col,"
-   (convert-el f)
-   ");"
-   "})()"))
+     '(defn str [& args]
+        (reduce (fn [col el] (+ col el)) "" (filter #(.identity _ %) args)))
 
-(defn handle-cond [[_ & conds]]
-  (let [pairs (partition 2 conds)]
-    (str
-     "(function(){"
-     (->> pairs
-          (map #(str
-                 (when (not (keyword? (first %)))
-                   (str "if("
-                        (convert-el (first %))
-                        ")"))
-                 "{"
-                 "return "
-                 (convert-el (second %))
-                 ";"
-                 "}"))
-          (interpose " else ")
-          (apply str))
-     "})();")))
+     '(defn println [& args]
+        (.log 'console args))
 
-(defn handle-do [[_ & statements]]
-  (str
-   "(function(){"
-   (apply str
-          (interpose ";" (add-return (map convert-el statements))))
-   "})()"))
+     '(defn apply [f args]
+        (.apply f 'this args))
 
-(defn handle-first [[_ arr]]
-  (str (convert-el arr) "[0]"))
+     '(defn filter [f col]
+        (if col
+          (.filter _ col f)))
 
-(defn handle-ns [[_ ns & args]]
-  (set-current-ns ns)
-  (str
-   "var " (cns) " = " (cns) " || {};"))
+     '(defn concat [cola colb]
+        (let [out []]
+          (out.push.apply out cola)
+          (out.push.apply out colb)
+          out))
 
-(defn handle-quote [[_ arg]]
-  (convert-el arg))
+     '(defn take [n col]
+        (.slice col 0 n))
 
-(defn handle-not [[_ stmt]]
-  (str "(!" (convert-el stmt) ")"))
+     '(defn drop [n col]
+        (when col
+          (.slice col n)))
 
-(defn handle-and [[_ & stmts]]
-  (str
-   "("
-   (apply str (interpose " && " (map convert-el stmts)))
-   ")"))
+     '(defn partition [n col]
+        (let [f (fn [out col]
+                  (if (= 0 (count col))
+                    out
+                    (f (concat out [(take n col)]) (drop n col))))]
+          (f [] col)))
 
-(defn handle-or [[_ & stmts]]
-  (str
-   "("
-   (apply str (interpose " || " (map convert-el stmts)))
-   ")"))
+     '(defn assoc [obj & rest]
+        (let [pairs (partition 2 rest)]
+          (doseq [p pairs]
+            (aset obj (first p) (nth p 1)))
+          obj))
 
-(defn handle-reduce [[_ f init col]]
-  (when (not init)
-    (throw (Exception. "No collection provided to reduce over.")))
-  (str
-   "(function(){"
-   (if (not col)
-     (str "var col = " (convert-el init) ";\n"
-          "var memo = col[0];\n"
-          "col = col.slice(1);\n")
-     (str "var col = " (convert-el col) ";\n"
-          "var memo = " (convert-el init) ";\n"))
-   "return _.reduce("
-   "col"
-   \,
-   (convert-el f)
-   \,
-   "memo"
-   ");"
-   "})()"))
+     '(defn conj [col & rest]
+        (doseq [r rest]
+          (.push col r))
+        col)
 
-(defn handle-merge []
-  (str
-   "(function(){"
-   "var pivot = arguments[0];"
-   "var rest = Array.prototype.slice.call(arguments,1);"
-   "_.each(rest, function(el) {"
-   "_.each(el, function(v,k) {"
-   "pivot[k] = v;"
-   "});"
-   "});"
-   "return pivot;"
-   "})"))
+     '(defn array? [o]
+        (and o
+             (.isArray _ o)))
 
-(defn handle-assoc [[_ m & args]]
-  (let [pairs (partition 2 args)]
-    (str
-     "(function(){"
-     "var out = " (convert-el m) ";"
-     (apply str (map #(str "out['" (convert-el (first %)) "'] = " (convert-el (second %)) ";") pairs))
-     "return out;"
-     "})()")))
+     '(defn object? [o]
+        (and o
+             (not (array? o))
+             (not (string? o))))
 
-(defn handle-set! [[_ var val]]
-  (str
-   (convert-el var)
-   " = "
-   (convert-el val)
-   ";"))
+     '(defn string? [o]
+        (.isString _ o))
 
-(defn handle-conj []
-  (str
-   "(function(){"
-   "var arr = arguments[0];"
-   "var items = Array.prototype.slice.call(arguments, 1);"
-   "_.each(items, function(el) { arr.push(el) });"
-   "return arr"
-   "})"))
+     '(defn element? [o]
+        (and o
+             (or (.isElement _ o)
+                 (.isElement _ (first o)))))
 
-(defn handle-disj []
-  (str
-   "(function(){"
-   "var arr = arguments[0];"
-   "var el = arguments[1];"
-   "var idx = arr.indexOf(el);"
-   "if(idx != -1) {"
-   "arr.splice(idx,1);"
-   "}"
-   "return arr;"
-   "})"))
+     '(defn merge [& objs]
+        (let [o {}]
+          (map #(.extend _ o %) objs)
+          o))
 
+     '(defn interpose [o col]
+        (when col
+          (let [out []
+                idx 0
+                len (count col)
+                declen (dec len)]
+            (while (< idx len)
+              (if (= idx declen)
+                (.push out (aget col idx))
+                (do
+                  (.push out (aget col idx))
+                  (.push out o)))
+              (set! idx (inc idx)))
+            out)))
 
-(defn handle-nth []
-  (str
-   "(function(col,idx){return col[idx]})"))
+     '(defn distinct [col]
+        (.uniq '_ col))
 
-(def lazy-eval-fn-defs
-  {'fn      handle-fn
-   'fn*     handle-fn
-   'let     handle-let
-   'doto    handle-doto
-   'def     handle-def
-   'defn    handle-defn
-   '=       handle-=
-   '>       handle->
-   '<       handle-<
-   'if      handle-if
-   'map     handle-map
-   'reduce  handle-reduce
-   'cond    handle-cond
-   'do      handle-do
-   'first   handle-first
-   'ns      handle-ns
-   'quote   handle-quote
-   'filter  handle-filter
-   'not     handle-not
-   'and     handle-and
-   'or      handle-or
-   '->>     handle-->>
-   '->      handle-->
-   'assoc   handle-assoc
-   'set!    handle-set!
-   'loop    handle-loop
-   'recur   handle-recur
-   })
+     '(defn identity [arg]
+        (if arg
+          (.identity '_ arg))))))
 
+(defn spit-cljs-core [path]
+  (spit path *core-lib*))
 
-
-(defn strict-handlers []
-  {'str     str-fn
-   '+       handle-+
-   '-       handle--
-   '*       handle-*
-   '/       handle-div
-   'println handle-println
-   'merge   handle-merge
-   'conj    handle-conj
-   'disj    handle-disj
-   'nth     handle-nth})
-
-;;
-;;
-;;
-
-(defn js [form] (str (convert-el form) ";"))
-
-(defn compile-cljs [path]
-  (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path))
+(defn compile-cljs-reader [reader]
+  (let [rdr (clojure.lang.LineNumberingPushbackReader. reader)
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))
-        first-form (first forms)
-        ns-decl (when (= 'ns (first first-form))
-                  first-form)
-        forms (if ns-decl (rest forms) forms)]
-    (when ns-decl)
-    (set-current-ns (second ns-decl))
-    (str "var " (cns) " = " (cns) " || {};\n"
-         "(function() {\n"
-         (apply str (interpose "\n" (map js forms)))
-         "})();")))
+        ns-decl (when (= 'ns (first (first forms)))
+                  (first forms))
+        forms (if ns-decl (rest forms) forms)
+        imports (drop 2 ns-decl)]
+    (apply wrap-with-ns
+           (second ns-decl)
+           imports
+           forms)))
 
-(defn compile-to [cljs-path output-path]
-  (spit output-path (compile-cljs cljs-path)))
+(defn compile-cljs-string [str]
+  (compile-cljs-reader (java.io.StringReader. str)))
 
-(defn stich-cljs-output [js-path]
-  (->> (java.io.File. js-path)
-       (file-seq)
-       (filter #(.endsWith (.getName %) ".cljs.js"))
-       #_(map slurp)
-       #_(apply str)))
+(defn compile-cljs-file [path]
+  (compile-cljs-reader (java.io.FileReader. path)))

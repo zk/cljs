@@ -1,6 +1,6 @@
 (ns cljs.watch
   "# Utilities for automatically compiing changed .cjls files."
-  (:use [cljs.core2 :only (compile-cljs-file)])
+  (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
             [cljs.stitch :as st]))
 
