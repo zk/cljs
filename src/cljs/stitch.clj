@@ -96,29 +96,37 @@
     (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
       ns-decl)))
 
-
-(defn includes [type ns-decl]
+(defn includes [ns-decl]
   (->> ns-decl
        (filter #(or (seq? %) (vector? %)))
-       (filter #(= type (first %)))
+       (filter #(or (= :use (first %))
+                    (= :require (first %))))
        (map #(drop 1 %))
-       (reduce concat)))
+       (reduce concat)
+       (map #(if (or (seq? %) (vector? %))
+               (first %)
+               %))))
 
-(defn uses [ns-decl]
-  (includes :use ns-decl))
+(uses (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
+(includes (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
+(ns-decl "./resources/testproj/src/cljs/ns/main.cljs")
 
-(defn requires [ns-decl]
-  (includes :require ns-decl))
-
-#_(uses (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
-
-#_(ns-decl "./resources/testproj/src/cljs/ns/main.cljs")
-
+(defn ns-to-file [source-root ns-sym]
+  (str
+   source-root
+   "/"
+   (str/replace (str ns-sym)
+                #"\."
+                "/")
+   ".cljs"))
 
 (defn find-dependencies [source-root source-file]
-  (ns-decl source-file))
+  (let [ns-decl (ns-decl source-file)
+        includes (distinct (includes ns-decl))]
+    (concat (map #(find-dependencies source-root (ns-to-file source-root %)) includes)
+            [includes])))
 
-#_(find-dependencies "./resources/testproj/src/cljs"
+(find-dependencies "./resources/testproj/src/cljs"
                    "./resources/testproj/src/cljs/ns/main.cljs")
 
 #_(time (stitch-project "./resources/testproj/project.clj" :project-root "./resources/testproj"))
