@@ -586,7 +586,7 @@
 
      '(defn rest [col]
         (when col
-             (.call Array.prototype.slice col 1)))
+          (.call Array.prototype.slice col 1)))
 
      '(defn inc [n]
         (+ n 1))
@@ -683,22 +683,29 @@
           o))
 
      '(defn interpose [o col]
-                   (when col
-                     (let [out []
-                           idx 0
-                           len (count col)
-                           declen (dec len)]
-                       (while (< idx len)
-                         (if (= idx declen)
-                           (.push out (aget col idx))
-                           (do
-                             (.push out (aget col idx))
-                             (.push out o)))
-                         (set! idx (inc idx)))
-                       out)))
+        (when col
+          (let [out []
+                idx 0
+                len (count col)
+                declen (dec len)]
+            (while (< idx len)
+              (if (= idx declen)
+                (.push out (aget col idx))
+                (do
+                  (.push out (aget col idx))
+                  (.push out o)))
+              (set! idx (inc idx)))
+            out)))
 
      '(defn distinct [col]
-        (.uniq '_ col)))))
+        (.uniq '_ col))
+
+     '(defn identity [arg]
+        (if arg
+          (.identity '_ arg)))
+
+
+     )))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))

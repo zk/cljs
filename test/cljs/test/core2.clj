@@ -116,6 +116,10 @@
                              (.push 2)
                              (.push 3))))))
 
+(deftest test-when
+  (is (eval-js '(when (> 2 1)
+                  true))))
+
 ;; Scoping
 
 ;; Core Lib
@@ -151,3 +155,6 @@
 
 (deftest test-distinct
   (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))
+
+
+
