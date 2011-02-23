@@ -321,30 +321,28 @@ cljs.core = cljs.core || {};
 
 
 
-var bar = bar || {};
-bar.core = bar.core || {};
+var two = two || {};
 (function() {
 
   this.Array = Array;
   
   for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
   
-  return this.println("foo")
+  return 
 
-}).call(bar.core);
+}).call(two);
 
 
 
-var bar = bar || {};
-bar.stuff = bar.stuff || {};
+var one = one || {};
 (function() {
 
   this.Array = Array;
   
   for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
   
-  return this.asdf = (function(){
-    return this.println("asdf");
-  }.bind(this))
+  this.two = two;
+  
+  return 
 
-}).call(bar.stuff);
+}).call(one);

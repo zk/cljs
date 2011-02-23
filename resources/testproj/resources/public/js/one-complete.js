@@ -148,8 +148,8 @@ cljs.core = cljs.core || {};
         }
         return _out;
       }).call(this, col, el);
-    }.bind(this)), "", this.filter((function(p1__2205_HASH_){
-      return this._["identity"](p1__2205_HASH_);
+    }.bind(this)), "", this.filter((function(p1__1948_HASH_){
+      return this._["identity"](p1__1948_HASH_);
     }.bind(this)), args));
   }.bind(this));
   
@@ -222,9 +222,9 @@ cljs.core = cljs.core || {};
       var pairs = this.partition(2, rest);
       
       (function() {
-        var G__2207 = pairs;
-        for(var i=0; i < G__2207.length; i++) {
-          (function(p){(obj[this.first(p)] = this.nth(p, 1))}.bind(this))(G__2207[i]);
+        var G__1950 = pairs;
+        for(var i=0; i < G__1950.length; i++) {
+          (function(p){(obj[this.first(p)] = this.nth(p, 1))}.bind(this))(G__1950[i]);
         }
       }.bind(this))();
       
@@ -236,9 +236,9 @@ cljs.core = cljs.core || {};
   this.conj = (function(col){
     var rest = Array.prototype.slice.call(arguments, 1);
     (function() {
-      var G__2208 = rest;
-      for(var i=0; i < G__2208.length; i++) {
-        (function(r){col["push"](r)}.bind(this))(G__2208[i]);
+      var G__1951 = rest;
+      for(var i=0; i < G__1951.length; i++) {
+        (function(r){col["push"](r)}.bind(this))(G__1951[i]);
       }
     }.bind(this))();
     return col;
@@ -267,8 +267,8 @@ cljs.core = cljs.core || {};
         
       });
       
-      this.map((function(p1__2206_HASH_){
-        return this._["extend"](o,p1__2206_HASH_);
+      this.map((function(p1__1949_HASH_){
+        return this._["extend"](o,p1__1949_HASH_);
       }.bind(this)), objs);
       
       return o;

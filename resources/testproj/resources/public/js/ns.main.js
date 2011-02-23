@@ -321,30 +321,86 @@ cljs.core = cljs.core || {};
 
 
 
-var bar = bar || {};
-bar.core = bar.core || {};
+var common = common || {};
 (function() {
 
   this.Array = Array;
   
   for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
   
-  return this.println("foo")
-
-}).call(bar.core);
-
-
-
-var bar = bar || {};
-bar.stuff = bar.stuff || {};
-(function() {
-
-  this.Array = Array;
-  
-  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
-  
-  return this.asdf = (function(){
-    return this.println("asdf");
+  return this.common_one = (function(){
+    return this.println("common one");
   }.bind(this))
 
-}).call(bar.stuff);
+}).call(common);
+
+
+
+var two = two || {};
+(function() {
+
+  this.Array = Array;
+  
+  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
+  
+  return 
+
+}).call(two);
+
+
+
+var one = one || {};
+(function() {
+
+  this.Array = Array;
+  
+  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
+  
+  this.two = two;
+  
+  return 
+
+}).call(one);
+
+
+
+var ns = ns || {};
+ns.alt = ns.alt || {};
+(function() {
+
+  this.Array = Array;
+  
+  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
+  
+  this.o = one;
+  
+  return this.foo = "bar";
+
+}).call(ns.alt);
+
+
+
+var main = main || {};
+(function() {
+
+  this.Array = Array;
+  
+  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
+  
+  for(var prop in common){ this[prop] = common[prop] };
+  
+  ;
+  
+  for(var prop in ns.alt){ this[prop] = ns.alt[prop] };
+  
+  for(var prop in one){ this[prop] = one[prop] };
+  
+  this.alt = ns.alt;
+  
+  this.$ = jQuery;
+  
+  return this.bar = (function(){
+    return "foo";
+  }.bind(this))
+
+}).call(main);

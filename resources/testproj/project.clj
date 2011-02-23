@@ -6,10 +6,8 @@
   :source-path "src/clj"
   :cljs {:source-path "src/cljs"
          :output-path "resources/public/js"
-         :libs [{:name one-complete
-                 :sources [sub.two
-                           one]}
+         :libs [one
                 {:name bar.main
-                 :sources [bar.stuff
-                           bar.core]}
-                {:name ns.main}]})
+                 :sources [bar.core
+                           bar.stuff]}
+                ns.main]})

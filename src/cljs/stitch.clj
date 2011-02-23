@@ -33,7 +33,62 @@
     (catch Exception e
       (println (str "Problem reading project at " project-clj)))))
 
+(defn ns-to-file [source-root ns-sym]
+  (str
+   source-root
+   "/"
+   (str/replace (str ns-sym) #"\." "/")
+   ".cljs"))
+
+(defn ns-decl [file]
+  (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
+                   (java.io.FileReader. file))]
+    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
+      ns-decl)))
+
+
+(defn includes [ns-decl]
+  (->> ns-decl
+       (filter #(or (seq? %) (vector? %)))
+       (filter #(or (= :use (first %))
+                    (= :require (first %))))
+       (map #(drop 1 %))
+       (reduce concat)
+       (map #(if (or (seq? %) (vector? %))
+               (first %)
+               %))))
+
+
+
+(defn find-dependencies [source-root source-file]
+  (let [ns-decl (ns-decl source-file)
+        includes (distinct (includes ns-decl))]
+    (distinct
+     (flatten
+      (map #(concat (find-dependencies source-root (ns-to-file source-root %)) [%])
+           includes)))))
+
+
 (defn stitch-lib
+  "Converts and stitches `sources` into `output-path/name.js`."
+  [source-path output-path name]
+  (println "Stitching" name)
+  (println "  " "input:")
+
+  (println "  " "output:")
+  (println "    "  (str output-path "/" name ".js"))
+
+  (->> (concat (find-dependencies source-path (ns-to-file source-path name))
+               [name])
+       (#(do (println %) %))
+       (map #(ns-to-file source-path %))
+       (map core/compile-cljs-file)
+       (interpose "\n\n\n\n")
+       (apply str)
+       (str core/*core-lib* "\n\n\n\n")
+       (spit (str output-path "/" (str name) ".js"))))
+
+(defn stitch-lib-with-sources
   "Converts and stitches `sources` into `output-path/name.js`."
   [source-path output-path name sources]
   (let [cljs-source-paths (->> sources
@@ -62,9 +117,12 @@
          (str core/*core-lib* "\n\n\n\n")
          (spit (str output-path "/" (str name) ".js")))))
 
+
 (defn stitch-libs [output-path source-path libs]
   (doseq [lib libs]
-    (stitch-lib source-path output-path (as-str (:name lib)) (:sources lib))))
+    (if (map? lib)
+      (stitch-lib-with-sources source-path output-path (as-str (:name lib)) (:sources lib))
+      (stitch-lib source-path output-path (as-str lib)))))
 
 (defn prefix-path [prefix path]
   (str
@@ -90,43 +148,8 @@
      (println)
      (stitch-libs output-path source-path libs))))
 
-(defn ns-decl [file]
-  (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
-                   (java.io.FileReader. file))]
-    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
-      ns-decl)))
 
-(defn includes [ns-decl]
-  (->> ns-decl
-       (filter #(or (seq? %) (vector? %)))
-       (filter #(or (= :use (first %))
-                    (= :require (first %))))
-       (map #(drop 1 %))
-       (reduce concat)
-       (map #(if (or (seq? %) (vector? %))
-               (first %)
-               %))))
-
-(uses (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
-(includes (ns-decl "./resources/testproj/src/cljs/ns/main.cljs"))
-(ns-decl "./resources/testproj/src/cljs/ns/main.cljs")
-
-(defn ns-to-file [source-root ns-sym]
-  (str
-   source-root
-   "/"
-   (str/replace (str ns-sym)
-                #"\."
-                "/")
-   ".cljs"))
-
-(defn find-dependencies [source-root source-file]
-  (let [ns-decl (ns-decl source-file)
-        includes (distinct (includes ns-decl))]
-    (concat (map #(find-dependencies source-root (ns-to-file source-root %)) includes)
-            [includes])))
-
-(find-dependencies "./resources/testproj/src/cljs"
+#_(find-dependencies "./resources/testproj/src/cljs"
                    "./resources/testproj/src/cljs/ns/main.cljs")
 
-#_(time (stitch-project "./resources/testproj/project.clj" :project-root "./resources/testproj"))
+#_(stitch-project "./resources/testproj/project.clj" :project-root "./resources/testproj")
