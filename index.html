@@ -1,5 +1,34 @@
 <!DOCTYPE html>
-<html><head><script type="text/javascript">/*!
+<html><head><meta charset="utf-8" content="text/html" http-equiv="Content-Type" /><meta content="An experimental Clojure(ish) to Javascript compiler similar to
+   [clojurescript](https://github.com/clojure/clojure-contrib/tree/master/clojurescript/). The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!
+
+   # Usage
+
+   Use the `cljs.core/to-js` function to turn a list (representing some
+   code) into javascript, like so:
+
+       (to-js '((fn [x] (alert x)) &quot;hello world&quot;))
+
+       -&gt; function(x){alert(x);}(&quot;hello world&quot;);
+
+
+       (to-js '(-&gt; ($ &quot;&lt;div /&gt;&quot;)
+                (.css {:backgroundColor &quot;blue&quot; .
+                       :border &quot;dashed white 5px&quot;})
+
+       -&gt; (function(){var out = $(&quot;&lt;div /&gt;&quot;);
+                      out.css({backgroundColor:&quot;blue&quot;,border:&quot;dashed white 5px&quot;});
+                      return out}())
+
+   Neat, huh?
+
+   In addition to the compiler, cljs provides several tools to make working with cljs in the context of a web project easier:
+
+   1. [cljs.watch](#cljs.watch) provides a mechanism for automatic recompilation on source changes. Used by either `lein cljs-watch` or `(use 'cljs.watch) (start-watch-project &quot;./project.clj&quot;)`. Cljs output is declared in your project.clj file, under the :cljs key.
+
+   2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
+
+   For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><script type="text/javascript">/*!
  * jQuery JavaScript Library v1.4.4
  * http://jquery.com/
  *
@@ -2525,20 +2554,20 @@ $(document).ready(function() {
   font-style: italic !important;
   color: #2a00ff !important;
 }
-</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><title>Marginalia Output</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
-   <a href="https://github.com/clojure/clojure-contrib/tree/master/clojurescript/">clojurescript</a>.</p>
+</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><title>cljs -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
+   <a href="https://github.com/clojure/clojure-contrib/tree/master/clojurescript/">clojurescript</a>. The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!</p>
 
 <p>   # Usage</p>
 
-<p>   Use the <code>cljs.core/js</code> function to turn a list (representing some
+<p>   Use the <code>cljs.core/to-js</code> function to turn a list (representing some
    code) into javascript, like so:</p>
 
-<pre><code>   (js '((fn [x] (alert x)) "hello world"))
+<pre><code>   (to-js '((fn [x] (alert x)) "hello world"))
 
    -&gt; function(x){alert(x);}("hello world");
 
 
-   (js '(-&gt; ($ "&lt;div /&gt;")
+   (to-js '(-&gt; ($ "&lt;div /&gt;")
             (.css {:backgroundColor "blue" .
                    :border "dashed white 5px"})
 
@@ -2549,85 +2578,133 @@ $(document).ready(function() {
 
 <p>   Neat, huh?</p>
 
-<p>   For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.2.2</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.stitch">cljs.stitch</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns cljs.core
-  (:require [clojure.string :as str]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def *indent* 0)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def nl &quot;\n&quot;)
+<p>   In addition to the compiler, cljs provides several tools to make working with cljs in the context of a web project easier:</p>
 
-(declare to-js)
+<ol>
+<li><p><a href="#cljs.watch">cljs.watch</a> provides a mechanism for automatic recompilation on source changes. Used by either <code>lein cljs-watch</code> or <code>(use 'cljs.watch) (start-watch-project "./project.clj")</code>. Cljs output is declared in your project.clj file, under the :cljs key.</p></li>
+<li><p><a href="#cljs.stitch">cljs.stitch</a> takes care of stitching the collection of source files that make up a library into a cohearant javascript file.</p>
+
+<p>For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p></li>
+</ol>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.5.0-alpha</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.stitch">cljs.stitch</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li><li><a href="#cljs.test.stitch">cljs.test.stitch</a></li><li><a href="#cljs.test.watch">cljs.test.watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><strong>cljs</strong></p>
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.core
+  (:require [clojure.string :as str]))</pre></tr><tr><td class="docs"><p>Overall, cljs tries to mimic Clojure's rules where possible.</p>
+</td><td class="codes" /></tr><tr><td class="docs"><h2>Identifiers</h2>
+
+<p>Cljs allows you to include several characters which are not allowed
+in javascript identifiers.</p>
+</td><td class="codes" /></tr><tr><td class="docs"><p>Prep-symbol will replace invalid characters in the passed symbol with
+   javascript-compatable replacements.</p>
+
+<pre><code>   foo-bar  &amp;rarr;  foo_bar
+   foo?     &amp;rarr;  foo_QM_
+   foo#     &amp;rarr;  foo_HASH_
+   foo!     &amp;rarr;  foo_BANG_
+   foo/bar  &amp;rarr;  foo.bar
+   foo*     &amp;rarr;  foo_SPLAT_
+</code></pre>
+</td><td class="codes" /><pre class="brush: clojure">(defn prep-symbol
+  [s]
+  (-> (str s)
+      (str/replace #"-" "_")
+      (str/replace #"\?" "_QM_")
+      (str/replace #"#" "_HASH_")
+      (str/replace #"!" "_BANG_")
+      (str/replace #"/" ".")
+      (str/replace #"\*" "_SPLAT_")
+      (symbol)))</pre></tr><tr><td class="docs"><h3>Indenting / Pretty-Printing</h3>
+</td><td class="codes" /><pre class="brush: clojure">(def *indent* 0)</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def nl "\n")</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(declare to-js)
 (declare special-forms)
-(declare apply-able-special-forms)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn ind []
-  (apply str (take *indent* (repeat &quot; &quot;))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn ind-str [&amp; args]
-  (let [lines (-&gt; (apply str args)
-                  (str/split #&quot;\n&quot;))
+(declare apply-able-special-forms)</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn ind []
+  (apply str (take *indent* (repeat " "))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn ind-str [& args]
+  (let [lines (-> (apply str args)
+                  (str/split #"\n"))
         with-indent (interpose nl (map #(str (ind) %) lines))]
-    (apply str with-indent)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defmacro with-inc-indent [&amp; body]
+    (apply str with-indent)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defmacro with-inc-indent [& body]
   `(binding [*indent* (+ *indent* 2)]
-     ~@body))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn inc-ind-str [&amp; body]
+     ~@body))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn inc-ind-str [& body]
   (with-inc-indent
-    (apply ind-str body)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn add-return [statements]
+    (apply ind-str body)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn add-return [statements]
   (let [count (dec (count statements))
         before-ret (take count statements)
         after-ret (drop count statements)
-        with-return (concat before-ret [(apply str &quot;return &quot; after-ret)])]
-    with-return))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn interpose-semi-colon [col]
-  (interpose &quot;;&quot; col))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn interpose-op-fn [op]
+        with-return (concat before-ret [(apply str "return " after-ret)])]
+    with-return))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn interpose-semi-colon [col]
+  (interpose ";" col))</pre></tr><tr><td class="docs"><p>Several types of functions follow the pattern `<expr> <op>
+<expr>`. We use the *-op-fn functions to provide a uniform
+mechanism for defining these types of operations.</p>
+
+<p>See section 1.2 of Okasaki's <a href="http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf">Purely Functional Data
+Structures</a> for more
+info. In fact, just go read the whole thing, it's amazingly
+well-written.</p>
+</td><td class="codes" /></tr><tr><td class="docs"><p><code>strict-eval-op-fn</code> is used to define functions of the above pattern for fuctions such as <code>+</code>, <code>*</code>,   etc.  Cljs special forms defined this way are applyable, such as <code>(apply + [1 2 3])</code>.</p>
+
+<p>   Resulting expressions are wrapped in an anonymous function and, down the line, <code>call</code>ed, like so:</p>
+
+<pre><code>   (+ 1 2 3) &amp;rarr; (function(){...}.call(this, 1 2 3)
+</code></pre>
+</td><td class="codes" /><pre class="brush: clojure">(defn strict-eval-op-fn
+  [op]
   (ind-str
-   &quot;(function() {&quot; nl
+   "(function() {" nl
    (inc-ind-str
-    &quot;var _out = arguments[0];&quot; nl
-    &quot;for(var _i=1; _i&lt;arguments.length; _i++) {&quot; nl
+    "var _out = arguments[0];" nl
+    "for(var _i=1; _i<arguments.length; _i++) {" nl
     (inc-ind-str
-     &quot;_out = _out &quot; op &quot; arguments[_i];&quot;)
+     "_out = _out " op " arguments[_i];")
     nl
-    &quot;}&quot; nl
-    &quot;return _out;&quot;)
+    "}" nl
+    "return _out;")
    nl
-   &quot;})&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn boolean-op-fn [op stmts]
+   "})"))</pre></tr><tr><td class="docs"><p><code>lazy-eval-op-fn</code> is used for operators whose inputs must be lazily evaluated. Resulting expression   is not <code>apply</code>able.</p>
+
+<pre><code>   (or foo bar baz)  &amp;rarr; (foo || bar || baz)
+</code></pre>
+</td><td class="codes" /><pre class="brush: clojure">(defn lazy-eval-op-fn
+  [op stmts]
   (str
-   &quot;(&quot;
-   (apply str (interpose (str &quot; &quot; op &quot; &quot;) (map to-js stmts)))
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def *fn-params* #{})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn prep-symbol [s]
-  (-&gt; (str s)
-      (str/replace #&quot;-&quot; &quot;_&quot;)
-      (str/replace #&quot;\?&quot; &quot;_QM_&quot;)
-      (str/replace #&quot;#&quot; &quot;_HASH_&quot;)
-      (str/replace #&quot;!&quot; &quot;_BANG_&quot;)
-      (str/replace #&quot;/&quot; &quot;.&quot;)
-      (str/replace #&quot;\*&quot; &quot;_SPLAT_&quot;)
-      (symbol)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn to-identifier [sym]
+   "("
+   (apply str (interpose (str " " op " ") (map to-js stmts)))
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def *fn-params* #{})</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn to-identifier [sym]
   (when sym
-    (prep-symbol sym)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn to-fn [[_ arglist &amp; body-seq]]
-  (let [before-amp (take-while #(not= '&amp; %) arglist)
-        after-amp (first (drop 1 (drop-while #(not= '&amp; %) arglist)))
+    (prep-symbol sym)))</pre></tr><tr><td class="docs"><h1>Calling Functions</h1>
+</td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn call-fn [[f & args]]
+  (ind-str
+   (to-js f)
+   "("
+   (->> args
+        (map to-js)
+        (interpose ", ")
+        (apply str))
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn call-special-form [sexp]
+  (let [f (first sexp)
+        args (rest sexp)
+        jsf (((apply-able-special-forms) f) sexp)]
+    (ind-str
+     jsf
+        ".call(this"
+   (->> args
+        (map to-js)
+        (interleave (repeat ", "))
+        #_(interpose ", ")
+        (apply str))
+   ")")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn to-fn [[_ arglist & body-seq]]
+  (let [before-amp (take-while #(not= '& %) arglist)
+        after-amp (first (drop 1 (drop-while #(not= '& %) arglist)))
         params (concat before-amp [after-amp])
         before-amp (map to-identifier before-amp)
         after-amp (to-identifier after-amp)]
@@ -2636,283 +2713,211 @@ $(document).ready(function() {
             body-len (dec (count body-seq))
             before-ret (take body-len body-seq)
             after-ret (drop body-len body-seq)
-            with-return (concat before-ret [(apply str &quot;return &quot; after-ret)])]
-        (str &quot;(function(&quot;
-             (apply str (interpose &quot;, &quot; before-amp))
-             &quot;){\n&quot;
+            with-return (concat before-ret [(apply str "return " after-ret)])]
+        (str "(function("
+             (apply str (interpose ", " before-amp))
+             "){\n"
              (inc-ind-str
               (when after-amp
-                (str &quot;var &quot; after-amp
-                     &quot; = Array.prototype.slice.call(arguments, &quot; (count before-amp) &quot;);&quot; nl))
-              (apply str (interpose (str &quot;;&quot; nl) with-return)))
-             &quot;;\n}.bind(this))&quot;)))))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn call-fn [[f &amp; args]]
+                (str "var " after-amp
+                     " = Array.prototype.slice.call(arguments, " (count before-amp) ");" nl))
+              (apply str (interpose (str ";" nl) with-return)))
+             ";\n}.bind(this))")))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-def [[_ name body]]
   (ind-str
-   (to-js f)
-   &quot;(&quot;
-   (-&gt;&gt; args
-        (map to-js)
-        (interpose &quot;, &quot;)
-        (apply str))
-   &quot;)&quot;))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn call-fn-using-call [[f &amp; args]]
+   "this." (to-identifier name) " = " (to-js body) ";"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-fn [sexp]
+  (to-fn sexp))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-set [[_ name val]]
   (ind-str
-   (to-js f)
-   #_&quot;.call(this&quot;
-   &quot;(&quot;
-   (-&gt;&gt; args
-        (map to-js)
-        #_(interleave (repeat &quot;, &quot;))
-        (interpose &quot;, &quot;)
-        (apply str))
-   &quot;)&quot;))
-
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn call-special-form [sexp]
-  (let [f (first sexp)
-        args (rest sexp)
-        jsf (((apply-able-special-forms) f) sexp)]
-    (ind-str
-     jsf
-        &quot;.call(this&quot;
-   (-&gt;&gt; args
-        (map to-js)
-        (interleave (repeat &quot;, &quot;))
-        #_(interpose &quot;, &quot;)
-        (apply str))
-   &quot;)&quot;)))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn js [form]
-  (to-js form))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-def [[_ name body]]
-  (ind-str
-   &quot;this.&quot; (to-identifier name) &quot; = &quot; (to-js body) &quot;;&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-fn [sexp]
-  (to-fn sexp))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-set [[_ name val]]
-  (ind-str
-   &quot;(&quot;
+   "("
    (to-js name)
-   &quot; = &quot;
+   " = "
    (to-js val)
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-binding [[v binding]]
-  (str &quot;&quot; (to-identifier v) &quot; = &quot; (to-js binding)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-bindings [col]
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-binding [[v binding]]
+  (str  (to-identifier v) " = " (to-js binding)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-bindings [col]
   (str
-   &quot;var &quot;
-   (-&gt;&gt; (partition 2 col)
+   "var "
+   (->> (partition 2 col)
         (map handle-binding)
-        (interpose (str &quot;,&quot; nl))
+        (interpose (str "," nl))
         (apply str))
-   &quot;;&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn binding-vars [bindings]
-  (-&gt;&gt; (partition 2 bindings)
-      (map first)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-let [[_ bindings &amp; body]]
+   ";"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn binding-vars [bindings]
+  (->> (partition 2 bindings)
+      (map first)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-let [[_ bindings & body]]
   (binding [*fn-params* (concat *fn-params* (binding-vars bindings))]
     (ind-str
-     &quot;(function(){&quot; nl
+     "(function(){" nl
      (inc-ind-str
       (handle-bindings bindings) nl nl
-      (apply str (interpose (str &quot;;&quot; nl nl) (add-return (map to-js body)))))
-     &quot;;&quot;
+      (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
+     ";"
      nl nl
-     &quot;}.bind(this))()&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-defn [[_ &amp; rest]]
+     "}.bind(this))()")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-defn [[_ & rest]]
   (let [name (first rest)
         fn (drop 1 rest)]
     (ind-str
-     &quot;this.&quot; (to-identifier name) &quot; = &quot;
-     (to-fn rest)
-     )))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-aget [[_ col idx]]
+     "this." (to-identifier name) " = "
+     (to-fn rest))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-aget [[_ col idx]]
   (ind-str
-   &quot;(&quot;
+   "("
    (to-js col)
-   &quot;[&quot; (to-js idx) &quot;]&quot;
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-aset [[_ col idx val]]
+   "[" (to-js idx) "]"
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-aset [[_ col idx val]]
   (ind-str
-   &quot;(&quot;
+   "("
    (to-js col)
-   &quot;[&quot; (to-js idx) &quot;]&quot;
-   &quot; = &quot;
+   "[" (to-js idx) "]"
+   " = "
    (to-js val)
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-if [[_ pred t f]]
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-if [[_ pred t f]]
   (let [pred (to-js pred)
         t (to-js t)
         f (to-js f)]
     (str
-     &quot;(function(){&quot; nl
+     "(function(){" nl
      (inc-ind-str
-      &quot;if(&quot; pred &quot;){\n return &quot; t &quot;;\n}&quot;
+      "if(" pred "){\n return " t ";\n}"
       (when f
-        (str &quot; else {\n return &quot; f &quot;;\n}&quot;)))
+        (str " else {\n return " f ";\n}")))
      nl
-     &quot;}.bind(this))()&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-while [[_ pred &amp; body]]
+     "}.bind(this))()")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-while [[_ pred & body]]
   (ind-str
-   &quot;while(&quot;
+   "while("
    (to-js pred)
-   &quot;) {&quot;
+   ") {"
    (inc-ind-str
-    (apply str (interpose (str &quot;;&quot; nl) (map to-js body))))
+    (apply str (interpose (str ";" nl) (map to-js body))))
    nl
-   &quot;}&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-when [[_ pred &amp; rest]]
+   "}"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-when [[_ pred & rest]]
   (let [pred (to-js pred)
         rest (add-return (map to-js rest))]
     (ind-str
-     &quot;(function(){&quot; nl
+     "(function(){" nl
      (inc-ind-str
       nl
-      &quot;if(!&quot; pred &quot;) return null;&quot; nl nl
-      (apply str (interpose (str &quot;;&quot; nl) rest))
-      &quot;;&quot;)
+      "if(!" pred ") return null;" nl nl
+      (apply str (interpose (str ";" nl) rest))
+      ";")
      nl nl
-     &quot;}.bind(this))()&quot;)))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-doto [[_ &amp; body]]
+     "}.bind(this))()")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-doto [[_ & body]]
   (let [pivot (first body)
         forms (rest body)]
     (binding [*fn-params* (concat *fn-params* ['_out])]
       (str
-       &quot;(function(){&quot;
+       "(function(){"
        (apply
         str
         (interpose
-         &quot;;\n&quot;
+         ";\n"
          (add-return
           (concat
-           [(str &quot;var _out = &quot; (to-js pivot))]
+           [(str "var _out = " (to-js pivot))]
            (map to-js (map #(concat (vector (first %) '_out) (rest %)) forms))
            ['_out]))))
-       &quot;}.bind(this)())&quot;))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle--&gt;&gt; [[_ pivot &amp; forms]]
+       "}.bind(this)())"))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-->> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
         forms (map #(concat % ['_out])
                    forms)]
     (binding [*fn-params* (concat *fn-params* ['_out])]
       (str
-       &quot;(function(){&quot;
-       &quot;var _out = &quot;
+       "(function(){"
+       "var _out = "
        pivot
-       &quot;;\n&quot;
-       (apply str (map #(str &quot;_out = &quot; % &quot;;&quot; nl) (map to-js forms)))
-       &quot;return _out;&quot;
-       &quot;}.bind(this))()&quot;))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle--&gt; [[_ pivot &amp; forms]]
+       ";\n"
+       (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+       "return _out;"
+       "}.bind(this))()"))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle--> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
         forms (map #(concat [(first %)] [''_out] (rest %))
                    forms)]
     (binding [*fn-params* (concat *fn-params* ['_out])]
       (ind-str
-       &quot;(function(){&quot;
+       "(function(){"
        (inc-ind-str
-        &quot;var _out = &quot;
+        "var _out = "
         pivot
-        &quot;;\n&quot;
-        (apply str (map #(str &quot;_out = &quot; % &quot;;&quot; nl) (map to-js forms)))
-        &quot;return _out;&quot;)
-       &quot;}.bind(this))()&quot;))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-not [[_ stmt]]
-  (str &quot;(!&quot; (to-js stmt) &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-do [[_ &amp; statements]]
+        ";\n"
+        (apply str (map #(str "_out = " % ";" nl) (map to-js forms)))
+        "return _out;")
+       "}.bind(this))()"))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-not [[_ stmt]]
+  (str "(!" (to-js stmt) ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-do [[_ & statements]]
   (str
-   &quot;(function(){&quot;
+   "(function(){"
    (apply str
-          (interpose (str &quot;;&quot; nl) (add-return (map to-js statements))))
-   &quot;}.bind(this))()&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-cond [[_ &amp; conds]]
+          (interpose (str ";" nl) (add-return (map to-js statements))))
+   "}.bind(this))()"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-cond [[_ & conds]]
   (let [pairs (partition 2 conds)]
     (ind-str
-     &quot;(function(){&quot; nl
+     "(function(){" nl
      (inc-ind-str
-      (-&gt;&gt; pairs
+      (->> pairs
            (map #(str
                   (when (not (keyword? (first %)))
-                    (str &quot;if(&quot;
+                    (str "if("
                          (to-js (first %))
-                         &quot;)&quot;))
-                  &quot;{&quot; nl
+                         ")"))
+                  "{" nl
                   (inc-ind-str
-                   &quot;return &quot;
+                   "return "
                    (to-js (second %))
-                   &quot;;&quot;) nl
-                  &quot;}&quot;))
-           (interpose &quot; else &quot;)
+                   ";") nl
+                  "}"))
+           (interpose " else ")
            (apply str)))
-     &quot;}.bind(this))()&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn make-handle-op [op]
-  (fn [&amp; _]
-    (interpose-op-fn op)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn make-boolean-op [op]
-  (fn [[_ &amp; args]]
-    (boolean-op-fn op args)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-doseq [[_ bdg &amp; body]]
+     "}.bind(this))()")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn make-strict-op [op]
+  (fn [& _]
+    (strict-eval-op-fn op)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn make-lazy-op [op]
+  (fn [[_ & args]]
+    (lazy-eval-op-fn op args)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-doseq [[_ bdg & body]]
   (let [colsym (gensym)]
     (ind-str
-     &quot;(function() {&quot; nl
+     "(function() {" nl
      (inc-ind-str
-      &quot;var &quot; colsym &quot; = &quot; (to-js (second bdg)) &quot;;&quot; nl
-      &quot;for(var i=0; i &lt; &quot; colsym  &quot;.length; i++) {&quot; nl
+      "var " colsym " = " (to-js (second bdg)) ";" nl
+      "for(var i=0; i < " colsym  ".length; i++) {" nl
       (inc-ind-str
-       &quot;(function(&quot; (to-identifier (first bdg)) &quot;){&quot;
+       "(function(" (to-identifier (first bdg)) "){"
        (binding [*fn-params* (concat *fn-params* [(first bdg)])]
-         (-&gt;&gt; body
+         (->> body
               (map to-js)
-              (interpose (str &quot;;&quot; nl))
+              (interpose (str ";" nl))
               (apply str))))
-      &quot;}.bind(this))(&quot; colsym &quot;[i]);&quot;
+      "}.bind(this))(" colsym "[i]);"
       nl
-      &quot;}&quot;) nl
-      &quot;}.bind(this))()&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-instanceof [[_ obj type]]
+      "}") nl
+      "}.bind(this))()")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-instanceof [[_ obj type]]
   (ind-str
-   &quot;(&quot;
+   "("
    (to-js obj)
-   &quot; instanceof &quot;
+   " instanceof "
    (to-js type)
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-gensym [_]
-  (to-identifier (gensym)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn handle-gensym-str [_]
-  (to-js (str (gensym))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn special-forms []
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-gensym [_]
+  (to-identifier (gensym)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-gensym-str [_]
+  (to-js (str (gensym))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn special-forms []
   {'def     handle-def
    'fn      handle-fn
    'fn*     handle-fn
@@ -2925,77 +2930,96 @@ $(document).ready(function() {
    'while   handle-while
    'when    handle-when
    'doto    handle-doto
-   '-&gt;      handle--&gt;
-   '-&gt;&gt;     handle--&gt;&gt;
+   '->      handle-->
+   '->>     handle-->>
    'not     handle-not
    'do      handle-do
    'cond    handle-cond
-   '=       (make-boolean-op '==)
-   '&gt;       (make-boolean-op '&gt;)
-   '&lt;       (make-boolean-op '&lt;)
-   '&gt;=      (make-boolean-op '&gt;=)
-   '&lt;=      (make-boolean-op '&lt;=)
-   'or      (make-boolean-op '||)
-   'and     (make-boolean-op '&amp;&amp;)
+   '=       (make-lazy-op '==)
+   '>       (make-lazy-op '>)
+   '<       (make-lazy-op '<)
+   '>=      (make-lazy-op '>=)
+   '<=      (make-lazy-op '<=)
+   'or      (make-lazy-op '||)
+   'and     (make-lazy-op '&&)
    'doseq   handle-doseq
    'instanceof handle-instanceof
    'gensym handle-gensym
-   'gensym-str handle-gensym-str})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn apply-able-special-forms []
-  {'+       (make-handle-op '+)
-   '-       (make-handle-op '-)
-   '*       (make-handle-op '*)
-   '/       (make-handle-op '/)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn map-accessor? [sexp]
+   'gensym-str handle-gensym-str})</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn apply-able-special-forms []
+  {'+       (make-strict-op '+)
+   '-       (make-strict-op '-)
+   '*       (make-strict-op '*)
+   '/       (make-strict-op '/)})</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn map-accessor? [sexp]
   (and (= 2 (count sexp))
        (or (seq? sexp)
            (list? sexp))
-       (keyword? (first sexp))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn map-accessor-to-js [sexp]
+       (keyword? (first sexp))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn map-accessor-to-js [sexp]
   (let [kw (name (first sexp))
         obj (to-js (second sexp))]
-    (str &quot;(&quot; obj &quot;['&quot; kw &quot;'])&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn object-member? [[f &amp; _]]
-  (= \. (first (str f))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn object-member-call-to-js [[member obj &amp; args]]
+    (str "(" obj "['" kw "'])")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn object-member? [[f & _]]
+  (= \. (first (str f))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn object-member-call-to-js [[member obj & args]]
   (ind-str
    (to-js obj)
-   &quot;[\&quot;&quot;
-   (str/replace member #&quot;\.&quot; &quot;&quot;)
-   &quot;\&quot;]&quot;
-   &quot;(&quot;
-   (-&gt;&gt; args
+   "[\
+   (str/replace member #"\." )
+   "\"]"
+   "("
+   (->> args
         (map to-js)
-        (interpose &quot;,&quot;)
+        (interpose ",")
         (apply str))
-   &quot;)&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn chop-trailing-period [sym]
+   ")"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn chop-trailing-period [sym]
   (let [sym-str (str sym)
         len (count sym-str)]
-    (-&gt;&gt; sym-str
+    (->> sym-str
          (take (dec len))
          (apply str)
-         (symbol))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn new-object? [[obj &amp; _]]
-  (re-find #&quot;\.$&quot; (str obj)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn new-object [[obj &amp; args]]
+         (symbol))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn new-object? [[obj & _]]
+  (re-find #"\.$" (str obj)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn new-object [[obj & args]]
   (let [clazz (chop-trailing-period obj)]
-    (str &quot;(new &quot;
-         &quot;this.&quot;
+    (str "(new "
+         "this."
          clazz
-         &quot;(&quot;
-         (apply str (interpose &quot;,&quot; (map to-js args)))
-         &quot;))&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn sexp-to-js [sexp]
+         "("
+         (apply str (interpose "," (map to-js args)))
+         "))")))</pre></tr><tr><td class="docs"><p>Sexps are (most of the time) translated into javascript function calls.
+   The baseline translation works as you would expect, the first form in
+   the sexp is moved outside the opening paren, and the remaining forms
+   are passed as arguments:</p>
+
+<pre><code>   (dostuff "foo" "bar" 1  &amp;rarr; alert("foo","bar",1)
+</code></pre>
+
+<p>   However, cljs supports special case sexps to support features like
+   sugared map access and javascript object interop.</p>
+
+<pre><code>    ; object member function
+    (.foo bar "baz") &amp;rarr; foo.bar("baz")
+
+    ; object construction
+    (Foo. "bar" "baz") &amp;rarr; new Foo("bar","baz")
+
+    ; map access
+    (:foo bar) &amp;rarr; bar["foo"]
+</code></pre>
+
+<p>   It is also at this point that calls to special forms are handled by
+   their respective handlers. <code>(fn [] ('alert "hi"))</code> is
+   handled by <code>handle-fn</code>, not passed along to <code>call-fn</code> like user
+   defined functions.</p>
+
+<p>   See <code>cljs.core/special-forms</code> and <code>cljs.core/apply-able-special-forms</code>
+   for symbol to handler mappings.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn sexp-to-js
+  [sexp]
   (cond
    (= 'quote (first sexp)) (str (second sexp))
    (object-member? sexp) (object-member-call-to-js sexp)
@@ -3003,168 +3027,173 @@ $(document).ready(function() {
    ((special-forms) (first sexp)) (((special-forms) (first sexp)) sexp)
    ((apply-able-special-forms) (first sexp)) (call-special-form sexp)
    (map-accessor? sexp) (map-accessor-to-js sexp)
-   :else (call-fn-using-call sexp)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn map-to-js [m]
+   :else (call-fn sexp)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn map-to-js
+  [m]
   (ind-str
-   &quot;({&quot; nl
+   "({" nl
    (inc-ind-str
-    (-&gt;&gt; m
+    (->> m
          (map #(str \' (name (key %)) \'
-                    &quot;:&quot;
+                    ":"
                     (to-js (val %))))
-         (interpose (str &quot;,&quot; nl (ind)))
+         (interpose (str "," nl (ind)))
          (apply str)))
-   nl &quot;})&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn vec-to-js [elements]
-  (if (empty? elements) &quot;[]&quot;
+   nl "})"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn vec-to-js [elements]
+  (if (empty? elements) "[]"
       (ind-str
-       &quot;[&quot; nl
+       "[" nl
        (inc-ind-str
-        (-&gt;&gt; elements
+        (->> elements
              (map to-js)
-             (interpose &quot;,\n&quot;)
+             (interpose ",\n")
              (apply str)))
-       nl &quot;]&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn scope-symbol [sym]
+       nl "]")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn scope-symbol [sym]
   (if (seq? sym)
     sym
-    (let [before-dot (symbol (second (re-find #&quot;^([^.]*)&quot; (str sym))))
+    (let [before-dot (symbol (second (re-find #"^([^.]*)" (str sym))))
           sym (prep-symbol sym)]
       (if (some #(= before-dot %) *fn-params*)
         sym
-        (str &quot;this.&quot; sym)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn symbol-to-js [sym]
+        (str "this." sym)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn symbol-to-js [sym]
   (cond
    ((apply-able-special-forms) sym) (((apply-able-special-forms) sym))
-   :else (scope-symbol sym)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn boolean? [o]
-  (= java.lang.Boolean (type true)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn str-to-js [s]
-  (-&gt; s
-      (str/replace #&quot;\n&quot; &quot;\\\\n&quot;)
-      (str/replace #&quot;\&quot;&quot; &quot;\\\\\&quot;&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn to-js [element]
+   :else (scope-symbol sym)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn boolean? [o]
+  (= java.lang.Boolean (type true)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn str-to-js [s]
+  (-> s
+      (str/replace #"\n" "\\\\n")
+      (str/replace #"\ "\\\\\)))</pre></tr><tr><td class="docs"><p>Top-level conversion routine. The form passed to <code>to-js</code> is converted to javascript based on it's type.  Valid input types are lists, vectors, symbols, keywords, strings, numbers, or booleans. Throws an exeption if the passed form is not a valid input type.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn to-js
+  [form]
   (cond
-   (or (seq? element) (list? element)) (sexp-to-js element)
-   (map? element) (map-to-js element)
-   (vector? element) (vec-to-js element)
-   (symbol? element) (symbol-to-js element)
-   (keyword? element) (to-js (name element))
-   (string? element) (str \&quot; (str-to-js element) \&quot;)
-   (number? element) element
-   (boolean? element) element
-   (nil? element) &quot;&quot;
-   :else (throw (Exception. (str &quot;Don't know how to handle &quot; element &quot; of type &quot; (:type element))))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def default-includes ['Array])</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn use-to-js [u]
-  (-&gt;&gt; u
+   (or (seq? form)
+       (list? form))  (sexp-to-js form)
+   (map? form)        (map-to-js form)
+   (vector? form)     (vec-to-js form)
+   (symbol? form)     (symbol-to-js form)
+   (keyword? form)    (to-js (name form))
+   (string? form)     (str \" (str-to-js form) \")
+   (number? form)     form
+   (boolean? form)    form
+   (nil? form)        ""
+   :else              (throw
+                       (Exception.
+                        (str
+                         "Don't know how to handle "
+                         form
+                         " of type "
+                         (:type form))))))</pre></tr><tr><td class="docs"><h2>Namespace Handling</h2>
+</td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn use-to-js [u]
+  (->> u
        (drop 1)
-       (map #(str &quot;for(&quot;
-                      &quot;var prop in &quot; (to-identifier %)
-                      &quot;)&quot;
-                      &quot;{ this[prop] = &quot; (to-identifier %) &quot;[prop] };&quot; nl nl))
-       (apply str)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn seq-require-to-js [col]
-  (let [name (first col)
-        as (nth col 2)]
-    (str
-     &quot;this.&quot; (to-identifier as) &quot; = &quot; (to-identifier name) &quot;;&quot; nl nl)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn sym-require-to-js [sym]
-  (str
-   &quot;this.&quot; (to-identifier sym) &quot; = &quot; (to-identifier sym) &quot;;&quot; nl nl))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn require-to-js [r]
-  (-&gt;&gt; r
+       (map #(str
+              "for("
+              "var prop in " (to-identifier %)
+              ")"
+              "{ this[prop] = " (to-identifier %) "[prop] };" nl nl))
+       (apply str)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn seq-require-to-js
+  "Handles `:require`s in the form of `[foo :as bar]`."
+  [[name _ as]]
+  (str "this." (to-identifier as) " = " (to-identifier name) ";" nl nl))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn sym-require-to-js [sym]
+  (str "this." (to-identifier sym) " = " (to-identifier sym) ";" nl nl))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn require-to-js [r]
+  (->> r
        (drop 1)
        (map #(cond
               (or (vector? %) (seq? %)) (seq-require-to-js %)
               :else (sym-require-to-js %)))
-       (apply str)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn import-to-js [r]
-  (require-to-js r))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn init-ns-object [name]
+       (apply str)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn import-to-js [r]
+  (require-to-js r))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn init-ns-object [name]
   (when name
-    (let [parts (str/split (str name) #&quot;\.&quot;)
+    (let [parts (str/split (str name) #"\.")
           num (count parts)]
-      (-&gt;&gt; (map #(-&gt;&gt; parts
+      (->> (map #(->> parts
                       (take (inc %))
-                      (interpose &quot;.&quot;)
+                      (interpose ".")
                       (apply str))
                 (range num))
-           (map #(str (when (not (re-find #&quot;\.&quot; %)) &quot;var &quot;) (to-identifier %) &quot; = &quot; (to-identifier %) &quot; || {};&quot; nl))))))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn wrap-with-ns [name imports &amp; body]
+           (map #(str
+                  (when (not (re-find #"\." %))
+                    "var ")
+                  (to-identifier %)
+                  " = "
+                  (to-identifier %)
+                  " || {};"
+                  nl))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def default-includes ['Array])</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn wrap-with-ns [name imports & body]
   (ind-str
    (apply str (init-ns-object name))
-   &quot;(function() {&quot; nl nl
+   "(function() {" nl nl
    (inc-ind-str
-    (apply str (interpose &quot;;\n&quot; (map #(str &quot;this.&quot; % &quot; = &quot; %) default-includes)))
-    &quot;;\n\n&quot;
+    (apply str (interpose ";\n" (map #(str "this." % " = " %) default-includes)))
+    ";\n\n"
     (use-to-js '(:use cljs.core))
-    (apply str (interpose &quot;;\n\n&quot; (map use-to-js (filter #(= :use (first %)) imports))))
-    (apply str (interpose &quot;;\n\n&quot; (map require-to-js (filter #(= :require (first %)) imports))))
-    (apply str (interpose &quot;;\n\n&quot; (map import-to-js (filter #(= :import (first %)) imports))))
-    (apply str (interpose (str &quot;;&quot; nl nl) (add-return (map to-js body)))))
+    (->> imports
+         (filter #(= :use (first %)))
+         (map use-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> imports
+         (filter #(= :require (first %)))
+         (map require-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> imports
+         (filter #(= :import (first %)))
+         (map import-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> body
+         (map to-js)
+         (add-return)
+         (interpose (str ";" nl nl))
+         (apply str)))
    nl nl
-   &quot;}).call(&quot; (to-identifier name) &quot;);&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def *core-lib*
+   "}).call(" (to-identifier name) ");"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def *core-lib*
   (str
-   &quot;if(!Function.prototype.bind){&quot;
-   &quot;Function.prototype.bind = function(scope) {var _function = this;return function() { return _function.apply(scope, arguments); } }&quot;
-   &quot;}&quot;
-   (wrap-with-ns &quot;cljs.core&quot; '[(:require _)]
-    
+   "if(!Function.prototype.bind){"
+   "Function.prototype.bind = function(scope) {var _function = this;return function() { return _function.apply(scope, arguments); } }"
+   "}"
+   (wrap-with-ns "cljs.core" '[(:require _)]
      '(defn count [col]
         (if col
           'col.length
           0))
-
      '(defn first [col]
         (when col
           (aget col 0)))
-
      '(defn second [col]
         (nth col 1))
-
      '(defn rest [col]
         (when col
           (.call Array.prototype.slice col 1)))
-
      '(defn inc [n]
         (+ n 1))
-
      '(defn dec [n]
         (- n 1))
-
      '(defn nth [col n]
-        (when (and col (&gt; col.length n))
+        (when (and col (> col.length n))
           (aget col n)))
-
      '(defn last [col]
         (aget col (dec col.length)))
-
      '(defn reduce [f initial col]
         (let [i (if col initial 'null)
               c (if col col initial)]
           (if i
             (.reduce _ c f i)
             (.reduce _ c f))))
-
      '(defn map [f initial col]
         (let [i (if col initial 'null)
               c (if col col initial)]
@@ -3172,80 +3201,64 @@ $(document).ready(function() {
             (if i
               (.map _ c f i)
               (.map _ c f)))))
-
-     '(defn str [&amp; args]
-        (reduce (fn [col el] (+ col el)) &quot;&quot; (filter #(.identity _ %) args)))
-
-     '(defn println [&amp; args]
+     '(defn str [& args]
+        (reduce (fn [col el] (+ col el))  (filter #(.identity _ %) args)))
+     '(defn println [& args]
         (.log 'console args))
-
      '(defn apply [f args]
         (.apply f 'this args))
-
      '(defn filter [f col]
         (if col
           (.filter _ col f)))
-
      '(defn concat [cola colb]
         (let [out []]
           (out.push.apply out cola)
           (out.push.apply out colb)
           out))
-
      '(defn take [n col]
         (.slice col 0 n))
-
      '(defn drop [n col]
         (when col
           (.slice col n)))
-
      '(defn partition [n col]
         (let [f (fn [out col]
                   (if (= 0 (count col))
                     out
                     (f (concat out [(take n col)]) (drop n col))))]
           (f [] col)))
-
-     '(defn assoc [obj &amp; rest]
+     '(defn assoc [obj & rest]
         (let [pairs (partition 2 rest)]
           (doseq [p pairs]
             (aset obj (first p) (nth p 1)))
           obj))
-
-     '(defn conj [col &amp; rest]
+     '(defn conj [col & rest]
         (doseq [r rest]
           (.push col r))
         col)
-
      '(defn array? [o]
         (and o
              (.isArray _ o)))
-
      '(defn object? [o]
         (and o
              (not (array? o))
              (not (string? o))))
-
      '(defn string? [o]
         (.isString _ o))
-
      '(defn element? [o]
         (and o
              (or (.isElement _ o)
                  (.isElement _ (first o)))))
-
-     '(defn merge [&amp; objs]
+     '(defn merge [& objs]
         (let [o {}]
           (map #(.extend _ o %) objs)
           o))
-
      '(defn interpose [o col]
         (when col
           (let [out []
                 idx 0
                 len (count col)
                 declen (dec len)]
-            (while (&lt; idx len)
+            (while (< idx len)
               (if (= idx declen)
                 (.push out (aget col idx))
                 (do
@@ -3253,18 +3266,14 @@ $(document).ready(function() {
                   (.push out o)))
               (set! idx (inc idx)))
             out)))
-
      '(defn distinct [col]
         (.uniq '_ col))
-
      '(defn identity [arg]
         (if arg
-          (.identity '_ arg))))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn spit-cljs-core [path]
-  (spit path *core-lib*))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn compile-cljs-reader [reader]
+          (.identity '_ arg))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn spit-cljs-core [path]
+  (spit path *core-lib*))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-reader [reader]
   (let [rdr (clojure.lang.LineNumberingPushbackReader. reader)
         forms (take-while #(not (nil? %)) (repeatedly (fn [] (read rdr false nil))))
         ns-decl (when (= 'ns (first (first forms)))
@@ -3274,96 +3283,78 @@ $(document).ready(function() {
     (apply wrap-with-ns
            (second ns-decl)
            imports
-           forms)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn compile-cljs-string [str]
-  (compile-cljs-reader (java.io.StringReader. str)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn compile-cljs-file [path]
-  (compile-cljs-reader (java.io.FileReader. path)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.rhino" name="cljs.rhino"><h1 class="project-name">cljs.rhino</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Used for testing / debugging of generated javascript.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns cljs.rhino
+           forms)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-string [str]
+  (compile-cljs-reader (java.io.StringReader. str)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-file [path]
+  (compile-cljs-reader (java.io.FileReader. path)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.rhino" name="cljs.rhino"><h1 class="project-name">cljs.rhino</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Used for testing / debugging of generated javascript.</p>
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.rhino
   (:import (org.mozilla.javascript Context
-                                   Scriptable)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn slurp-resource
+                                   Scriptable)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn slurp-resource
   [resource-name]
-  (-&gt; (.getContextClassLoader (Thread/currentThread))
+  (-> (.getContextClassLoader (Thread/currentThread))
       (.getResourceAsStream resource-name)
       (java.io.InputStreamReader.)
-      (slurp)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def underscore-js-source (slurp-resource &quot;underscore.js&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn eval-js [snippet]
+      (slurp)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def underscore-js-source (slurp-resource "underscore.js"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn eval-js [snippet]
   (let [cx (Context/enter)
         sc (.initStandardObjects cx)]
     (try
-      (.evaluateString cx sc &quot;var console = {}; console.log = function(){};&quot; &quot;&lt;cmd&gt;&quot; 1 nil)
-      (.evaluateString cx sc underscore-js-source &quot;underscore.js&quot; 1 nil)
-      (.evaluateString cx sc snippet &quot;&lt;cmd&gt;&quot; 1 nil)
-      (finally (Context/exit)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn objtomap [obj]
+      (.evaluateString cx sc "var console = {}; console.log = function(){};" "<cmd>" 1 nil)
+      (.evaluateString cx sc underscore-js-source "underscore.js" 1 nil)
+      (.evaluateString cx sc snippet "<cmd>" 1 nil)
+      (finally (Context/exit)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn objtomap [obj]
   (let [obj-ids (seq (.getIds obj))
         vals (map #(.get obj % nil) obj-ids)
         keys (map keyword obj-ids)]
-    (apply hash-map (interleave keys vals))))
+    (apply hash-map (interleave keys vals))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.stitch" name="cljs.stitch"><h1 class="project-name">cljs.stitch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Stitch is responsible for collecting disparate cljs source files into
+   a single js library.  Js libs are specified in your project.clj file
+   like so:</p>
 
-#_(objtomap (eval-js (slurp &quot;./resources/scope/test1.js&quot;)))
-
-#_(eval-js (slurp &quot;./resources/scope/test1.js&quot;))
-
-</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.stitch" name="cljs.stitch"><h1 class="project-name">cljs.stitch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Stitch is responsible for collecting disparate cljs source files into
-a single js library.  Js libs are specified in your project.clj file
-like so:</p>
-
-<pre><code>(defproject foo "1.0
+<pre><code>   (defproject foo "1.0"
+     :dependencies ...
+     :cljs {:source-path "./src/cljs"
+            :output-path "./resources/public/js"
+            :libs [{:name :out-name
+                    :sources [:one
+                              :subdir.two]}]})
 </code></pre>
-</td><td class="codes"><pre class="brush: clojure">(ns cljs.stitch
-         :dependencies ...
-         :cljs {:source-path \&quot;./src/cljs\&quot;
-                :output-path \&quot;./resources/public/js\&quot;
-                :libs [{:name :out-name
-                        :sources [:one
-                                  :subdir.two]}]})
 
-   Stich will stich together `src/cljs/one.cljs` and `src/cljs/subdir/two.cljs`
-   into `resources/public/js/out-name.js`.
-&quot;
+<p>   Stich will stich together <code>src/cljs/one.cljs</code> and <code>src/cljs/subdir/two.cljs</code>
+   into <code>resources/public/js/out-name.js</code>.</p>
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.stitch
   (:use [clojure.contrib.string :only (as-str)]
         [clojure.contrib.find-namespaces :only (read-ns-decl)]
         [clojure.contrib.seq :only (find-first)]
         [clojure.pprint :only (pprint)])
   (:require [clojure.string :as str]
-            [cljs.core :as core]))</pre></td></tr><tr><td class="docs"><p>Pulls the :cljs map from the specified <code>project-clj</code>.</p>
-</td><td class="codes"><pre class="brush: clojure">
-(defn cljs-opts
+            [cljs.core :as core]))</pre></tr><tr><td class="docs"><p>Pulls the :cljs map from the specified <code>project-clj</code>.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-opts
   [project-clj]
   (try
     (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-clj))]
-      (-&gt;&gt; (read rdr)
+      (->> (read rdr)
            (drop 5)
            (apply hash-map)
            :cljs))
     (catch Exception e
-      (println (str &quot;Problem reading project at &quot; project-clj)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn ns-to-file [source-root ns-sym]
+      (println (str "Problem reading project at " project-clj)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn ns-to-file [source-root ns-sym]
   (str
    source-root
-   &quot;/&quot;
-   (str/replace (str ns-sym) #&quot;\.&quot; &quot;/&quot;)
-   &quot;.cljs&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn ns-decl [file]
+   "/"
+   (str/replace (str ns-sym) #"\." "/")
+   ".cljs"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn ns-decl [file]
   (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
                    (java.io.FileReader. file))]
     (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
-      ns-decl)))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn includes [ns-decl]
-  (-&gt;&gt; ns-decl
+      ns-decl)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn includes [ns-decl]
+  (->> ns-decl
        (filter #(or (seq? %) (vector? %)))
        (filter #(or (= :use (first %))
                     (= :require (first %))))
@@ -3371,81 +3362,66 @@ like so:</p>
        (reduce concat)
        (map #(if (or (seq? %) (vector? %))
                (first %)
-               %))))
-
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn find-dependencies [source-root source-file]
+               %))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn find-dependencies [source-root source-file]
   (let [ns-decl (ns-decl source-file)
         includes (distinct (includes ns-decl))]
     (distinct
      (flatten
       (map #(concat (find-dependencies source-root (ns-to-file source-root %)) [%])
-           includes)))))
-</pre></td></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
-</td><td class="codes"><pre class="brush: clojure">
-(defn stitch-lib
+           includes)))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib
   [source-path output-path name]
-  (println &quot;Stitching&quot; name)
-  (println &quot;  &quot; &quot;input:&quot;)
-
-  (println &quot;  &quot; &quot;output:&quot;)
-  (println &quot;    &quot;  (str output-path &quot;/&quot; name &quot;.js&quot;))
-
-  (-&gt;&gt; (concat (find-dependencies source-path (ns-to-file source-path name))
+  (println "Stitching" name)
+  (println "  " "input:")
+  (println "  " "output:")
+  (println "    "  (str output-path "/" name ".js"))
+  (->> (concat (find-dependencies source-path (ns-to-file source-path name))
                [name])
        (#(do (println %) %))
        (map #(ns-to-file source-path %))
        (map core/compile-cljs-file)
-       (interpose &quot;\n\n\n\n&quot;)
+       (interpose "\n\n\n\n")
        (apply str)
-       (str core/*core-lib* &quot;\n\n\n\n&quot;)
-       (spit (str output-path &quot;/&quot; (str name) &quot;.js&quot;))))</pre></td></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
-</td><td class="codes"><pre class="brush: clojure">
-(defn stitch-lib-with-sources
+       (str core/*core-lib* "\n\n\n\n")
+       (spit (str output-path "/" (str name) ".js"))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib-with-sources
   [source-path output-path name sources]
-  (let [cljs-source-paths (-&gt;&gt; sources
+  (let [cljs-source-paths (->> sources
                                (map str)
-                               (map #(str/replace % #&quot;\.&quot; &quot;/&quot;))
-                               (map #(str source-path &quot;/&quot; % &quot;.cljs&quot;)))]
-    (println &quot;Stitching&quot; name)
-    (println &quot;  &quot; &quot;input:&quot;)
-
+                               (map #(str/replace % #"\." "/"))
+                               (map #(str source-path "/" % ".cljs")))]
+    (println "Stitching" name)
+    (println "  " "input:")
     (doseq [sp cljs-source-paths]
-      (println &quot;    &quot; sp)
+      (println "    " sp)
       (when (not (.exists (java.io.File. sp)))
         (throw (Exception.
-                (str &quot;Couldn't find source path &quot;
+                (str "Couldn't find source path "
                      sp
-                     &quot; for library &quot;
+                     " for library "
                      name)))))
-
-    (println &quot;  &quot; &quot;output:&quot;)
-    (println &quot;    &quot;  (str output-path &quot;/&quot; name &quot;.js&quot;))
-
-    (-&gt;&gt; cljs-source-paths
+    (println "  " "output:")
+    (println "    "  (str output-path "/" name ".js"))
+    (->> cljs-source-paths
          (map core/compile-cljs-file)
-         (interpose &quot;\n\n\n\n&quot;)
+         (interpose "\n\n\n\n")
          (apply str)
-         (str core/*core-lib* &quot;\n\n\n\n&quot;)
-         (spit (str output-path &quot;/&quot; (str name) &quot;.js&quot;)))))
-</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn stitch-libs [output-path source-path libs]
+         (str core/*core-lib* "\n\n\n\n")
+         (spit (str output-path "/" (str name) ".js")))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn stitch-libs [output-path source-path libs]
   (doseq [lib libs]
     (if (map? lib)
       (stitch-lib-with-sources source-path output-path (as-str (:name lib)) (:sources lib))
-      (stitch-lib source-path output-path (as-str lib)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn prefix-path [prefix path]
+      (stitch-lib source-path output-path (as-str lib)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn prefix-path [prefix path]
   (str
    (when prefix
      prefix)
    (when prefix
-     &quot;/&quot;)
-   path))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn stitch-project [project-clj-path &amp; opts]
+     "/")
+   path))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn stitch-project [project-clj-path & opts]
   (time
    (let [opts (apply hash-map opts)
          copts (cljs-opts project-clj-path)
@@ -3456,100 +3432,77 @@ like so:</p>
                       (:project-root opts)
                       (:source-path copts))
          libs (:libs copts)]
-     (println &quot;Stitching libs with&quot;)
+     (println "Stitching libs with")
      (pprint copts)
      (println)
-     (stitch-libs output-path source-path libs))))
-
-
-#_(find-dependencies &quot;./resources/testproj/src/cljs&quot;
-                   &quot;./resources/testproj/src/cljs/ns/main.cljs&quot;)
-
-#_(stitch-project &quot;./resources/testproj/project.clj&quot; :project-root &quot;./resources/testproj&quot;)</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.watch" name="cljs.watch"><h1 class="project-name">cljs.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Utilities for automatically compiing changed .cjls files.</h1>
-</td><td class="codes"><pre class="brush: clojure">(ns cljs.watch
+     (stitch-libs output-path source-path libs))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.watch" name="cljs.watch"><h1 class="project-name">cljs.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Utilities for automatically compiing changed .cjls files.</h1>
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.watch
   (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
-            [cljs.stitch :as st]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn file [file-or-path]
+            [cljs.stitch :as st]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn file [file-or-path]
   (if (string? file-or-path)
     (java.io.File. file-or-path)
-    file-or-path))</pre></td></tr><tr><td class="docs"><p>Returns a seq of java.io.File objects of all .cljs files
-found in <code>file-or-path</code> including subdirs.</p>
-</td><td class="codes"><pre class="brush: clojure">
-(defn find-cljs-files
+    file-or-path))</pre></tr><tr><td class="docs"><p>Returns a seq of java.io.File objects of all .cljs files
+   found in <code>file-or-path</code> including subdirs.</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn find-cljs-files
   [file-or-path]
   (let [f (file file-or-path)]
-    (-&gt;&gt; (file-seq f)
-         (filter #(.endsWith (.getName %) &quot;.cljs&quot;))
-         (filter #(not (re-find #&quot;\.#&quot; (.getName %)))))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn last-mod [file]
-  (.lastModified file))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn has-file-changed? [f last-change]
+    (->> (file-seq f)
+         (filter #(.endsWith (.getName %) ".cljs"))
+         (filter #(not (re-find #"\.#" (.getName %)))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn last-mod [file]
+  (.lastModified file))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn has-file-changed? [f last-change]
   (cond
    (nil? last-change) true
-   (&gt; (last-mod f) last-change) true
-   :else false))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn last-mod-map [f-seq]
+   (> (last-mod f) last-change) true
+   :else false))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn last-mod-map [f-seq]
   (reduce #(assoc %1 %2 (last-mod %2))
           {}
-          f-seq))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def *mod-map* (atom {}))
-(def *handlers* (atom []))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn hook-change [f]
-  (swap! *handlers* (fn [hs] (conj hs f))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn clear-hooks []
-  (reset! *handlers* []))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn run-hooks [changed-files]
+          f-seq))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def *mod-map* (atom {}))
+(def *handlers* (atom []))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn hook-change [f]
+  (swap! *handlers* (fn [hs] (conj hs f))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn clear-hooks []
+  (reset! *handlers* []))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn run-hooks [changed-files]
   (doseq [f @*handlers*]
-    (f changed-files)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn changed-files! [f-seq]
+    (f changed-files)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn changed-files! [f-seq]
   (let [changed-files (doall (filter #(has-file-changed? % (@*mod-map* %)) f-seq))]
     (reset! *mod-map* (last-mod-map f-seq))
-    changed-files))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn check-and-run! [path]
-  (-&gt; (find-cljs-files path)
+    changed-files))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn check-and-run! [path]
+  (-> (find-cljs-files path)
       (changed-files!)
-      (run-hooks)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn spit-equiv-js [cljs-file js-out-dir-file]
+      (run-hooks)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn spit-equiv-js [cljs-file js-out-dir-file]
   (let [cljs-path (.getAbsolutePath cljs-file)
         name (.getName cljs-file)
-        base (str/replace name #&quot;\.cljs$&quot; &quot;&quot;)
-        js-path (str (.getAbsolutePath js-out-dir-file) &quot;/&quot; base &quot;.js&quot;)]
-    (spit js-path (compile-cljs-file cljs-path))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn hook-compile-out [out-dir]
+        base (str/replace name #"\.cljs$" )
+        js-path (str (.getAbsolutePath js-out-dir-file) "/" base ".js")]
+    (spit js-path (compile-cljs-file cljs-path))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn hook-compile-out [out-dir]
   (hook-change
    (fn [cljss]
-     (when (empty? cljss) #_(println &quot;Nothing to compile&quot;))
+     (when (empty? cljss) #_(println "Nothing to compile"))
      (doseq [cljs cljss]
        (try
-         (println &quot;Compiling&quot; (.getName cljs) &quot;to&quot; out-dir)
+         (println "Compiling" (.getName cljs) "to" out-dir)
          (spit-equiv-js cljs (file out-dir))
-         (catch Exception e (println &quot;Problem compiling &quot; (.getAbsolutePath cljs) &quot;: &quot; e)))))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn hook-re-stitch [project-clj-path]
+         (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn hook-re-stitch [project-clj-path]
   (hook-change
    (fn [cljss]
      (if (not (empty? cljss))
-       (st/stitch-project project-clj-path)))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(def *run* (atom true))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn stop-watch []
-  (reset! *run* false))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn start-watch [watch-path js-out-path]
+       (st/stitch-project project-clj-path)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def *run* (atom true))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn stop-watch []
+  (reset! *run* false))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn start-watch [watch-path js-out-path]
   (clear-hooks)
   (reset! *run* true)
   (hook-compile-out js-out-path)
@@ -3557,16 +3510,15 @@ found in <code>file-or-path</code> including subdirs.</p>
            (fn []
              (while @*run*
                (check-and-run! watch-path)
-               (Thread/sleep 500))))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn start-watch-project [project-clj-path]
+               (Thread/sleep 500))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn start-watch-project [project-clj-path]
   (let [opts (st/cljs-opts project-clj-path)]
     (when (not opts)
-      (throw (Exception. (str &quot;Couldn't find cljs options in &quot; project-clj-path))))
+      (throw (Exception. (str "Couldn't find cljs options in " project-clj-path))))
     (clear-hooks)
     (reset! *run* true)
     (hook-re-stitch project-clj-path)
-    (println &quot;Watching&quot; (:source-path opts) &quot;for changes.&quot;)
+    (println "Watching" (:source-path opts) "for changes.")
     (st/stitch-project project-clj-path)
     (.start (Thread.
              (fn []
@@ -3574,61 +3526,182 @@ found in <code>file-or-path</code> including subdirs.</p>
                  (try
                    (check-and-run! (:source-path opts))
                    (Thread/sleep 500)
-                   (catch Exception e (println e)))))))))
-</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
+                   (catch Exception e (println e)))))))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
 
-<p>add to your project.clj (ignore periods):</p>
+<p>   add to your project.clj (ignore periods):</p>
 
-<pre><code>(defproject my-project "1.0" .
-  :cljs {:source-path "src/cljs" .
-         :output-path "resources/public/js"})
+<pre><code>   (defproject my-project "1.0" .
+     :cljs {:source-path "src/cljs" .
+            :output-path "resources/public/js"})
 </code></pre>
 
-<p><code>src/cljs</code> and <code>resources/public/js</code> are the defaults.</p>
+<p>   <code>src/cljs</code> and <code>resources/public/js</code> are the defaults.</p>
 
-<p>Then run <code>lein cljs-watch</code> from your project's root dir
-to enable automatic compilation of <code>.cljs</code> files when
-they are changed.</p>
+<p>   Then run <code>lein cljs-watch</code> from your project's root dir
+   to enable automatic compilation of <code>.cljs</code> files when
+   they are changed.</p>
 
-<p>Conversely, you can override these values from the command
-line like so:
-<code>$ lein cljs-watch :source-path ./path/to/cljs :output-path ./path/to/output/</code>.</p>
-</td><td class="codes"><pre class="brush: clojure">(ns leiningen.cljs-watch
+<p>   Conversely, you can override these values from the command
+   line like so:
+   <code>$ lein cljs-watch :source-path ./path/to/cljs :output-path ./path/to/output/</code>.</p>
+</td><td class="codes" /><pre class="brush: clojure">(ns leiningen.cljs-watch
   (:use [cljs.watch])
-  (:require [clojure.java.io :as io]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs"><p>For REPL use</p>
-</td><td class="codes"><pre class="brush: clojure">(defn parse-cljs-opts
+  (:require [clojure.java.io :as io]))</pre></tr><tr><td class="docs"><p>For REPL use</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn parse-cljs-opts
   ([project-path]
      (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-path))]
        (:cljs (apply hash-map (drop 3 (read rdr))))))
-  ([] (parse-cljs-opts &quot;project.clj&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure"></pre></td></tr><tr><td class="docs"><p>Stolen from marginalia:</p>
-</td><td class="codes"><pre class="brush: clojure">(defn ls
+  ([] (parse-cljs-opts "project.clj")))</pre></tr><tr><td class="docs"><p>Stolen from marginalia:</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn ls
   [path]
   (let [file (java.io.File. path)]
     (if (.isDirectory file)
       (seq (.list file))
       (when (.exists file)
-        [path]))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn mkdir [path]
-  (.mkdirs (io/file path)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn ensure-directory!
+        [path]))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn mkdir [path]
+  (.mkdirs (io/file path)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn ensure-directory!
   [path]
   (when-not (ls path)
-    (mkdir path)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">
-(defn cljs-watch [project &amp; args]
-  (let [cljs-opts (merge {:source-path &quot;src/cljs&quot;
-                          :output-path &quot;resources/public/js&quot;}
+    (mkdir path)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-watch [project & args]
+  (let [cljs-opts (merge {:source-path "src/cljs"
+                          :output-path "resources/public/js"}
                          (:cljs project)
                          (apply hash-map args))
         src-path (:source-path cljs-opts)
         out-path (:output-path cljs-opts)]
     (when-not (ls out-path)
-      (println &quot;Output directory&quot; out-path &quot;not found, creating.&quot;)
+      (println "Output directory" out-path "not found, creating.")
       (ensure-directory! out-path))
-    (println &quot;Watching&quot; src-path &quot;for changes...&quot;)
-    (start-watch src-path out-path)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.stitch">cljs.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+    (println "Watching" src-path "for changes...")
+    (start-watch src-path out-path)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.core" name="cljs.test.core"><h1 class="project-name">cljs.test.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.core
+  (:use [cljs.core] :reload)
+  (:use [clojure.test])
+  (:require [cljs.rhino :as rhino])
+  (:import (org.mozilla.javascript Context
+                                   Scriptable
+                                   NativeArray
+                                   NativeObject)))</pre></tr><tr><td class="docs"><h2>Test helpers</h2>
+</td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn narr-to-seq [narr]
+  (->> narr
+    (.getIds)
+    (seq)
+    (map #(.get narr % nil))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn obj-to-map [obj]
+  (let [obj-ids (seq (.getIds obj))
+        vals (map #(.get obj % nil) obj-ids)
+        keys (map keyword obj-ids)]
+    (apply hash-map (interleave keys vals))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn eval-js [& stmt-or-stmts]
+  (let [cmd (str
+             *core-lib*
+             "\n\n"
+             (apply wrap-with-ns "test" []
+                    stmt-or-stmts))
+        res (rhino/eval-js cmd)]
+    (cond
+     (= NativeArray (class res)) (narr-to-seq res)
+     (= NativeObject (class res)) (obj-to-map res)
+     :else res)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core
+  (is (rhino/eval-js *core-lib*)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-var-definition
+  (is (= "hello"
+         (eval-js '(def x "hello")
+                  'x))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-function-definition
+  (is (= "hello"
+         (eval-js '(defn x [] "hello")
+                  '(x)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-hash-definition
+  (is (= "hello"
+         (eval-js '(#(str "he" "llo"))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-varargs
+  (is (= [2 3 4])
+      (eval-js '(defn x [& args]
+                  (map (fn [i] (+ i 1)) args))
+                    '(x 1 2 3))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-varargs-2
+  (is (= 10
+         (eval-js '(defn x [a b & args]
+                     (+ a b
+                        (reduce (fn [col i] (+ col i)) args)))
+                       '(x 1 2 3 4)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-let
+  (is (= 8 (eval-js '(let [x 5
+                           y 3]
+                       (+ x y))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-keyword-access
+  (is (= 10 (eval-js '(:foo {:foo 10})))))</pre></tr><tr><td class="docs"><p>Basic Elements</p>
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-string
+  (is (= "foo" (eval-js '"foo"))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-number
+  (is (= 10 (eval-js '10)))
+  (is (= 10.0 (eval-js '10.0))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-identifier-cleaning
+  (is (eval-js '(def one-two 12)))
+  (is (eval-js '(def one? 1)))
+  (is (eval-js '(def one! 1)))
+  (is (eval-js '(def *one* 1))))</pre></tr><tr><td class="docs"><p>Special Forms</p>
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-def
+  (is (= 10 (eval-js '(def x 10) 'x))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-fn
+  (is (= 10 (eval-js '((fn [] 10))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-set!
+  (is (= 10 (eval-js '(def x 5)
+                     '(set! x 10)
+                     'x))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test--
+  (is (= 0 (eval-js '(- 3 2 1)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-->
+  (is (= "foobarbaz" (eval-js '(-> "foo"
+                                   (str "bar")
+                                   (str "baz"))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-->>
+  (is (= "bazbarfoo" (eval-js '(->> "foo"
+                                    (str "bar")
+                                    (str "baz"))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-doto
+  (is (= [1 2 3] (eval-js '(doto []
+                             (.push 1)
+                             (.push 2)
+                             (.push 3))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-when
+  (is (eval-js '(when (> 2 1)
+                  true))))</pre></tr><tr><td class="docs"><p>Scoping</p>
+</td><td class="codes" /></tr><tr><td class="docs"><p>Core Lib</p>
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-count
+  (is (= 3 (eval-js '(count [1 2 3])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-first
+  (is (= 1 (eval-js '(first [1 2 3])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-rest
+  (is (= [2 3] (eval-js '(rest [1 2 3])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-reduce
+  (is (= 6 (eval-js '(reduce #(+ %1 %2) [1 2 3])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-concat
+  (is (= [1 2 3 4] (eval-js '(concat [1 2] [3 4])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-take
+  (is (= [1 2] (eval-js '(take 2 [1 2 3 4])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-drop
+  (is (= [3 4] (eval-js '(drop 2 [1 2 3 4])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-partition
+  (is (= [3 4] (eval-js '(nth (partition 2 [1 2 3 4]) 1)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-core-assoc
+  (is (= "foo" (:bar (eval-js '(assoc {} :bar "foo"))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-interpose
+  (is (= [1 0 2 0 3] (eval-js '(interpose 0 [1 2 3])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-distinct
+  (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.stitch" name="cljs.test.stitch"><h1 class="project-name">cljs.test.stitch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.stitch
+  (:use [cljs.stitch]))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.watch" name="cljs.test.watch"><h1 class="project-name">cljs.test.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.watch
+  (:use [cljs.watch] :reload)
+  (:use [clojure.test]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-find-cljs-files
+  (is (empty? (filter #(re-find #"\.#" (.getName %))
+                      (find-cljs-files "./resources")))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.stitch">cljs.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li><li class="floating-toc-li" id="floating-toc_cljs.test.stitch">cljs.test.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.test.watch">cljs.test.watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>
