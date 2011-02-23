@@ -1,6 +1,34 @@
 (ns cljs.core
+  "**cljs**"
   (:require [clojure.string :as str]))
 
+;; Overall, cljs tries to mimic Clojure's rules where possible.
+
+;; ## Identifiers
+;; Cljs allows you to include several characters which are not allowed
+;; in javascript identifiers.
+
+(defn prep-symbol
+  "Prep-symbol will replace invalid characters in the passed symbol with
+   javascript-compatable replacements.
+
+       foo-bar  ->  foo_bar
+       foo?     ->  foo_QM_
+       foo#     ->  foo_HASH_
+       foo!     ->  foo_BANG_
+       foo/bar  ->  foo.bar
+       foo*     ->  foo_SPLAT_"
+  [s]
+  (-> (str s)
+      (str/replace #"-" "_")
+      (str/replace #"\?" "_QM_")
+      (str/replace #"#" "_HASH_")
+      (str/replace #"!" "_BANG_")
+      (str/replace #"/" ".")
+      (str/replace #"\*" "_SPLAT_")
+      (symbol)))
+
+;; ### Indenting / Pretty-Printing
 (def *indent* 0)
 
 (def nl "\n")
@@ -36,7 +64,23 @@
 (defn interpose-semi-colon [col]
   (interpose ";" col))
 
-(defn interpose-op-fn [op]
+;; Several types of functions follow the pattern `<expr> <op>
+;; <expr>`. We use the *-op-fn functions to provide a uniform
+;; mechanism for defining these types of operations.
+;;
+;; See section 1.2 of Okasaki's [Purely Functional Data
+;; Structures](http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf) for more
+;; info. In fact, just go read the whole thing, it's amazingly
+;; well-written.
+
+
+(defn strict-eval-op-fn
+  "`strict-eval-op-fn` is used to define functions of the above pattern for fuctions such as `+`, `*`,   etc.  Cljs special forms defined this way are applyable, such as `(apply + [1 2 3])`.
+
+   Resulting expressions are wrapped in an anonymous function and, down the line, `call`ed, like so:
+
+       (+ 1 2 3) -> (function(){...}.call(this, 1 2 3)"
+  [op]
   (ind-str
    "(function() {" nl
    (inc-ind-str
@@ -50,27 +94,51 @@
    nl
    "})"))
 
-(defn boolean-op-fn [op stmts]
+(defn lazy-eval-op-fn
+  "`lazy-eval-op-fn` is used for operators whose inputs must be lazily evaluated. Resulting expression   is not `apply`able.
+
+       (or foo bar baz)  -> (foo || bar || baz)"
+  [op stmts]
   (str
    "("
    (apply str (interpose (str " " op " ") (map to-js stmts)))
    ")"))
 
-(def *fn-params* #{})
 
-(defn prep-symbol [s]
-  (-> (str s)
-      (str/replace #"-" "_")
-      (str/replace #"\?" "_QM_")
-      (str/replace #"#" "_HASH_")
-      (str/replace #"!" "_BANG_")
-      (str/replace #"/" ".")
-      (str/replace #"\*" "_SPLAT_")
-      (symbol)))
+(def *fn-params* #{})
 
 (defn to-identifier [sym]
   (when sym
     (prep-symbol sym)))
+
+
+;; # Calling Functions
+
+(defn call-fn [[f & args]]
+  (ind-str
+   (to-js f)
+   "("
+   (->> args
+        (map to-js)
+        (interpose ", ")
+        (apply str))
+   ")"))
+
+
+(defn call-special-form [sexp]
+  (let [f (first sexp)
+        args (rest sexp)
+        jsf (((apply-able-special-forms) f) sexp)]
+    (ind-str
+     jsf
+        ".call(this"
+   (->> args
+        (map to-js)
+        (interleave (repeat ", "))
+        #_(interpose ", ")
+        (apply str))
+   ")")))
+
 
 (defn to-fn [[_ arglist & body-seq]]
   (let [before-amp (take-while #(not= '& %) arglist)
@@ -93,50 +161,6 @@
                      " = Array.prototype.slice.call(arguments, " (count before-amp) ");" nl))
               (apply str (interpose (str ";" nl) with-return)))
              ";\n}.bind(this))")))))
-
-
-(defn call-fn [[f & args]]
-  (ind-str
-   (to-js f)
-   "("
-   (->> args
-        (map to-js)
-        (interpose ", ")
-        (apply str))
-   ")"))
-
-
-(defn call-fn-using-call [[f & args]]
-  (ind-str
-   (to-js f)
-   #_".call(this"
-   "("
-   (->> args
-        (map to-js)
-        #_(interleave (repeat ", "))
-        (interpose ", ")
-        (apply str))
-   ")"))
-
-
-
-(defn call-special-form [sexp]
-  (let [f (first sexp)
-        args (rest sexp)
-        jsf (((apply-able-special-forms) f) sexp)]
-    (ind-str
-     jsf
-        ".call(this"
-   (->> args
-        (map to-js)
-        (interleave (repeat ", "))
-        #_(interpose ", ")
-        (apply str))
-   ")")))
-
-
-(defn js [form]
-  (to-js form))
 
 (defn handle-def [[_ name body]]
   (ind-str
@@ -318,13 +342,13 @@
            (apply str)))
      "}.bind(this))()")))
 
-(defn make-handle-op [op]
+(defn make-strict-op [op]
   (fn [& _]
-    (interpose-op-fn op)))
+    (strict-eval-op-fn op)))
 
-(defn make-boolean-op [op]
+(defn make-lazy-op [op]
   (fn [[_ & args]]
-    (boolean-op-fn op args)))
+    (lazy-eval-op-fn op args)))
 
 (defn handle-doseq [[_ bdg & body]]
   (let [colsym (gensym)]
@@ -377,23 +401,23 @@
    'not     handle-not
    'do      handle-do
    'cond    handle-cond
-   '=       (make-boolean-op '==)
-   '>       (make-boolean-op '>)
-   '<       (make-boolean-op '<)
-   '>=      (make-boolean-op '>=)
-   '<=      (make-boolean-op '<=)
-   'or      (make-boolean-op '||)
-   'and     (make-boolean-op '&&)
+   '=       (make-lazy-op '==)
+   '>       (make-lazy-op '>)
+   '<       (make-lazy-op '<)
+   '>=      (make-lazy-op '>=)
+   '<=      (make-lazy-op '<=)
+   'or      (make-lazy-op '||)
+   'and     (make-lazy-op '&&)
    'doseq   handle-doseq
    'instanceof handle-instanceof
    'gensym handle-gensym
    'gensym-str handle-gensym-str})
 
 (defn apply-able-special-forms []
-  {'+       (make-handle-op '+)
-   '-       (make-handle-op '-)
-   '*       (make-handle-op '*)
-   '/       (make-handle-op '/)})
+  {'+       (make-strict-op '+)
+   '-       (make-strict-op '-)
+   '*       (make-strict-op '*)
+   '/       (make-strict-op '/)})
 
 (defn map-accessor? [sexp]
   (and (= 2 (count sexp))
@@ -442,7 +466,34 @@
          (apply str (interpose "," (map to-js args)))
          "))")))
 
-(defn sexp-to-js [sexp]
+(defn sexp-to-js
+  "Sexps are (most of the time) translated into javascript function calls.
+   The baseline translation works as you would expect, the first form in
+   the sexp is moved outside the opening paren, and the remaining forms
+   are passed as arguments:
+
+       (dostuff \"foo\" \"bar\" 1  -> alert(\"foo\",\"bar\",1)
+
+   However, cljs supports special case sexps to support features like
+   sugared map access and javascript object interop.
+
+        ; object member function
+        (.foo bar \"baz\") -> foo.bar(\"baz\")
+
+        ; object construction
+        (Foo. \"bar\" \"baz\") -> new Foo(\"bar\",\"baz\")
+
+        ; map access
+        (:foo bar) -> bar[\"foo\"]
+
+   It is also at this point that calls to special forms are handled by
+   their respective handlers. `(fn [] ('alert \"hi\"))` is
+   handled by `handle-fn`, not passed along to `call-fn` like user
+   defined functions.
+
+   See `cljs.core/special-forms` and `cljs.core/apply-able-special-forms`
+   for symbol to handler mappings."
+  [sexp]
   (cond
    (= 'quote (first sexp)) (str (second sexp))
    (object-member? sexp) (object-member-call-to-js sexp)
@@ -450,9 +501,11 @@
    ((special-forms) (first sexp)) (((special-forms) (first sexp)) sexp)
    ((apply-able-special-forms) (first sexp)) (call-special-form sexp)
    (map-accessor? sexp) (map-accessor-to-js sexp)
-   :else (call-fn-using-call sexp)))
+   :else (call-fn sexp)))
 
-(defn map-to-js [m]
+(defn map-to-js
+  ""
+  [m]
   (ind-str
    "({" nl
    (inc-ind-str
@@ -497,39 +550,48 @@
       (str/replace #"\n" "\\\\n")
       (str/replace #"\"" "\\\\\"")))
 
-(defn to-js [element]
+(defn to-js
+  "Top-level conversion routine. The form passed to `to-js` is converted to javascript based on it's type.  Valid input types are lists, vectors, symbols, keywords, strings, numbers, or booleans. Throws an exeption if the passed form is not a valid input type."
+  [form]
   (cond
-   (or (seq? element) (list? element)) (sexp-to-js element)
-   (map? element) (map-to-js element)
-   (vector? element) (vec-to-js element)
-   (symbol? element) (symbol-to-js element)
-   (keyword? element) (to-js (name element))
-   (string? element) (str \" (str-to-js element) \")
-   (number? element) element
-   (boolean? element) element
-   (nil? element) ""
-   :else (throw (Exception. (str "Don't know how to handle " element " of type " (:type element))))))
+   (or (seq? form)
+       (list? form))  (sexp-to-js form)
+   (map? form)        (map-to-js form)
+   (vector? form)     (vec-to-js form)
+   (symbol? form)     (symbol-to-js form)
+   (keyword? form)    (to-js (name form))
+   (string? form)     (str \" (str-to-js form) \")
+   (number? form)     form
+   (boolean? form)    form
+   (nil? form)        ""
+   :else              (throw
+                       (Exception.
+                        (str
+                         "Don't know how to handle "
+                         form
+                         " of type "
+                         (:type form))))))
 
-(def default-includes ['Array])
+
+;; ## Namespace Handling
 
 (defn use-to-js [u]
   (->> u
        (drop 1)
-       (map #(str "for("
-                      "var prop in " (to-identifier %)
-                      ")"
-                      "{ this[prop] = " (to-identifier %) "[prop] };" nl nl))
+       (map #(str
+              "for("
+              "var prop in " (to-identifier %)
+              ")"
+              "{ this[prop] = " (to-identifier %) "[prop] };" nl nl))
        (apply str)))
 
-(defn seq-require-to-js [col]
-  (let [name (first col)
-        as (nth col 2)]
-    (str
-     "this." (to-identifier as) " = " (to-identifier name) ";" nl nl)))
+(defn seq-require-to-js
+  "Handles `:require`s in the form of `[foo :as bar]`."
+  [[name _ as]]
+  (str "this." (to-identifier as) " = " (to-identifier name) ";" nl nl))
 
 (defn sym-require-to-js [sym]
-  (str
-   "this." (to-identifier sym) " = " (to-identifier sym) ";" nl nl))
+  (str "this." (to-identifier sym) " = " (to-identifier sym) ";" nl nl))
 
 (defn require-to-js [r]
   (->> r
@@ -551,8 +613,17 @@
                       (interpose ".")
                       (apply str))
                 (range num))
-           (map #(str (when (not (re-find #"\." %)) "var ") (to-identifier %) " = " (to-identifier %) " || {};" nl))))))
+           (map #(str
+                  (when (not (re-find #"\." %))
+                    "var ")
+                  (to-identifier %)
+                  " = "
+                  (to-identifier %)
+                  " || {};"
+                  nl))))))
 
+
+(def default-includes ['Array])
 
 (defn wrap-with-ns [name imports & body]
   (ind-str
@@ -562,10 +633,26 @@
     (apply str (interpose ";\n" (map #(str "this." % " = " %) default-includes)))
     ";\n\n"
     (use-to-js '(:use cljs.core))
-    (apply str (interpose ";\n\n" (map use-to-js (filter #(= :use (first %)) imports))))
-    (apply str (interpose ";\n\n" (map require-to-js (filter #(= :require (first %)) imports))))
-    (apply str (interpose ";\n\n" (map import-to-js (filter #(= :import (first %)) imports))))
-    (apply str (interpose (str ";" nl nl) (add-return (map to-js body)))))
+    (->> imports
+         (filter #(= :use (first %)))
+         (map use-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> imports
+         (filter #(= :require (first %)))
+         (map require-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> imports
+         (filter #(= :import (first %)))
+         (map import-to-js)
+         (interpose (str ";" nl nl))
+         (apply str))
+    (->> body
+         (map to-js)
+         (add-return)
+         (interpose (str ";" nl nl))
+         (apply str)))
    nl nl
    "}).call(" (to-identifier name) ");"))
 
