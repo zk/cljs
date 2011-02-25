@@ -28,7 +28,361 @@
 
    2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
 
-   For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><script type="text/javascript">/*!
+   For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><style type="text/css">/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+  -moz-border-radius: 0 0 0 0 !important;
+  -webkit-border-radius: 0 0 0 0 !important;
+  background: none !important;
+  border: 0 !important;
+  bottom: auto !important;
+  float: none !important;
+  height: auto !important;
+  left: auto !important;
+  line-height: 1.1em !important;
+  margin: 0 !important;
+  outline: 0 !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  position: static !important;
+  right: auto !important;
+  text-align: left !important;
+  top: auto !important;
+  vertical-align: baseline !important;
+  width: auto !important;
+  box-sizing: content-box !important;
+  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  min-height: inherit !important;
+  min-height: auto !important;
+}
+
+.syntaxhighlighter {
+/*  width: 100% !important; */
+  margin: 1em 0 1em 0 !important;
+  position: relative !important;
+  overflow: auto !important;
+}
+.syntaxhighlighter.source {
+  overflow: hidden !important;
+}
+.syntaxhighlighter .bold {
+  font-weight: bold !important;
+}
+.syntaxhighlighter .italic {
+  font-style: italic !important;
+}
+.syntaxhighlighter .line {
+  white-space: pre !important;
+}
+.syntaxhighlighter table {
+/*    width: 100% !important;*/
+}
+.syntaxhighlighter table caption {
+  text-align: left !important;
+  padding: .5em 0 0.5em 1em !important;
+}
+.syntaxhighlighter table td.code {
+  width: 100% !important;
+}
+.syntaxhighlighter table td.code .container {
+  position: relative !important;
+}
+.syntaxhighlighter table td.code .container textarea {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: white !important;
+  padding-left: 1em !important;
+  overflow: hidden !important;
+  white-space: pre !important;
+}
+.syntaxhighlighter table td.gutter .line {
+  text-align: right !important;
+  padding: 0 0.5em 0 1em !important;
+}
+.syntaxhighlighter table td.code .line {
+  padding: 0 1em !important;
+}
+.syntaxhighlighter.nogutter td.code .container textarea, .syntaxhighlighter.nogutter td.code .line {
+  padding-left: 0em !important;
+}
+.syntaxhighlighter.show {
+  display: block !important;
+}
+.syntaxhighlighter.collapsed table {
+  display: none !important;
+}
+.syntaxhighlighter.collapsed .toolbar {
+    display: none;
+/*  padding: 0.1em 0.8em 0em 0.8em !important;
+  font-size: 1em !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;*/
+}
+.syntaxhighlighter.collapsed .toolbar span {
+  display: inline !important;
+  margin-right: 1em !important;
+}
+.syntaxhighlighter.collapsed .toolbar span a {
+  padding: 0 !important;
+  display: none !important;
+}
+.syntaxhighlighter.collapsed .toolbar span a.expandSource {
+  display: inline !important;
+}
+.syntaxhighlighter .toolbar {
+    display: none;
+/*  position: absolute !important;
+  right: 1px !important;
+  top: 1px !important;
+  width: 11px !important;
+  height: 11px !important;
+  font-size: 10px !important;
+  z-index: 10 !important;*/
+}
+.syntaxhighlighter .toolbar span.title {
+  display: inline !important;
+}
+.syntaxhighlighter .toolbar a {
+  display: block !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  padding-top: 1px !important;
+}
+.syntaxhighlighter .toolbar a.expandSource {
+  display: none !important;
+}
+.syntaxhighlighter.ie {
+  font-size: .9em !important;
+  padding: 1px 0 1px 0 !important;
+}
+.syntaxhighlighter.ie .toolbar {
+  line-height: 8px !important;
+}
+.syntaxhighlighter.ie .toolbar a {
+  padding-top: 0px !important;
+}
+.syntaxhighlighter.printing .line.alt1 .content,
+.syntaxhighlighter.printing .line.alt2 .content,
+.syntaxhighlighter.printing .line.highlighted .number,
+.syntaxhighlighter.printing .line.highlighted.alt1 .content,
+.syntaxhighlighter.printing .line.highlighted.alt2 .content {
+  background: none !important;
+}
+.syntaxhighlighter.printing .line .number {
+  color: #bbbbbb !important;
+}
+.syntaxhighlighter.printing .line .content {
+  color: black !important;
+}
+.syntaxhighlighter.printing .toolbar {
+  display: none !important;
+}
+.syntaxhighlighter.printing a {
+  text-decoration: none !important;
+}
+.syntaxhighlighter.printing .plain, .syntaxhighlighter.printing .plain a {
+  color: black !important;
+}
+.syntaxhighlighter.printing .comments, .syntaxhighlighter.printing .comments a {
+  color: #008200 !important;
+}
+.syntaxhighlighter.printing .string, .syntaxhighlighter.printing .string a {
+  color: blue !important;
+}
+.syntaxhighlighter.printing .keyword {
+  color: #006699 !important;
+  font-weight: bold !important;
+}
+.syntaxhighlighter.printing .preprocessor {
+  color: gray !important;
+}
+.syntaxhighlighter.printing .variable {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter.printing .value {
+  color: #009900 !important;
+}
+.syntaxhighlighter.printing .functions {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter.printing .constants {
+  color: #0066cc !important;
+}
+.syntaxhighlighter.printing .script {
+  font-weight: bold !important;
+}
+.syntaxhighlighter.printing .color1, .syntaxhighlighter.printing .color1 a {
+  color: gray !important;
+}
+.syntaxhighlighter.printing .color2, .syntaxhighlighter.printing .color2 a {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter.printing .color3, .syntaxhighlighter.printing .color3 a {
+  color: red !important;
+}
+.syntaxhighlighter.printing .break, .syntaxhighlighter.printing .break a {
+  color: black !important;
+}
+</style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css">/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.alt1 {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.alt2 {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.highlighted.alt1, .syntaxhighlighter .line.highlighted.alt2 {
+  background-color: #c3defe !important;
+}
+.syntaxhighlighter .line.highlighted.number {
+  color: white !important;
+}
+.syntaxhighlighter table caption {
+  color: black !important;
+}
+.syntaxhighlighter .gutter {
+  color: #787878 !important;
+}
+.syntaxhighlighter .gutter .line {
+  border-right: 3px solid #d4d0c8 !important;
+}
+.syntaxhighlighter .gutter .line.highlighted {
+  background-color: #d4d0c8 !important;
+  color: white !important;
+}
+.syntaxhighlighter.printing .line .content {
+  border: none !important;
+}
+.syntaxhighlighter.collapsed {
+  overflow: visible !important;
+}
+.syntaxhighlighter.collapsed .toolbar {
+  color: #3f5fbf !important;
+  background: white !important;
+  border: 1px solid #d4d0c8 !important;
+}
+.syntaxhighlighter.collapsed .toolbar a {
+  color: #3f5fbf !important;
+}
+.syntaxhighlighter.collapsed .toolbar a:hover {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter .toolbar {
+  color: #a0a0a0 !important;
+  background: #d4d0c8 !important;
+  border: none !important;
+}
+.syntaxhighlighter .toolbar a {
+  color: #a0a0a0 !important;
+}
+.syntaxhighlighter .toolbar a:hover {
+  color: red !important;
+}
+.syntaxhighlighter .plain, .syntaxhighlighter .plain a {
+  color: black !important;
+}
+.syntaxhighlighter .comments, .syntaxhighlighter .comments a {
+  color: #3f5fbf !important;
+}
+.syntaxhighlighter .string, .syntaxhighlighter .string a {
+  color: #2a00ff !important;
+}
+.syntaxhighlighter .keyword {
+  color: #7f0055 !important;
+}
+.syntaxhighlighter .preprocessor {
+  color: #646464 !important;
+}
+.syntaxhighlighter .variable {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter .value {
+  color: #009900 !important;
+}
+.syntaxhighlighter .functions {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter .constants {
+  color: #0066cc !important;
+}
+.syntaxhighlighter .script {
+  font-weight: bold !important;
+  color: #7f0055 !important;
+  background-color: none !important;
+}
+.syntaxhighlighter .color1, .syntaxhighlighter .color1 a {
+  color: gray !important;
+}
+.syntaxhighlighter .color2, .syntaxhighlighter .color2 a {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter .color3, .syntaxhighlighter .color3 a {
+  color: red !important;
+}
+
+.syntaxhighlighter .keyword {
+  font-weight: bold !important;
+}
+.syntaxhighlighter .xml .keyword {
+  color: #3f7f7f !important;
+  font-weight: normal !important;
+}
+.syntaxhighlighter .xml .color1, .syntaxhighlighter .xml .color1 a {
+  color: #7f007f !important;
+}
+.syntaxhighlighter .xml .string {
+  font-style: italic !important;
+  color: #2a00ff !important;
+}
+</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><script type="text/javascript">/*!
  * jQuery JavaScript Library v1.4.4
  * http://jquery.com/
  *
@@ -2083,7 +2437,7 @@ SyntaxHighlighter.brushes.Clojure = function () {
 		{ regex: /\b(true|false|nil)\b/g,
 			css: 'value' },
 		// (un)quoted symbols
-		{ regex: /(`|#?'|~@?)[\w-.\/]+/g,
+		{ regex: /(`|#?'|~@?)[\w-.A-Za-z0-9_&lt;&gt;\-]+/g,
 			css: 'color1' },
 		// keywords
 		{ regex: /:[A-Za-z0-9_\-]+/g,
@@ -2096,7 +2450,8 @@ SyntaxHighlighter.brushes.Clojure = function () {
 			css: 'preprocessor' },
 		// clojure.core
 		{ regex: new ClojureRegExp(this.getKeywords(clojure_core)),
-			css: 'functions' }
+			css: 'functions' },
+                { regex: /[A-Za-z0-9_&lt;&gt;\-]+/g,  css: 'plain'}
 	];
 
 	this.forHtmlScript(SyntaxHighlighter.regexLib.scriptScriptTags);
@@ -2200,361 +2555,7 @@ $(document).ready(function() {
     ul.css('margin-top', '0px')
 
 })
-</script><style type="text/css">/**
- * SyntaxHighlighter
- * http://alexgorbatchev.com/SyntaxHighlighter
- *
- * SyntaxHighlighter is donationware. If you are using it, please donate.
- * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
- *
- * @version
- * 3.0.83 (July 02 2010)
- * 
- * @copyright
- * Copyright (C) 2004-2010 Alex Gorbatchev.
- *
- * @license
- * Dual licensed under the MIT and GPL licenses.
- */
-.syntaxhighlighter a,
-.syntaxhighlighter div,
-.syntaxhighlighter code,
-.syntaxhighlighter table,
-.syntaxhighlighter table td,
-.syntaxhighlighter table tr,
-.syntaxhighlighter table tbody,
-.syntaxhighlighter table thead,
-.syntaxhighlighter table caption,
-.syntaxhighlighter textarea {
-  -moz-border-radius: 0 0 0 0 !important;
-  -webkit-border-radius: 0 0 0 0 !important;
-  background: none !important;
-  border: 0 !important;
-  bottom: auto !important;
-  float: none !important;
-  height: auto !important;
-  left: auto !important;
-  line-height: 1.1em !important;
-  margin: 0 !important;
-  outline: 0 !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  position: static !important;
-  right: auto !important;
-  text-align: left !important;
-  top: auto !important;
-  vertical-align: baseline !important;
-  width: auto !important;
-  box-sizing: content-box !important;
-  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  min-height: inherit !important;
-  min-height: auto !important;
-}
-
-.syntaxhighlighter {
-/*  width: 100% !important; */
-  margin: 1em 0 1em 0 !important;
-  position: relative !important;
-  overflow: auto !important;
-}
-.syntaxhighlighter.source {
-  overflow: hidden !important;
-}
-.syntaxhighlighter .bold {
-  font-weight: bold !important;
-}
-.syntaxhighlighter .italic {
-  font-style: italic !important;
-}
-.syntaxhighlighter .line {
-  white-space: pre !important;
-}
-.syntaxhighlighter table {
-/*    width: 100% !important;*/
-}
-.syntaxhighlighter table caption {
-  text-align: left !important;
-  padding: .5em 0 0.5em 1em !important;
-}
-.syntaxhighlighter table td.code {
-  width: 100% !important;
-}
-.syntaxhighlighter table td.code .container {
-  position: relative !important;
-}
-.syntaxhighlighter table td.code .container textarea {
-  box-sizing: border-box !important;
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-  background: white !important;
-  padding-left: 1em !important;
-  overflow: hidden !important;
-  white-space: pre !important;
-}
-.syntaxhighlighter table td.gutter .line {
-  text-align: right !important;
-  padding: 0 0.5em 0 1em !important;
-}
-.syntaxhighlighter table td.code .line {
-  padding: 0 1em !important;
-}
-.syntaxhighlighter.nogutter td.code .container textarea, .syntaxhighlighter.nogutter td.code .line {
-  padding-left: 0em !important;
-}
-.syntaxhighlighter.show {
-  display: block !important;
-}
-.syntaxhighlighter.collapsed table {
-  display: none !important;
-}
-.syntaxhighlighter.collapsed .toolbar {
-    display: none;
-/*  padding: 0.1em 0.8em 0em 0.8em !important;
-  font-size: 1em !important;
-  position: static !important;
-  width: auto !important;
-  height: auto !important;*/
-}
-.syntaxhighlighter.collapsed .toolbar span {
-  display: inline !important;
-  margin-right: 1em !important;
-}
-.syntaxhighlighter.collapsed .toolbar span a {
-  padding: 0 !important;
-  display: none !important;
-}
-.syntaxhighlighter.collapsed .toolbar span a.expandSource {
-  display: inline !important;
-}
-.syntaxhighlighter .toolbar {
-    display: none;
-/*  position: absolute !important;
-  right: 1px !important;
-  top: 1px !important;
-  width: 11px !important;
-  height: 11px !important;
-  font-size: 10px !important;
-  z-index: 10 !important;*/
-}
-.syntaxhighlighter .toolbar span.title {
-  display: inline !important;
-}
-.syntaxhighlighter .toolbar a {
-  display: block !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  padding-top: 1px !important;
-}
-.syntaxhighlighter .toolbar a.expandSource {
-  display: none !important;
-}
-.syntaxhighlighter.ie {
-  font-size: .9em !important;
-  padding: 1px 0 1px 0 !important;
-}
-.syntaxhighlighter.ie .toolbar {
-  line-height: 8px !important;
-}
-.syntaxhighlighter.ie .toolbar a {
-  padding-top: 0px !important;
-}
-.syntaxhighlighter.printing .line.alt1 .content,
-.syntaxhighlighter.printing .line.alt2 .content,
-.syntaxhighlighter.printing .line.highlighted .number,
-.syntaxhighlighter.printing .line.highlighted.alt1 .content,
-.syntaxhighlighter.printing .line.highlighted.alt2 .content {
-  background: none !important;
-}
-.syntaxhighlighter.printing .line .number {
-  color: #bbbbbb !important;
-}
-.syntaxhighlighter.printing .line .content {
-  color: black !important;
-}
-.syntaxhighlighter.printing .toolbar {
-  display: none !important;
-}
-.syntaxhighlighter.printing a {
-  text-decoration: none !important;
-}
-.syntaxhighlighter.printing .plain, .syntaxhighlighter.printing .plain a {
-  color: black !important;
-}
-.syntaxhighlighter.printing .comments, .syntaxhighlighter.printing .comments a {
-  color: #008200 !important;
-}
-.syntaxhighlighter.printing .string, .syntaxhighlighter.printing .string a {
-  color: blue !important;
-}
-.syntaxhighlighter.printing .keyword {
-  color: #006699 !important;
-  font-weight: bold !important;
-}
-.syntaxhighlighter.printing .preprocessor {
-  color: gray !important;
-}
-.syntaxhighlighter.printing .variable {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter.printing .value {
-  color: #009900 !important;
-}
-.syntaxhighlighter.printing .functions {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter.printing .constants {
-  color: #0066cc !important;
-}
-.syntaxhighlighter.printing .script {
-  font-weight: bold !important;
-}
-.syntaxhighlighter.printing .color1, .syntaxhighlighter.printing .color1 a {
-  color: gray !important;
-}
-.syntaxhighlighter.printing .color2, .syntaxhighlighter.printing .color2 a {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter.printing .color3, .syntaxhighlighter.printing .color3 a {
-  color: red !important;
-}
-.syntaxhighlighter.printing .break, .syntaxhighlighter.printing .break a {
-  color: black !important;
-}
-</style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css">/**
- * SyntaxHighlighter
- * http://alexgorbatchev.com/SyntaxHighlighter
- *
- * SyntaxHighlighter is donationware. If you are using it, please donate.
- * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
- *
- * @version
- * 3.0.83 (July 02 2010)
- * 
- * @copyright
- * Copyright (C) 2004-2010 Alex Gorbatchev.
- *
- * @license
- * Dual licensed under the MIT and GPL licenses.
- */
-.syntaxhighlighter {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.alt1 {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.alt2 {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.highlighted.alt1, .syntaxhighlighter .line.highlighted.alt2 {
-  background-color: #c3defe !important;
-}
-.syntaxhighlighter .line.highlighted.number {
-  color: white !important;
-}
-.syntaxhighlighter table caption {
-  color: black !important;
-}
-.syntaxhighlighter .gutter {
-  color: #787878 !important;
-}
-.syntaxhighlighter .gutter .line {
-  border-right: 3px solid #d4d0c8 !important;
-}
-.syntaxhighlighter .gutter .line.highlighted {
-  background-color: #d4d0c8 !important;
-  color: white !important;
-}
-.syntaxhighlighter.printing .line .content {
-  border: none !important;
-}
-.syntaxhighlighter.collapsed {
-  overflow: visible !important;
-}
-.syntaxhighlighter.collapsed .toolbar {
-  color: #3f5fbf !important;
-  background: white !important;
-  border: 1px solid #d4d0c8 !important;
-}
-.syntaxhighlighter.collapsed .toolbar a {
-  color: #3f5fbf !important;
-}
-.syntaxhighlighter.collapsed .toolbar a:hover {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter .toolbar {
-  color: #a0a0a0 !important;
-  background: #d4d0c8 !important;
-  border: none !important;
-}
-.syntaxhighlighter .toolbar a {
-  color: #a0a0a0 !important;
-}
-.syntaxhighlighter .toolbar a:hover {
-  color: red !important;
-}
-.syntaxhighlighter .plain, .syntaxhighlighter .plain a {
-  color: black !important;
-}
-.syntaxhighlighter .comments, .syntaxhighlighter .comments a {
-  color: #3f5fbf !important;
-}
-.syntaxhighlighter .string, .syntaxhighlighter .string a {
-  color: #2a00ff !important;
-}
-.syntaxhighlighter .keyword {
-  color: #7f0055 !important;
-}
-.syntaxhighlighter .preprocessor {
-  color: #646464 !important;
-}
-.syntaxhighlighter .variable {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter .value {
-  color: #009900 !important;
-}
-.syntaxhighlighter .functions {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter .constants {
-  color: #0066cc !important;
-}
-.syntaxhighlighter .script {
-  font-weight: bold !important;
-  color: #7f0055 !important;
-  background-color: none !important;
-}
-.syntaxhighlighter .color1, .syntaxhighlighter .color1 a {
-  color: gray !important;
-}
-.syntaxhighlighter .color2, .syntaxhighlighter .color2 a {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter .color3, .syntaxhighlighter .color3 a {
-  color: red !important;
-}
-
-.syntaxhighlighter .keyword {
-  font-weight: bold !important;
-}
-.syntaxhighlighter .xml .keyword {
-  color: #3f7f7f !important;
-  font-weight: normal !important;
-}
-.syntaxhighlighter .xml .color1, .syntaxhighlighter .xml .color1 a {
-  color: #7f007f !important;
-}
-.syntaxhighlighter .xml .string {
-  font-style: italic !important;
-  color: #2a00ff !important;
-}
-</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><title>cljs -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
+</script><title>cljs -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
    <a href="https://github.com/clojure/clojure-contrib/tree/master/clojurescript/">clojurescript</a>. The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!</p>
 
 <p>   # Usage</p>
@@ -2586,7 +2587,7 @@ $(document).ready(function() {
 
 <p>For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p></li>
 </ol>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.5.0-alpha</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.stitch">cljs.stitch</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li><li><a href="#cljs.test.stitch">cljs.test.stitch</a></li><li><a href="#cljs.test.watch">cljs.test.watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><strong>cljs</strong></p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.5.0</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr><tr><td class="dep-name">widgets-cljs</td><td class="dotted"><hr /></td><td class="dep-version">1.0.0-SNAPSHOT</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.stitch">cljs.stitch</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-compile">leiningen.cljs-compile</a></li><li><a href="#leiningen.cljs-install">leiningen.cljs-install</a></li><li><a href="#leiningen.cljs-jar">leiningen.cljs-jar</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li><li><a href="#cljs.test.stitch">cljs.test.stitch</a></li><li><a href="#cljs.test.watch">cljs.test.watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><strong>cljs</strong></p>
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.core
   (:require [clojure.string :as str]))</pre></tr><tr><td class="docs"><p>Overall, cljs tries to mimic Clojure's rules where possible.</p>
 </td><td class="codes" /></tr><tr><td class="docs"><h2>Identifiers</h2>
@@ -2613,6 +2614,11 @@ in javascript identifiers.</p>
       (str/replace #"/" ".")
       (str/replace #"\*" "_SPLAT_")
       (symbol)))</pre></tr><tr><td class="docs"><h3>Indenting / Pretty-Printing</h3>
+
+<p>As of now, pretty printing js is the only option.  If you need to
+minify the compiled output, use a tool like <a href="http://code.google.com/closure/compiler/">Google's
+Closure Compiler</a> (which
+may be included in cljs in the future.</p>
 </td><td class="codes" /><pre class="brush: clojure">(def *indent* 0)</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(def nl "\n")</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(declare to-js)
@@ -3097,9 +3103,8 @@ well-written.</p>
               "var prop in " (to-identifier %)
               ")"
               "{ this[prop] = " (to-identifier %) "[prop] };" nl nl))
-       (apply str)))</pre></tr><tr><td class="docs">
+       (apply str)))</pre></tr><tr><td class="docs"><p>Handles <code>:require</code>s in the form of <code>[foo :as bar]</code>.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn seq-require-to-js
-  "Handles `:require`s in the form of `[foo :as bar]`."
   [[name _ as]]
   (str "this." (to-identifier as) " = " (to-identifier name) ";" nl nl))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn sym-require-to-js [sym]
@@ -3342,15 +3347,15 @@ well-written.</p>
            :cljs))
     (catch Exception e
       (println (str "Problem reading project at " project-clj)))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn ns-to-file [source-root ns-sym]
+</td><td class="codes" /><pre class="brush: clojure">(defn ns-to-path [source-root ns-sym]
   (str
    source-root
    "/"
    (str/replace (str ns-sym) #"\." "/")
    ".cljs"))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn ns-decl [file]
+</td><td class="codes" /><pre class="brush: clojure">(defn ns-decl [source]
   (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
-                   (java.io.FileReader. file))]
+                   (java.io.StringReader. source))]
     (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
       ns-decl)))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn includes [ns-decl]
@@ -3363,12 +3368,23 @@ well-written.</p>
        (map #(if (or (seq? %) (vector? %))
                (first %)
                %))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn find-dependencies [source-root source-file]
-  (let [ns-decl (ns-decl source-file)
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-source-for [source-root name]
+  (let [file (java.io.File. (ns-to-path source-root name))]
+    (if (.exists file)
+      (slurp (.getAbsolutePath file))
+      (try
+        (-> (.getContextClassLoader (Thread/currentThread))
+            (.getResourceAsStream (str (str/replace name #"\." "/") ".cljs"))
+            (java.io.InputStreamReader.)
+            (slurp))
+        (catch Exception e
+          (println (str "Couldn't find " name " in " source-root " or classpath.")))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn find-dependencies [source-root cljs-source]
+  (let [ns-decl (ns-decl cljs-source)
         includes (distinct (includes ns-decl))]
     (distinct
      (flatten
-      (map #(concat (find-dependencies source-root (ns-to-file source-root %)) [%])
+      (map #(concat (find-dependencies source-root (cljs-source-for source-root %)) [%])
            includes)))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib
   [source-path output-path name]
@@ -3376,15 +3392,17 @@ well-written.</p>
   (println "  " "input:")
   (println "  " "output:")
   (println "    "  (str output-path "/" name ".js"))
-  (->> (concat (find-dependencies source-path (ns-to-file source-path name))
-               [name])
-       (#(do (println %) %))
-       (map #(ns-to-file source-path %))
-       (map core/compile-cljs-file)
-       (interpose "\n\n\n\n")
-       (apply str)
-       (str core/*core-lib* "\n\n\n\n")
-       (spit (str output-path "/" (str name) ".js"))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
+  (let [source (cljs-source-for source-path name)]
+    (->> (concat (find-dependencies source-path source)
+                 [name])
+         (map #(cljs-source-for source-path %))
+         (map core/compile-cljs-string)
+         (interpose "\n\n\n\n")
+         (apply str)
+         (str core/*core-lib* "\n\n\n\n")
+         (spit (str output-path "/" (str name) ".js")))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>. Looks for
+   sources in the filesystem first at <code>source-path</code>/<code>name</code>, then does a
+   classpath lookup.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib-with-sources
   [source-path output-path name sources]
   (let [cljs-source-paths (->> sources
@@ -3393,18 +3411,11 @@ well-written.</p>
                                (map #(str source-path "/" % ".cljs")))]
     (println "Stitching" name)
     (println "  " "input:")
-    (doseq [sp cljs-source-paths]
-      (println "    " sp)
-      (when (not (.exists (java.io.File. sp)))
-        (throw (Exception.
-                (str "Couldn't find source path "
-                     sp
-                     " for library "
-                     name)))))
     (println "  " "output:")
     (println "    "  (str output-path "/" name ".js"))
-    (->> cljs-source-paths
-         (map core/compile-cljs-file)
+    (->> sources
+         (map #(cljs-source-for source-path %))
+         (map core/compile-cljs-string)
          (interpose "\n\n\n\n")
          (apply str)
          (str core/*core-lib* "\n\n\n\n")
@@ -3526,7 +3537,201 @@ well-written.</p>
                  (try
                    (check-and-run! (:source-path opts))
                    (Thread/sleep 500)
-                   (catch Exception e (println e)))))))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
+                   (catch Exception e (println e)))))))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-compile" name="leiningen.cljs-compile"><h1 class="project-name">leiningen.cljs-compile</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns leiningen.cljs-compile
+  (:require [cljs.stitch :as stitch]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-compile [project]
+  (stitch/stitch-project "./project.clj"))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-install" name="leiningen.cljs-install"><h1 class="project-name">leiningen.cljs-install</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns leiningen.cljs-install
+  (:require [leiningen.install]
+            [leiningen.jar]
+            [leiningen.cljs-jar]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-install [project]
+  (binding [leiningen.jar/jar leiningen.cljs-jar/cljs-jar]
+    (leiningen.install/install project)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-jar" name="leiningen.cljs-jar"><h1 class="project-name">leiningen.cljs-jar</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns leiningen.cljs-jar
+  (:use [clojure.pprint])
+  (:require [robert.hooke :as hooke]
+            [leiningen.jar])
+  (:require [leiningen.compile :as compile]
+            [clojure.string :as string]
+            [lancet])
+  (:use [leiningen.pom :only [make-pom make-pom-properties]]
+        [leiningen.deps :only [deps]]
+        [clojure.java.io :only [copy file]])
+  (:import (java.util.jar Manifest JarEntry JarOutputStream)
+           (java.util.regex Pattern)
+           (java.util.jar JarFile)
+           (java.io BufferedOutputStream FileOutputStream
+                    ByteArrayInputStream)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- read-resource [resource-name]
+  (-> (.getContextClassLoader (Thread/currentThread))
+      (.getResourceAsStream resource-name)
+      (slurp)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- read-bin-template [system]
+  (case system
+        :unix (read-resource "script-template")
+        :windows (read-resource "script-template.bat")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn unix-path [path]
+  (.replace path "\\" "/"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn windows-path [path]
+  (.replace path "/" "\\"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn local-repo-path
+  ([group name version]
+     (local-repo-path {:group group :name name :version version}))
+  ([{:keys [group name version]}]
+     (unix-path (format
+                 "$HOME/.m2/repository/%s/%s/%s/%s-%s.jar"
+                 (.replace group "." "/") name version name version))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- script-classpath-for [project deps-fileset system]
+  (let [deps (when deps-fileset
+               (-> deps-fileset
+                   (.getDirectoryScanner lancet/ant-project)
+                   (.getIncludedFiles)))
+        unix-paths (conj (for [dep deps]
+                           (unix-path (format "$HOME/.m2/repository/%s" dep)))
+                         (local-repo-path project))]
+    (case system
+          :unix (string/join ":" unix-paths)
+          :windows (string/join ";" (for [path unix-paths]
+                                      (windows-path
+                                       (.replace path "$HOME"
+                                                 "%USERPROFILE%")))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- shell-wrapper-name [project]
+  (get-in project [:shell-wrapper :bin]
+          (format "bin/%s" (:name project))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- shell-wrapper-contents [project bin-name main deps-fileset system]
+  (let [file-name (case system
+                        :unix bin-name
+                        :windows (format "%s.bat" bin-name))
+        bin-file (file file-name)]
+    (format (if (.exists bin-file)
+              (slurp bin-file)
+              (read-bin-template system))
+            (script-classpath-for project deps-fileset system)
+            main (:version project))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- shell-wrapper-filespecs [project deps-fileset]
+  (when (:shell-wrapper project)
+    (let [main (or (:main (:shell-wrapper project)) (:main project))
+          bin-name (shell-wrapper-name project)
+          read-bin #(shell-wrapper-contents
+                     project bin-name main deps-fileset %)]
+      [{:type :bytes
+        :path bin-name
+        :bytes (.getBytes (read-bin :unix))}
+       {:type :bytes
+        :path (format "%s.bat" bin-name)
+        :bytes (.getBytes (read-bin :windows))}])))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def default-manifest
+     {"Created-By" (str "Leiningen " (System/getenv "LEIN_VERSION"))
+      "Built-By" (System/getProperty "user.name")
+      "Build-Jdk" (System/getProperty "java.version")})</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn make-manifest [project & [extra-entries]]
+  (Manifest.
+   (ByteArrayInputStream.
+    (.getBytes
+     (reduce (fn [manifest [k v]]
+               (str manifest "\n" k ": " v))
+             "Manifest-Version: 1.0"
+             (merge default-manifest (:manifest project)
+                    (when (:shell-wrapper project)
+                      {"Leiningen-shell-wrapper" (shell-wrapper-name project)})
+                    (when-let [main (:main project)]
+                      {"Main-Class" (.replaceAll (str main) "-" "_")})))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn manifest-map [manifest]
+  (let [attrs (.getMainAttributes manifest)]
+    (zipmap (map str (keys attrs)) (vals attrs))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn skip-file? [file relative-path patterns]
+  (or (.isDirectory file)
+      (re-find #"^\.?#" (.getName file))
+      (re-find #"~$" (.getName file))
+      (some #(re-find % relative-path) patterns)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defmulti copy-to-jar (fn [project jar-os spec] (:type spec)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- trim-leading-str [s to-trim]
+  (.replaceAll s (str "^" (Pattern/quote to-trim)) ))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defmethod copy-to-jar :path [project jar-os spec]
+  (let [root (str (unix-path (:root project)) \/)
+        noroot  #(trim-leading-str (unix-path %) root)
+        cljs-src (noroot (:source-path (:cljs project)))
+        resources (noroot (:resources-path project))]
+    (doseq [child (file-seq (file (:path spec)))]
+      (let [path (reduce trim-leading-str (unix-path (str child))
+                         [root resources cljs-src "/"])]
+        (when-not (skip-file? child path (:jar-exclusions project))
+          (.putNextEntry jar-os (doto (JarEntry. path)
+                                  (.setTime (.lastModified child))))
+          (copy child jar-os))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defmethod copy-to-jar :bytes [project jar-os spec]
+  (.putNextEntry jar-os (JarEntry. (:path spec)))
+  (copy (ByteArrayInputStream. (:bytes spec)) jar-os))</pre></tr><tr><td class="docs"><p>TODO: hacky; needed for conditional :resources-path below</p>
+</td><td class="codes" /><pre class="brush: clojure">(defmethod copy-to-jar nil [project jar-os spec])</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn write-jar [project out-filename filespecs]
+  (let [manifest (make-manifest project)]
+    (with-open [jar-os (-> out-filename
+                           (FileOutputStream.)
+                           (BufferedOutputStream.)
+                           (JarOutputStream. manifest))]
+      (doseq [filespec filespecs]
+        (copy-to-jar project jar-os filespec)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn get-default-jar-name [project]
+  (or (:jar-name project)
+      (str (:name project) "-" (:version project) ".jar")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn get-jar-filename
+  ([project jar-name]
+     (let [target-dir (:target-dir project)]
+       (.mkdirs (file target-dir))
+       (str target-dir "/" jar-name)))
+  ([project] (get-jar-filename project (get-default-jar-name project))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn get-default-uberjar-name [project]
+  (or (:uberjar-name project)
+      (str (:name project) \- (:version project) "-standalone.jar")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn- filespecs [project deps-fileset]
+  (concat
+   [{:type :bytes
+     :path (format "META-INF/maven/%s/%s/pom.xml"
+                   (:group project)
+                   (:name project))
+     :bytes (make-pom project)}
+    {:type :bytes
+     :path (format "META-INF/maven/%s/%s/pom.properties"
+                   (:group project)
+                   (:name project))
+     :bytes (make-pom-properties project)}
+    (when (and (:resources-path project)
+               (.exists (file (:resources-path project))))
+      {:type :path :path (:resources-path project)})
+    {:type :path :path (str (:root project) "/project.clj")}]
+   [{:type :path :path (:source-path (:cljs project))}]
+   (shell-wrapper-filespecs project deps-fileset)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn extract-jar
+  "Unpacks jar-file into target-dir. jar-file can be a JarFile
+  instance or a path to a jar file on disk."
+  [jar-file target-dir]
+  (let [jar (if (isa? jar-file JarFile)
+              jar-file
+              (JarFile. jar-file true))
+        entries (enumeration-seq (.entries jar))
+        target-file #(file target-dir (.getName %))]
+    (doseq [entry entries :when (not (.isDirectory entry))
+            :let [f (target-file entry)]]
+      (.mkdirs (.getParentFile f))
+      (copy (.getInputStream jar entry) f))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn jar
+  "Create a $PROJECT-$VERSION.jar file containing project's source files as well
+as .class files if applicable. If project.clj contains a :main key, the -main
+function in that namespace will be used as the main-class for executable jar."
+  ([project jar-name]
+     (binding [compile/*silently* true
+               deps (memoize deps)]
+       (when (zero? (compile/compile project))
+         (let [jar-path (get-jar-filename project jar-name)
+               deps-fileset (deps project)]
+           (write-jar project jar-path (filespecs project deps-fileset))
+           (println "Created" jar-path)
+           jar-path))))
+  ([project] (jar project (get-default-jar-name project))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-jar [project & args]
+    (jar project))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
 
 <p>   add to your project.clj (ignore periods):</p>
 
@@ -3703,5 +3908,5 @@ well-written.</p>
   (:use [clojure.test]))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-find-cljs-files
   (is (empty? (filter #(re-find #"\.#" (.getName %))
-                      (find-cljs-files "./resources")))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.stitch">cljs.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li><li class="floating-toc-li" id="floating-toc_cljs.test.stitch">cljs.test.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.test.watch">cljs.test.watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+                      (find-cljs-files "./resources")))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.stitch">cljs.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-compile">leiningen.cljs-compile</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-install">leiningen.cljs-install</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-jar">leiningen.cljs-jar</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li><li class="floating-toc-li" id="floating-toc_cljs.test.stitch">cljs.test.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.test.watch">cljs.test.watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>

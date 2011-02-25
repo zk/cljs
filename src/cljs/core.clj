@@ -29,6 +29,10 @@
       (symbol)))
 
 ;; ### Indenting / Pretty-Printing
+;; As of now, pretty printing js is the only option.  If you need to
+;; minify the compiled output, use a tool like [Google's
+;; Closure Compiler](http://code.google.com/closure/compiler/) (which
+;; may be included in cljs in the future.
 (def *indent* 0)
 
 (def nl "\n")
@@ -815,3 +819,4 @@
 
 (defn compile-cljs-file [path]
   (compile-cljs-reader (java.io.FileReader. path)))
+
