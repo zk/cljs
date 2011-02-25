@@ -34,7 +34,13 @@
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.0"]
-                     [marginalia "0.5.0-alpha"]
-                     [rhino/js "1.7R2"]]
+                     [marginalia "0.5.0"]
+                     [rhino/js "1.7R2"]
+                     [ring "0.3.3"]
+                     [net.cgrand/moustache "1.0.0-SNAPSHOT"]
+                     [hiccup "0.3.0"]
+                     [org.danlarkin/clojure-json "1.2-SNAPSHOT"]]
+  :source-path "src/clj"
   :cljs {:source-path "src/cljs"
-         :output-path "resources/js"})
+         :output-path "resources/public/js"
+         :libs [app]})
