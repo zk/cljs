@@ -2,9 +2,9 @@
 
 An experimental Clojure(ish) to Javascript compiler.
 
-Docs: http://zkim.github.com/cljs
+Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
 
-Demo: http://50.16.182.181:8080/ (Chrome only for now)
+Demo: [http://50.16.182.181:8080/](http://50.16.182.181:8080/) (Chrome only for now)
 
 
 ## License
