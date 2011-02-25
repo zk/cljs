@@ -33,16 +33,16 @@
     (catch Exception e
       (println (str "Problem reading project at " project-clj)))))
 
-(defn ns-to-file [source-root ns-sym]
+(defn ns-to-path [source-root ns-sym]
   (str
    source-root
    "/"
    (str/replace (str ns-sym) #"\." "/")
    ".cljs"))
 
-(defn ns-decl [file]
+(defn ns-decl [source]
   (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
-                   (java.io.FileReader. file))]
+                   (java.io.StringReader. source))]
     (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
       ns-decl)))
 
@@ -58,14 +58,25 @@
                (first %)
                %))))
 
+(defn cljs-source-for [source-root name]
+  (let [file (java.io.File. (ns-to-path source-root name))]
+    (if (.exists file)
+      (slurp (.getAbsolutePath file))
+      (try
+        (-> (.getContextClassLoader (Thread/currentThread))
+            (.getResourceAsStream (str (str/replace name #"\." "/") ".cljs"))
+            (java.io.InputStreamReader.)
+            (slurp))
+        (catch Exception e
+          (println (str "Couldn't find " name " in " source-root " or classpath.")))))))
 
 
-(defn find-dependencies [source-root source-file]
-  (let [ns-decl (ns-decl source-file)
+(defn find-dependencies [source-root cljs-source]
+  (let [ns-decl (ns-decl cljs-source)
         includes (distinct (includes ns-decl))]
     (distinct
      (flatten
-      (map #(concat (find-dependencies source-root (ns-to-file source-root %)) [%])
+      (map #(concat (find-dependencies source-root (cljs-source-for source-root %)) [%])
            includes)))))
 
 
@@ -78,18 +89,20 @@
   (println "  " "output:")
   (println "    "  (str output-path "/" name ".js"))
 
-  (->> (concat (find-dependencies source-path (ns-to-file source-path name))
-               [name])
-       (#(do (println %) %))
-       (map #(ns-to-file source-path %))
-       (map core/compile-cljs-file)
-       (interpose "\n\n\n\n")
-       (apply str)
-       (str core/*core-lib* "\n\n\n\n")
-       (spit (str output-path "/" (str name) ".js"))))
+  (let [source (cljs-source-for source-path name)]
+    (->> (concat (find-dependencies source-path source)
+                 [name])
+         (map #(cljs-source-for source-path %))
+         (map core/compile-cljs-string)
+         (interpose "\n\n\n\n")
+         (apply str)
+         (str core/*core-lib* "\n\n\n\n")
+         (spit (str output-path "/" (str name) ".js")))))
 
 (defn stitch-lib-with-sources
-  "Converts and stitches `sources` into `output-path/name.js`."
+  "Converts and stitches `sources` into `output-path/name.js`. Looks for
+   sources in the filesystem first at `source-path`/`name`, then does a
+   classpath lookup."
   [source-path output-path name sources]
   (let [cljs-source-paths (->> sources
                                (map str)
@@ -98,20 +111,13 @@
     (println "Stitching" name)
     (println "  " "input:")
 
-    (doseq [sp cljs-source-paths]
-      (println "    " sp)
-      (when (not (.exists (java.io.File. sp)))
-        (throw (Exception.
-                (str "Couldn't find source path "
-                     sp
-                     " for library "
-                     name)))))
 
     (println "  " "output:")
     (println "    "  (str output-path "/" name ".js"))
 
-    (->> cljs-source-paths
-         (map core/compile-cljs-file)
+    (->> sources
+         (map #(cljs-source-for source-path %))
+         (map core/compile-cljs-string)
          (interpose "\n\n\n\n")
          (apply str)
          (str core/*core-lib* "\n\n\n\n")
