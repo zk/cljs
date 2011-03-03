@@ -2,7 +2,8 @@
   "# Utilities for automatically compiing changed .cjls files."
   (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
-            [cljs.stitch :as st]))
+            [cljs.stitch :as st]
+            [clojure.contrib.io :as io]))
 
 (defn file [file-or-path]
   (if (string? file-or-path)
@@ -50,10 +51,18 @@
     (reset! *mod-map* (last-mod-map f-seq))
     changed-files))
 
-(defn check-and-run! [path]
-  (-> (find-cljs-files path)
-      (changed-files!)
-      (run-hooks)))
+(defn check-and-run! [paths]
+  (let [dirs (filter #(.isDirectory (java.io.File. %))
+                     paths)
+        files (map #(java.io.File. %)
+                   (filter #(not (.isDirectory (java.io.File. %)))
+                           paths))
+        cljs-files (concat
+                    (reduce concat (map find-cljs-files dirs))
+                    files)]
+    (-> cljs-files
+        (changed-files!)
+        (run-hooks))))
 
 (defn spit-equiv-js [cljs-file js-out-dir-file]
   (let [cljs-path (.getAbsolutePath cljs-file)
@@ -72,11 +81,11 @@
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))
 
-(defn hook-re-stitch [project-clj-path]
+(defn hook-re-stitch [path-or-map]
   (hook-change
    (fn [cljss]
      (if (not (empty? cljss))
-       (st/stitch-project project-clj-path)))))
+       (st/stitch-project path-or-map)))))
 
 (def *run* (atom true))
 
@@ -93,20 +102,56 @@
                (check-and-run! watch-path)
                (Thread/sleep 500))))))
 
-(defn start-watch-project [project-clj-path]
-  (let [opts (st/cljs-opts project-clj-path)]
+;; Stolen from marginalia:
+(defn ls
+  [path]
+  (let [file (java.io.File. path)]
+    (if (.isDirectory file)
+      (seq (.list file))
+      (when (.exists file)
+        [path]))))
+
+(defn mkdir [path]
+  (.mkdirs (io/file path)))
+
+(defn ensure-directory!
+  [path]
+  (when-not (ls path)
+    (mkdir path)))
+
+(defn start-watch-project
+  "Starts up a watcher which will re-compile cljs files to javascript
+   when cljs files found in :source-path and :test-path change.  Also re-compiles when
+   your project.clj changes.
+
+   Usage: `(start-watch-project \"./project.clj\")`"
+  [path-or-map]
+  (let [opts (st/cljs-opts path-or-map)
+        test-output-path (:test-output-path opts)
+        source-output-path (:source-output-path opts)]
     (when (not opts)
-      (throw (Exception. (str "Couldn't find cljs options in " project-clj-path))))
+      (throw (Exception. (str "Couldn't find cljs options in project."))))
     (clear-hooks)
     (reset! *run* true)
-    (hook-re-stitch project-clj-path)
-    (println "Watching" (:source-path opts) "for changes.")
-    (st/stitch-project project-clj-path)
+    (hook-re-stitch path-or-map)
+    (println "Watching" (:source-path opts) " for changes.")
+    (println "Watching" (:test-path opts) " for changes.")
+    (when (not (ls source-output-path))
+      (println "Source output path " source-output-path "not found, creating.")
+      (ensure-directory! source-output-path))
+    (when (not (ls test-output-path))
+      (println "Test output path " test-output-path "not found, creating.")
+      (ensure-directory! test-output-path))
+    (st/stitch-project path-or-map)
     (.start (Thread.
              (fn []
                (while @*run*
                  (try
-                   (check-and-run! (:source-path opts))
+                   (check-and-run! [(:source-path opts)
+                                    (:test-path opts)
+                                    (when (.exists (file "./project.clj"))
+                                      "./project.clj")])
                    (Thread/sleep 500)
                    (catch Exception e (println e)))))))))
+
 

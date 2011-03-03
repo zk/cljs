@@ -514,8 +514,8 @@ var html = html || {};
         return this.drop(1, args);
       }}.bind(this))();
     _out = this.filter(this._.identity, _out);
-    _out = this.filter((function(p1__2610_HASH_){
-      return (!(undefined == p1__2610_HASH_));
+    _out = this.filter((function(p1__2611_HASH_){
+      return (!(undefined == p1__2611_HASH_));
     }.bind(this)), _out);
     return _out;}.bind(this))();
   }.bind(this));
@@ -802,3 +802,38 @@ var app = app || {};
   }.bind(this))
 
 }).call(app);
+
+
+
+var app_test = app_test || {};
+(function() {
+
+  this.Array = Array;
+  
+  for(var prop in cljs.core){ this[prop] = cljs.core[prop] };
+  
+  for(var prop in app){ this[prop] = app[prop] };
+  
+  this.TestCase = TestCase;
+  
+  this.is = (function(test){
+    return assertTrue(test);
+  }.bind(this));
+  
+  this.deftest = (function(name){
+    var tests = Array.prototype.slice.call(arguments, 1);
+    return (function(){
+      var tc = this.TestCase(name);
+      
+      return this.map((function(p1__2612_HASH_){
+        return ((tc.prototype[this.str("test-", "G__2613")]) = p1__2612_HASH_);
+      }.bind(this)), tests);
+    
+    }.bind(this))();
+  }.bind(this));
+  
+  return this.deftest("foo", (function(){
+    return this.is((1 == 2));
+  }.bind(this)))
+
+}).call(app_test);

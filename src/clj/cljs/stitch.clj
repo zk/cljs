@@ -22,16 +22,19 @@
             [cljs.core :as core]))
 
 (defn cljs-opts
-  "Pulls the :cljs map from the specified `project-clj`."
-  [project-clj]
-  (try
-    (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-clj))]
-      (->> (read rdr)
-           (drop 5)
-           (apply hash-map)
-           :cljs))
-    (catch Exception e
-      (println (str "Problem reading project at " project-clj)))))
+  "Returns the value from the :cljs key in a project map. Accepts both a project map or
+   path to project.clj."
+  [path-or-map]
+  (if (map? path-or-map)
+    (:cljs path-or-map)
+    (try
+      (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. path-or-map))]
+        (->> (read rdr)
+             (drop 5)
+             (apply hash-map)
+             :cljs))
+      (catch Exception e
+        (println (str "Problem reading project at " path-or-map))))))
 
 (defn ns-to-path [source-root ns-sym]
   (str
@@ -58,41 +61,53 @@
                (first %)
                %))))
 
-(defn cljs-source-for [source-root name]
-  (let [file (java.io.File. (ns-to-path source-root name))]
-    (if (.exists file)
-      (slurp (.getAbsolutePath file))
-      (try
-        (-> (.getContextClassLoader (Thread/currentThread))
-            (.getResourceAsStream (str (str/replace name #"\." "/") ".cljs"))
-            (java.io.InputStreamReader.)
-            (slurp))
-        (catch Exception e
-          (println (str "Couldn't find " name " in " source-root " or classpath.")))))))
+(defn cljs-source-for [search-paths name]
+  (let [res (->> search-paths
+                 (map (fn [path]
+                        (let [file (java.io.File. (ns-to-path path name))]
+                          (if (.exists file)
+                            (slurp (.getAbsolutePath file))
+                            (try
+                              (-> (.getContextClassLoader (Thread/currentThread))
+                                  (.getResourceAsStream (str (str/replace name #"\." "/") ".cljs"))
+                                  (java.io.InputStreamReader.)
+                                  (slurp))
+                              (catch Exception e nil))))))
+                 (filter identity)
+                 (first))]
+    (if res
+      res
+      (println (str "Couldn't find " name " in "
+                    (apply str (interpose ", " search-paths))
+                    " or classpath.")))))
 
 
-(defn find-dependencies [source-root cljs-source]
+(defn find-dependencies [search-paths cljs-source]
   (let [ns-decl (ns-decl cljs-source)
         includes (distinct (includes ns-decl))]
     (distinct
      (flatten
-      (map #(concat (find-dependencies source-root (cljs-source-for source-root %)) [%])
+      (map #(concat (find-dependencies search-paths (cljs-source-for search-paths %)) [%])
            includes)))))
 
 
 (defn stitch-lib
   "Converts and stitches `sources` into `output-path/name.js`."
-  [source-path output-path name]
+  [search-paths output-path name]
   (println "Stitching" name)
-  (println "  " "input:")
+  (let [source (cljs-source-for search-paths name)
+        deps (concat (find-dependencies search-paths source)
+                     [name])]
 
-  (println "  " "output:")
-  (println "    "  (str output-path "/" name ".js"))
+    (println "  " "input:")
+    (println "    " (apply str (interpose "\n     " deps)))
 
-  (let [source (cljs-source-for source-path name)]
-    (->> (concat (find-dependencies source-path source)
-                 [name])
-         (map #(cljs-source-for source-path %))
+    (println "  " "output:")
+    (println "    "  (str output-path "/" name ".js"))
+    (println)
+
+    (->> deps
+         (map #(cljs-source-for search-paths %))
          (map core/compile-cljs-string)
          (interpose "\n\n\n\n")
          (apply str)
@@ -114,6 +129,7 @@
 
     (println "  " "output:")
     (println "    "  (str output-path "/" name ".js"))
+    (println)
 
     (->> sources
          (map #(cljs-source-for source-path %))
@@ -124,11 +140,11 @@
          (spit (str output-path "/" (str name) ".js")))))
 
 
-(defn stitch-libs [output-path source-path libs]
+(defn stitch-libs [output-path search-paths libs]
   (doseq [lib libs]
     (if (map? lib)
-      (stitch-lib-with-sources source-path output-path (as-str (:name lib)) (:sources lib))
-      (stitch-lib source-path output-path (as-str lib)))))
+      (stitch-lib-with-sources search-paths output-path (as-str (:name lib)) (:sources lib))
+      (stitch-lib search-paths output-path (as-str lib)))))
 
 (defn prefix-path [prefix path]
   (str
@@ -142,20 +158,29 @@
   (time
    (let [opts (apply hash-map opts)
          copts (cljs-opts project-clj-path)
-         output-path (prefix-path
-                      (:project-root opts)
-                      (:output-path copts))
+         source-output-path (prefix-path
+                             (:project-root opts)
+                             (:source-output-path copts))
          source-path (prefix-path
                       (:project-root opts)
                       (:source-path copts))
-         libs (:libs copts)]
-     (println "Stitching libs with")
+         source-libs (:source-libs copts)
+
+         test-output-path (prefix-path
+                           (:project-root opts)
+                           (:test-output-path copts))
+         test-path (prefix-path
+                    (:project-root opts)
+                    (:test-path copts))
+         test-libs (:test-libs copts)]
+     (println)
+     (println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+     (println "vvv" "cljs project options" "vvv")
      (pprint copts)
      (println)
-     (stitch-libs output-path source-path libs))))
+     (stitch-libs source-output-path [source-path] source-libs)
+     (stitch-libs test-output-path [source-path test-path] test-libs)
+     (println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+     (println (java.util.Date.)))))
 
 
-#_(find-dependencies "./resources/testproj/src/cljs"
-                   "./resources/testproj/src/cljs/ns/main.cljs")
-
-#_(stitch-project "./resources/testproj/project.clj" :project-root "./resources/testproj")

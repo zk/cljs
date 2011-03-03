@@ -26,6 +26,7 @@
       (str/replace #"!" "_BANG_")
       (str/replace #"/" ".")
       (str/replace #"\*" "_SPLAT_")
+      (str/replace #"=" "_EQ_")
       (symbol)))
 
 ;; ### Indenting / Pretty-Printing

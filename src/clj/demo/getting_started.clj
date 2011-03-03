@@ -23,9 +23,8 @@
             [:html
              [:head
               [:title "cljs - getting started"]
-              [:style {:type "text/css"}
-               "ins {background-color: #afa;}
-                del {background-color: #faa;}"]
+              [:link {:rel "stylesheet"
+                      :href "/css/getting-started.css"}]
               [:script {:src "/js/jquery-1.4.4.min.js"}]
               [:script {:src "/js/underscore.min.js"}]
               [:script {:src "/js/jsdiff.js"}]

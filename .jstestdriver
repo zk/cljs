@@ -1,0 +1,7 @@
+server: http://localhost:4224
+
+load:
+  - resources/public/js/underscore.min.js
+  - resources/public/js/jquery-1.4.4.min.js
+  - resources/test/js/*.js
+
