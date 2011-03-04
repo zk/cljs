@@ -732,8 +732,11 @@
      '(defn println [& args]
         (.log 'console args))
 
-     '(defn apply [f args]
-        (.apply f 'this args))
+     '(defn apply [f & args]
+        (let [l (last args)
+              fs (take (dec (count args)) args)
+              flattened (concat fs l)]
+          (.apply f 'this flattened)))
 
      '(defn filter [f col]
         (if col
