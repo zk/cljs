@@ -430,7 +430,8 @@
    'doseq   handle-doseq
    'instanceof handle-instanceof
    'gensym handle-gensym
-   'gensym-str handle-gensym-str})
+   'gensym-str handle-gensym-str
+   'throw   handle-throw})
 
 (defn apply-able-special-forms []
   {'+       (make-strict-op '+)
