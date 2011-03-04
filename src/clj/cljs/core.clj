@@ -59,12 +59,20 @@
   (with-inc-indent
     (apply ind-str body)))
 
+(defn returnable? [el]
+  (cond
+   (coll? el) (let [f (first el)]
+                (not (or (= 'throw f))))
+   :else true))
+
 (defn add-return [statements]
   (let [count (dec (count statements))
         before-ret (take count statements)
         after-ret (drop count statements)
         with-return (concat before-ret [(apply str "return " after-ret)])]
-    with-return))
+    (if (returnable? after-ret)
+      with-return
+      statements)))
 
 (defn interpose-semi-colon [col]
   (interpose ";" col))
@@ -339,8 +347,10 @@
                          ")"))
                   "{" nl
                   (inc-ind-str
-                   "return "
-                   (to-js (second %))
+                   (if (returnable? (second %))
+                     (str "return "
+                          (to-js (second %)))
+                     (to-js (second %)))
                    ";") nl
                   "}"))
            (interpose " else ")
@@ -387,6 +397,10 @@
 
 (defn handle-gensym-str [_]
   (to-js (str (gensym))))
+
+(defn handle-throw [[_ msg]]
+  (ind-str
+   "throw " (to-js msg) ";"))
 
 (defn special-forms []
   {'def     handle-def
@@ -798,7 +812,25 @@
 
      '(defn identity [arg]
         (if arg
-          (.identity '_ arg))))))
+          (.identity '_ arg)))
+
+     '(defn empty? [col]
+        (cond
+         (array? col) (= 0 col.length)
+         (object? col) (.isEqual '_ {} col)
+         :else (throw (str "Can't call empty? on " col))))
+
+     '(defn hash-map [& col]
+        (let [pairs (partition 2 col)]
+          (if (empty? col)
+            {}
+            (reduce (fn [m pair]
+                      (aset m (first pair) (second pair))
+                      m)
+                    {}
+                    pairs))))
+
+     )))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))
@@ -820,4 +852,5 @@
 
 (defn compile-cljs-file [path]
   (compile-cljs-reader (java.io.FileReader. path)))
+
 

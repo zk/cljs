@@ -156,5 +156,19 @@
 (deftest test-distinct
   (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))
 
+(deftest test-empty?
+  (is (eval-js '(empty? [])))
+  (is (not (eval-js '(empty? [1 2 3]))))
+  (is (eval-js '(empty? {})))
+  (is (not (eval-js '(empty? {:foo "bar"})))))
 
+(deftest test-hash-map
+  (is (= {} (eval-js '(hash-map))))
+  (is (= {:foo "bar"} (eval-js '(hash-map :foo "bar"))))
+  (is (= {:foo "bar" :baz "bap"}
+         (eval-js '(apply hash-map [:foo "bar" :baz "bap"])))))
+
+(deftest test-apply
+  (is (= 6 (eval-js '(apply + 1 [2 3]))))
+  (is (= 10 (eval-js '(apply + 1 2 [3 4])))))
 

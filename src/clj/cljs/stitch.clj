@@ -95,49 +95,51 @@
   "Converts and stitches `sources` into `output-path/name.js`."
   [search-paths output-path name]
   (println "Stitching" name)
-  (let [source (cljs-source-for search-paths name)
-        deps (concat (find-dependencies search-paths source)
-                     [name])]
+  (let [source (cljs-source-for search-paths name)]
+    (if (not source)
+      (println "Skipping" name)
+      (let [deps (concat (find-dependencies search-paths source)
+                         [name])]
+        (println "  " "input:")
+        (println "    " (apply str (interpose "\n     " deps)))
 
-    (println "  " "input:")
-    (println "    " (apply str (interpose "\n     " deps)))
+        (println "  " "output:")
+        (println "    "  (str output-path "/" name ".js"))
+        (println)
 
-    (println "  " "output:")
-    (println "    "  (str output-path "/" name ".js"))
-    (println)
-
-    (->> deps
-         (map #(cljs-source-for search-paths %))
-         (map core/compile-cljs-string)
-         (interpose "\n\n\n\n")
-         (apply str)
-         (str core/*core-lib* "\n\n\n\n")
-         (spit (str output-path "/" (str name) ".js")))))
+        (->> deps
+             (map #(cljs-source-for search-paths %))
+             (map core/compile-cljs-string)
+             (interpose "\n\n\n\n")
+             (apply str)
+             (str core/*core-lib* "\n\n\n\n")
+             (spit (str output-path "/" (str name) ".js")))))))
 
 (defn stitch-lib-with-sources
   "Converts and stitches `sources` into `output-path/name.js`. Looks for
    sources in the filesystem first at `source-path`/`name`, then does a
    classpath lookup."
   [source-path output-path name sources]
-  (let [cljs-source-paths (->> sources
-                               (map str)
-                               (map #(str/replace % #"\." "/"))
-                               (map #(str source-path "/" % ".cljs")))]
-    (println "Stitching" name)
-    (println "  " "input:")
+  (try
+    (let [cljs-source-paths (->> sources
+                                 (map str)
+                                 (map #(str/replace % #"\." "/"))
+                                 (map #(str source-path "/" % ".cljs")))]
+      (println "Stitching" name)
+      (println "  " "input:")
 
 
-    (println "  " "output:")
-    (println "    "  (str output-path "/" name ".js"))
-    (println)
+      (println "  " "output:")
+      (println "    "  (str output-path "/" name ".js"))
+      (println)
 
-    (->> sources
-         (map #(cljs-source-for source-path %))
-         (map core/compile-cljs-string)
-         (interpose "\n\n\n\n")
-         (apply str)
-         (str core/*core-lib* "\n\n\n\n")
-         (spit (str output-path "/" (str name) ".js")))))
+      (->> sources
+           (map #(cljs-source-for source-path %))
+           (map core/compile-cljs-string)
+           (interpose "\n\n\n\n")
+           (apply str)
+           (str core/*core-lib* "\n\n\n\n")
+           (spit (str output-path "/" (str name) ".js"))))))
 
 
 (defn stitch-libs [output-path search-paths libs]
