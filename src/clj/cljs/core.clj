@@ -63,13 +63,14 @@
   (cond
    (coll? el) (let [f (first el)]
                 (not (or (= 'throw f))))
+   (string? el) (not (re-find #"^throw\s+" el))
    :else true))
 
 (defn add-return [statements]
   (let [count (dec (count statements))
         before-ret (take count statements)
-        after-ret (drop count statements)
-        with-return (concat before-ret [(apply str "return " after-ret)])]
+        after-ret (first (drop count statements))
+        with-return (concat before-ret [(str "return " after-ret)])]
     (if (returnable? after-ret)
       with-return
       statements)))
@@ -276,7 +277,6 @@
       ";")
      nl nl
      "}.bind(this))()")))
-
 
 (defn handle-doto [[_ & body]]
   (let [pivot (first body)
