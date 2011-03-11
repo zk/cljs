@@ -85,6 +85,10 @@
   (is (eval-js '(def one! 1)))
   (is (eval-js '(def *one* 1))))
 
+(deftest test-hash-map-objs
+  (is (= {:foo "bar"} (eval-js '(let [asdf "foo"]
+                                  {asdf "bar"})))))
+
 ;; Special Forms
 (deftest test-def
   (is (= 10 (eval-js '(def x 10) 'x))))

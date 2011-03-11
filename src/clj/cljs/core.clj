@@ -523,19 +523,49 @@
    (map-accessor? sexp) (map-accessor-to-js sexp)
    :else (call-fn sexp)))
 
-(defn map-to-js
-  ""
-  [m]
+;; hashmap creation is handled in a seemingly convoluted way. A
+;; temporary object is created to which entries are inserted, instead
+;; of a direct translation to javascript's map syntax.  This is to
+;; support using var values as keys.  For example:
+;;
+;;     var x = "foo"
+;;     var m = {x: "bar"}
+;;
+;; would produce an object with a member "x" of value "bar", where the
+;; desired behavoir is a map with member "foo" of value
+;; "bar". Therefore we handle map creation as such:
+;;
+;;     (let [x "foo"]
+;;       {x "bar"})
+;;
+;;          |
+;;          v
+;;
+;;     var x = "foo"
+;;     return (function() {
+;;       var _out = {}
+;;       _out[x] = "bar"
+;;     })()
+;;
+;;        instead of
+;;
+;;     var x = "foo
+;;     {x: "bar"}
+;;
+;; which more closely mimics clojure's map creation behavior.
+
+(defn map-to-js [m]
   (ind-str
-   "({" nl
+   "(function(){" nl
    (inc-ind-str
+    "var _out = {};" nl
     (->> m
-         (map #(str \' (name (key %)) \'
-                    ":"
-                    (to-js (val %))))
-         (interpose (str "," nl (ind)))
-         (apply str)))
-   nl "})"))
+         (map #(str
+                "_out[" (to-js (key %)) "] = " (to-js (val %)) ";" nl))
+         (apply str))
+    "return _out;")
+   nl
+   "}.bind(this))()"))
 
 (defn vec-to-js [elements]
   (if (empty? elements) "[]"
