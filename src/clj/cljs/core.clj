@@ -293,7 +293,7 @@
            [(str "var _out = " (to-js pivot))]
            (map to-js (map #(concat (vector (first %) '_out) (rest %)) forms))
            ['_out]))))
-       "}.bind(this)())"))))
+       "}.bind(this))()"))))
 
 (defn handle-->> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
@@ -538,8 +538,7 @@
 ;;     (let [x "foo"]
 ;;       {x "bar"})
 ;;
-;;          |
-;;          v
+;;       compiles to
 ;;
 ;;     var x = "foo"
 ;;     return (function() {
@@ -547,12 +546,13 @@
 ;;       _out[x] = "bar"
 ;;     })()
 ;;
-;;        instead of
+;;       instead of
 ;;
-;;     var x = "foo
+;;     var x = "foo"
 ;;     {x: "bar"}
 ;;
 ;; which more closely mimics clojure's map creation behavior.
+;;
 
 (defn map-to-js [m]
   (ind-str
