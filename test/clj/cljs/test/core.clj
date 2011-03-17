@@ -143,7 +143,9 @@
   (is (= [1 2 3 4] (eval-js '(concat [1 2] [3 4])))))
 
 (deftest test-core-take
-  (is (= [1 2] (eval-js '(take 2 [1 2 3 4])))))
+  (is (= [1 2] (eval-js '(take 2 [1 2 3 4]))))
+  (is (= [1] (eval-js '(take 1 [1 2 3]))))
+  (is (= 1 (count (eval-js '(take 1 [{:foo "bar"} {:baz "bap"}]))))))
 
 (deftest test-core-drop
   (is (= [3 4] (eval-js '(drop 2 [1 2 3 4])))))
@@ -176,3 +178,6 @@
   (is (= 6 (eval-js '(apply + 1 [2 3]))))
   (is (= 10 (eval-js '(apply + 1 2 [3 4])))))
 
+(deftest test-interleave
+  (is (= [1 "a" 2 "b"] (eval-js '(interleave [1 2] [:a :b]))))
+  (is (= [1 10 2 20 3 30] (eval-js '(interleave [1 2 3] [10 20 30 40])))))

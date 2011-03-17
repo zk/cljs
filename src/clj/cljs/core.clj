@@ -780,7 +780,8 @@
           out))
 
      '(defn take [n col]
-        (.slice col 0 n))
+        (when col
+          (.slice col 0 n)))
 
      '(defn drop [n col]
         (when col
@@ -841,6 +842,16 @@
               (set! idx (inc idx)))
             out)))
 
+     '(defn interleave [cola colb]
+        (if (or (= 0 (count cola))
+                (= 0 (count colb)))
+          []
+          (let [len (if (> (count cola) (count colb))
+                      (count cola)
+                      (count colb))]
+            (concat [(first cola) (first colb)]
+                    (interleave (rest cola) (rest colb))))))
+
      '(defn distinct [col]
         (.uniq '_ col))
 
@@ -864,6 +875,16 @@
                     {}
                     pairs))))
 
+     #_'(defn range [start end step]
+          (let [sta (if end
+                      start
+                      0)
+                en (if end
+                     end
+                     start)
+                ste (if step
+                      step
+                      1)]))
      )))
 
 (defn spit-cljs-core [path]
