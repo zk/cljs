@@ -873,19 +873,7 @@
                       (aset m (first pair) (second pair))
                       m)
                     {}
-                    pairs))))
-
-     #_'(defn range [start end step]
-          (let [sta (if end
-                      start
-                      0)
-                en (if end
-                     end
-                     start)
-                ste (if step
-                      step
-                      1)]))
-     )))
+                    pairs)))))))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))
