@@ -34,8 +34,4 @@
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.0"]
-                     [rhino/js "1.7R2"]
-                     [lein-cljs "0.0.1-SNAPSHOT"]
-                     [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
-                     [com.google.jstestdriver/jstestdriver "1.3.1"]]
-  :repositories {"js-test-driver" "http://jstd-maven-plugin.googlecode.com/svn/maven2"})
+                     [rhino/js "1.7R2"]])
