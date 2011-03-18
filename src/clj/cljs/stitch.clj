@@ -12,8 +12,7 @@
                                   :subdir.two]}]})
 
    Stich will stich together `src/cljs/one.cljs` and `src/cljs/subdir/two.cljs`
-   into `resources/public/js/out-name.js`.
-"
+   into `resources/public/js/out-name.js`."
   (:use [clojure.contrib.string :only (as-str)]
         [clojure.contrib.find-namespaces :only (read-ns-decl)]
         [clojure.contrib.seq :only (find-first)]

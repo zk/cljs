@@ -10,7 +10,7 @@
       (java.io.InputStreamReader.)
       (slurp)))
 
-(def underscore-js-source (slurp-resource "underscore.js"))
+(def underscore-js-source (slurp-resource "underscore.min.js"))
 
 (defn eval-js [snippet]
   (let [cx (Context/enter)
@@ -26,9 +26,3 @@
         vals (map #(.get obj % nil) obj-ids)
         keys (map keyword obj-ids)]
     (apply hash-map (interleave keys vals))))
-
-#_(objtomap (eval-js (slurp "./resources/scope/test1.js")))
-
-#_(eval-js (slurp "./resources/scope/test1.js"))
-
-
