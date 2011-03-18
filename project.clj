@@ -36,17 +36,6 @@
   :dev-dependencies [[swank-clojure "1.2.0"]
                      [rhino/js "1.7R2"]
                      [lein-cljs "0.0.1-SNAPSHOT"]
-                     [ring "0.3.3"]
-                     [net.cgrand/moustache "1.0.0-SNAPSHOT"]
-                     [hiccup "0.3.0"]
                      [org.danlarkin/clojure-json "1.2-SNAPSHOT"]
                      [com.google.jstestdriver/jstestdriver "1.3.1"]]
-  :source-path "src/clj"
-  :test-path "test/clj"
-  :cljs {:source-path "src/cljs"
-         :source-output-path "resources/public/js"
-         :source-libs [app]
-         :test-path "test/cljs"
-         :test-output-path "resources/test/js"
-         :test-libs [app-test]}
   :repositories {"js-test-driver" "http://jstd-maven-plugin.googlecode.com/svn/maven2"})
