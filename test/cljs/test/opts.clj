@@ -9,7 +9,7 @@
                 test-path
                 test-output-path
                 test-libs]}
-        (slurp-opts "dev-resources/test-project1.clj")]
+        (slurp "dev-resources/test-project1.clj")]
     (is (= "alt-source-path" source-path))
     (is (= "alt-source-output-path" source-output-path))
     (is (= [] source-libs))

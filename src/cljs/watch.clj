@@ -2,7 +2,8 @@
   "# Utilities for automatically compiing changed .cjls files."
   (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
-            [cljs.stitch :as st]
+            [cljs.compile :as compile]
+            [cljs.opts :as opts]
             [clojure.contrib.io :as io]))
 
 (defn file [file-or-path]
@@ -81,11 +82,11 @@
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))
 
-(defn hook-re-stitch [path-or-map]
+(defn hook-re-stitch [cljs-opts]
   (hook-change
    (fn [cljss]
      (if (not (empty? cljss))
-       (st/stitch-project path-or-map)))))
+       (compile/opts cljs-opts)))))
 
 (def *run* (atom true))
 
@@ -119,21 +120,14 @@
   (when-not (ls path)
     (mkdir path)))
 
-(defn start-watch-project
-  "Starts up a watcher which will re-compile cljs files to javascript
-   when cljs files found in :source-path and :test-path change.  Also re-compiles when
-   your project.clj changes.
-
-   Usage: `(start-watch-project \"./project.clj\")`"
-  [path-or-map]
-  (let [opts (st/cljs-opts path-or-map)
-        test-output-path (:test-output-path opts)
+(defn start-watch-opts [opts]
+  (let [test-output-path (:test-output-path opts)
         source-output-path (:source-output-path opts)]
     (when (not opts)
       (throw (Exception. (str "Couldn't find cljs options in project."))))
     (clear-hooks)
     (reset! *run* true)
-    (hook-re-stitch path-or-map)
+    (hook-re-stitch opts)
     (println "Watching" (:source-path opts) " for changes.")
     (println "Watching" (:test-path opts) " for changes.")
     (when (not (ls source-output-path))
@@ -142,7 +136,7 @@
     (when (not (ls test-output-path))
       (println "Test output path " test-output-path "not found, creating.")
       (ensure-directory! test-output-path))
-    (st/stitch-project path-or-map)
+    (compile/opts opts)
     (.start (Thread.
              (fn []
                (while @*run*
@@ -153,5 +147,15 @@
                                       "./project.clj")])
                    (Thread/sleep 500)
                    (catch Exception e (println e)))))))))
+
+(defn start-watch-project
+  "Starts up a watcher which will re-compile cljs files to javascript
+   when cljs files found in :source-path and :test-path change.  Also re-compiles when
+   your project.clj changes.
+
+   Usage: `(start-watch-project \"./project.clj\")`"
+  [& [project-path]]
+  (let [opts (opts/slurp (or project-path "./project.clj"))]
+    (start-watch-opts opts)))
 
 
