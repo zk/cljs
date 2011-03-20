@@ -47,10 +47,10 @@
            [(:source-path opts)
             (:test-path opts)]
            (:test-libs opts))
+     (println)
      (println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
      (println (java.util.Date.))))
   (println))
 
 (defn project [& [project-file]]
   (opts (opts/slurp (or project-file "./project.clj"))))
-
