@@ -29,9 +29,11 @@
 
    2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
 
+
    For more examples, please see the [cljs.test.core](#cljs.test.core) namespace."
   
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.0"]
-                     [rhino/js "1.7R2"]])
+                     [rhino/js "1.7R2"]]
+  :dev-resources "dev-resources")
