@@ -66,6 +66,6 @@ compiled cljs output.
 
 ## License
 
-Copyright (C) 2010 Zachary Kim
+Copyright (C) 2010-2011 Zachary Kim
 
 Distributed under the Eclipse Public License, the same as Clojure.
