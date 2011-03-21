@@ -1,4 +1,4 @@
-(defproject cljs "0.2-SNAPSHOT"
+(defproject cljs "0.2"
   :description
   "An experimental Clojure(ish) to Javascript compiler similar to
    [clojurescript](https://github.com/clojure/clojure-contrib/tree/master/clojurescript/). The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!
@@ -35,5 +35,6 @@
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.0"]
-                     [rhino/js "1.7R2"]]
+                     [rhino/js "1.7R2"]
+                     [lein-clojars "0.6.0"]]
   :dev-resources "dev-resources")
