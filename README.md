@@ -13,12 +13,12 @@ only for now)
 
 2. Add a `:cljs` entry to your project.clj:
 
-    :cljs {:source-path "src/cljs"
-           :source-output-path "resources/public/js"
-           :source-libs [some-ns.app]
-           :test-path "test/cljs"
-           :test-output-path "resources/testjs"
-           :test-libs [app-test]}
+     :cljs {:source-path "src/cljs"
+            :source-output-path "resources/public/js"
+            :source-libs [some-ns.app]
+            :test-path "test/cljs"
+            :test-output-path "resources/testjs"
+            :test-libs [app-test]}
 
 
 3. Make sure the paths you specify above exist.
