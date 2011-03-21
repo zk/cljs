@@ -17,9 +17,9 @@
 (defn libs [opts search-paths libs]
   (doseq [source-lib libs]
     (let [analyzed (deps/analyze search-paths source-lib)]
-      (println "  Lib:")
-      (println "   " (:name analyzed) "--" (:file analyzed))
-      (println "  Deps:")
+      (println "*" (:name analyzed) "--" (:file analyzed))
+      (println)
+      (println "  deps")
       (doseq [dep (:deps analyzed)]
         (println "   " (:name dep) "--" (:file dep)))
       (print "  Compiling...  ")
@@ -28,7 +28,8 @@
         (println "done.  ")
         (print "  Writing to" (str out-path "...  "))
         (spit out-path compiled)
-        (println "done.")))))
+        (println "done.")
+        (println)))))
 
 (defn opts [opts]
   (time
