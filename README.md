@@ -13,6 +13,7 @@ only for now)
 
 2. Add a `:cljs` entry to your project.clj:
 
+
     (defproject...
       :cljs {:source-path "src/cljs"
              :source-output-path "resources/public/js"
