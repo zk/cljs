@@ -40,7 +40,9 @@ global domination.
 See
 [http://github.com/zkim/cljs-contrib](http://github.com/zkim/cljs-contrib),
 specifically:
+
 * `project.clj` for info on the `:cljs` opts map.
+
 * Clone the repo and open `resources/border-layout.html` and
 `resources/panel.html` in your browser.  This will give you an idea of
  how to use the compiled cljs output.
