@@ -62,6 +62,8 @@ compiled cljs output.
 
 * Macros
 
+* TCO -- Possible with CPS? http://eriwen.com/javascript/cps-tail-call-elimination/
+
 ## License
 
 Copyright (C) 2010 FIXME
