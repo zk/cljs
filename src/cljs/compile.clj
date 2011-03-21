@@ -1,15 +1,30 @@
 (ns cljs.compile
-  (:use clojure.pprint)
+  (:use clojure.pprint
+        [clojure.java.io :only (file)])
   (:require [cljs.opts :as opts]
             [cljs.deps :as deps]
             [cljs.core :as core]))
 
+(defn cljs-source
+  "Returns `path` content as string.  Checks both
+   filesystem and classpath."
+  [path]
+  (let [file (file path)]
+    (if (.exists file)
+      (slurp file)
+      (try
+        (-> (.getContextClassLoader (Thread/currentThread))
+            (.getResourceAsStream (.getPath file))
+            (java.io.InputStreamReader.)
+            (slurp))
+        (catch Exception e nil)))))
 
 (defn lib [opts analyzed-lib]
   (let [dep-files (map :file (:deps analyzed-lib))
         lib-file (:file analyzed-lib)]
     (->> (concat dep-files [lib-file])
-         (map core/compile-cljs-file)
+         (map cljs-source)
+         (map core/compile-cljs-string)
          (interpose "\n\n\n\n")
          (apply str)
          (str core/*core-lib*))))
