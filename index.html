@@ -28,7 +28,362 @@
 
    2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
 
-   For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><script type="text/javascript">/*!
+
+   For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><style type="text/css">/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+  -moz-border-radius: 0 0 0 0 !important;
+  -webkit-border-radius: 0 0 0 0 !important;
+  background: none !important;
+  border: 0 !important;
+  bottom: auto !important;
+  float: none !important;
+  height: auto !important;
+  left: auto !important;
+  line-height: 1.1em !important;
+  margin: 0 !important;
+  outline: 0 !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  position: static !important;
+  right: auto !important;
+  text-align: left !important;
+  top: auto !important;
+  vertical-align: baseline !important;
+  width: auto !important;
+  box-sizing: content-box !important;
+  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  min-height: inherit !important;
+  min-height: auto !important;
+}
+
+.syntaxhighlighter {
+/*  width: 100% !important; */
+  margin: 1em 0 1em 0 !important;
+  position: relative !important;
+  overflow: auto !important;
+}
+.syntaxhighlighter.source {
+  overflow: hidden !important;
+}
+.syntaxhighlighter .bold {
+  font-weight: bold !important;
+}
+.syntaxhighlighter .italic {
+  font-style: italic !important;
+}
+.syntaxhighlighter .line {
+  white-space: pre !important;
+}
+.syntaxhighlighter table {
+/*    width: 100% !important;*/
+}
+.syntaxhighlighter table caption {
+  text-align: left !important;
+  padding: .5em 0 0.5em 1em !important;
+}
+.syntaxhighlighter table td.code {
+  width: 100% !important;
+}
+.syntaxhighlighter table td.code .container {
+  position: relative !important;
+}
+.syntaxhighlighter table td.code .container textarea {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: white !important;
+  padding-left: 1em !important;
+  overflow: hidden !important;
+  white-space: pre !important;
+}
+.syntaxhighlighter table td.gutter .line {
+  text-align: right !important;
+  padding: 0 0.5em 0 1em !important;
+}
+.syntaxhighlighter table td.code .line {
+  padding: 0 1em !important;
+}
+.syntaxhighlighter.nogutter td.code .container textarea, .syntaxhighlighter.nogutter td.code .line {
+  padding-left: 0em !important;
+}
+.syntaxhighlighter.show {
+  display: block !important;
+}
+.syntaxhighlighter.collapsed table {
+  display: none !important;
+}
+.syntaxhighlighter.collapsed .toolbar {
+    display: none;
+/*  padding: 0.1em 0.8em 0em 0.8em !important;
+  font-size: 1em !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;*/
+}
+.syntaxhighlighter.collapsed .toolbar span {
+  display: inline !important;
+  margin-right: 1em !important;
+}
+.syntaxhighlighter.collapsed .toolbar span a {
+  padding: 0 !important;
+  display: none !important;
+}
+.syntaxhighlighter.collapsed .toolbar span a.expandSource {
+  display: inline !important;
+}
+.syntaxhighlighter .toolbar {
+    display: none;
+/*  position: absolute !important;
+  right: 1px !important;
+  top: 1px !important;
+  width: 11px !important;
+  height: 11px !important;
+  font-size: 10px !important;
+  z-index: 10 !important;*/
+}
+.syntaxhighlighter .toolbar span.title {
+  display: inline !important;
+}
+.syntaxhighlighter .toolbar a {
+  display: block !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  padding-top: 1px !important;
+}
+.syntaxhighlighter .toolbar a.expandSource {
+  display: none !important;
+}
+.syntaxhighlighter.ie {
+  font-size: .9em !important;
+  padding: 1px 0 1px 0 !important;
+}
+.syntaxhighlighter.ie .toolbar {
+  line-height: 8px !important;
+}
+.syntaxhighlighter.ie .toolbar a {
+  padding-top: 0px !important;
+}
+.syntaxhighlighter.printing .line.alt1 .content,
+.syntaxhighlighter.printing .line.alt2 .content,
+.syntaxhighlighter.printing .line.highlighted .number,
+.syntaxhighlighter.printing .line.highlighted.alt1 .content,
+.syntaxhighlighter.printing .line.highlighted.alt2 .content {
+  background: none !important;
+}
+.syntaxhighlighter.printing .line .number {
+  color: #bbbbbb !important;
+}
+.syntaxhighlighter.printing .line .content {
+  color: black !important;
+}
+.syntaxhighlighter.printing .toolbar {
+  display: none !important;
+}
+.syntaxhighlighter.printing a {
+  text-decoration: none !important;
+}
+.syntaxhighlighter.printing .plain, .syntaxhighlighter.printing .plain a {
+  color: black !important;
+}
+.syntaxhighlighter.printing .comments, .syntaxhighlighter.printing .comments a {
+  color: #008200 !important;
+}
+.syntaxhighlighter.printing .string, .syntaxhighlighter.printing .string a {
+  color: blue !important;
+}
+.syntaxhighlighter.printing .keyword {
+  color: #006699 !important;
+  font-weight: bold !important;
+}
+.syntaxhighlighter.printing .preprocessor {
+  color: gray !important;
+}
+.syntaxhighlighter.printing .variable {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter.printing .value {
+  color: #009900 !important;
+}
+.syntaxhighlighter.printing .functions {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter.printing .constants {
+  color: #0066cc !important;
+}
+.syntaxhighlighter.printing .script {
+  font-weight: bold !important;
+}
+.syntaxhighlighter.printing .color1, .syntaxhighlighter.printing .color1 a {
+  color: gray !important;
+}
+.syntaxhighlighter.printing .color2, .syntaxhighlighter.printing .color2 a {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter.printing .color3, .syntaxhighlighter.printing .color3 a {
+  color: red !important;
+}
+.syntaxhighlighter.printing .break, .syntaxhighlighter.printing .break a {
+  color: black !important;
+}
+</style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css">/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.alt1 {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.alt2 {
+  background-color: transparent !important;
+}
+.syntaxhighlighter .line.highlighted.alt1, .syntaxhighlighter .line.highlighted.alt2 {
+  background-color: #c3defe !important;
+}
+.syntaxhighlighter .line.highlighted.number {
+  color: white !important;
+}
+.syntaxhighlighter table caption {
+  color: black !important;
+}
+.syntaxhighlighter .gutter {
+  color: #787878 !important;
+}
+.syntaxhighlighter .gutter .line {
+  border-right: 3px solid #d4d0c8 !important;
+}
+.syntaxhighlighter .gutter .line.highlighted {
+  background-color: #d4d0c8 !important;
+  color: white !important;
+}
+.syntaxhighlighter.printing .line .content {
+  border: none !important;
+}
+.syntaxhighlighter.collapsed {
+  overflow: visible !important;
+}
+.syntaxhighlighter.collapsed .toolbar {
+  color: #3f5fbf !important;
+  background: white !important;
+  border: 1px solid #d4d0c8 !important;
+}
+.syntaxhighlighter.collapsed .toolbar a {
+  color: #3f5fbf !important;
+}
+.syntaxhighlighter.collapsed .toolbar a:hover {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter .toolbar {
+  color: #a0a0a0 !important;
+  background: #d4d0c8 !important;
+  border: none !important;
+}
+.syntaxhighlighter .toolbar a {
+  color: #a0a0a0 !important;
+}
+.syntaxhighlighter .toolbar a:hover {
+  color: red !important;
+}
+.syntaxhighlighter .plain, .syntaxhighlighter .plain a {
+  color: black !important;
+}
+.syntaxhighlighter .comments, .syntaxhighlighter .comments a {
+  color: #3f5fbf !important;
+}
+.syntaxhighlighter .string, .syntaxhighlighter .string a {
+  color: #2a00ff !important;
+}
+.syntaxhighlighter .keyword {
+  color: #7f0055 !important;
+}
+.syntaxhighlighter .preprocessor {
+  color: #646464 !important;
+}
+.syntaxhighlighter .variable {
+  color: #aa7700 !important;
+}
+.syntaxhighlighter .value {
+  color: #009900 !important;
+}
+.syntaxhighlighter .functions {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter .constants {
+  color: #0066cc !important;
+}
+.syntaxhighlighter .script {
+  font-weight: bold !important;
+  color: #7f0055 !important;
+  background-color: none !important;
+}
+.syntaxhighlighter .color1, .syntaxhighlighter .color1 a {
+  color: gray !important;
+}
+.syntaxhighlighter .color2, .syntaxhighlighter .color2 a {
+  color: #ff1493 !important;
+}
+.syntaxhighlighter .color3, .syntaxhighlighter .color3 a {
+  color: red !important;
+}
+
+.syntaxhighlighter .keyword {
+  font-weight: bold !important;
+}
+.syntaxhighlighter .xml .keyword {
+  color: #3f7f7f !important;
+  font-weight: normal !important;
+}
+.syntaxhighlighter .xml .color1, .syntaxhighlighter .xml .color1 a {
+  color: #7f007f !important;
+}
+.syntaxhighlighter .xml .string {
+  font-style: italic !important;
+  color: #2a00ff !important;
+}
+</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><script type="text/javascript">/*!
  * jQuery JavaScript Library v1.4.4
  * http://jquery.com/
  *
@@ -2083,7 +2438,7 @@ SyntaxHighlighter.brushes.Clojure = function () {
 		{ regex: /\b(true|false|nil)\b/g,
 			css: 'value' },
 		// (un)quoted symbols
-		{ regex: /(`|#?'|~@?)[\w-.\/]+/g,
+		{ regex: /(`|#?'|~@?)[\w-.A-Za-z0-9_&lt;&gt;\-]+/g,
 			css: 'color1' },
 		// keywords
 		{ regex: /:[A-Za-z0-9_\-]+/g,
@@ -2096,7 +2451,8 @@ SyntaxHighlighter.brushes.Clojure = function () {
 			css: 'preprocessor' },
 		// clojure.core
 		{ regex: new ClojureRegExp(this.getKeywords(clojure_core)),
-			css: 'functions' }
+			css: 'functions' },
+                { regex: /[A-Za-z0-9_&lt;&gt;\-]+/g,  css: 'plain'}
 	];
 
 	this.forHtmlScript(SyntaxHighlighter.regexLib.scriptScriptTags);
@@ -2200,361 +2556,7 @@ $(document).ready(function() {
     ul.css('margin-top', '0px')
 
 })
-</script><style type="text/css">/**
- * SyntaxHighlighter
- * http://alexgorbatchev.com/SyntaxHighlighter
- *
- * SyntaxHighlighter is donationware. If you are using it, please donate.
- * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
- *
- * @version
- * 3.0.83 (July 02 2010)
- * 
- * @copyright
- * Copyright (C) 2004-2010 Alex Gorbatchev.
- *
- * @license
- * Dual licensed under the MIT and GPL licenses.
- */
-.syntaxhighlighter a,
-.syntaxhighlighter div,
-.syntaxhighlighter code,
-.syntaxhighlighter table,
-.syntaxhighlighter table td,
-.syntaxhighlighter table tr,
-.syntaxhighlighter table tbody,
-.syntaxhighlighter table thead,
-.syntaxhighlighter table caption,
-.syntaxhighlighter textarea {
-  -moz-border-radius: 0 0 0 0 !important;
-  -webkit-border-radius: 0 0 0 0 !important;
-  background: none !important;
-  border: 0 !important;
-  bottom: auto !important;
-  float: none !important;
-  height: auto !important;
-  left: auto !important;
-  line-height: 1.1em !important;
-  margin: 0 !important;
-  outline: 0 !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  position: static !important;
-  right: auto !important;
-  text-align: left !important;
-  top: auto !important;
-  vertical-align: baseline !important;
-  width: auto !important;
-  box-sizing: content-box !important;
-  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  min-height: inherit !important;
-  min-height: auto !important;
-}
-
-.syntaxhighlighter {
-/*  width: 100% !important; */
-  margin: 1em 0 1em 0 !important;
-  position: relative !important;
-  overflow: auto !important;
-}
-.syntaxhighlighter.source {
-  overflow: hidden !important;
-}
-.syntaxhighlighter .bold {
-  font-weight: bold !important;
-}
-.syntaxhighlighter .italic {
-  font-style: italic !important;
-}
-.syntaxhighlighter .line {
-  white-space: pre !important;
-}
-.syntaxhighlighter table {
-/*    width: 100% !important;*/
-}
-.syntaxhighlighter table caption {
-  text-align: left !important;
-  padding: .5em 0 0.5em 1em !important;
-}
-.syntaxhighlighter table td.code {
-  width: 100% !important;
-}
-.syntaxhighlighter table td.code .container {
-  position: relative !important;
-}
-.syntaxhighlighter table td.code .container textarea {
-  box-sizing: border-box !important;
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-  background: white !important;
-  padding-left: 1em !important;
-  overflow: hidden !important;
-  white-space: pre !important;
-}
-.syntaxhighlighter table td.gutter .line {
-  text-align: right !important;
-  padding: 0 0.5em 0 1em !important;
-}
-.syntaxhighlighter table td.code .line {
-  padding: 0 1em !important;
-}
-.syntaxhighlighter.nogutter td.code .container textarea, .syntaxhighlighter.nogutter td.code .line {
-  padding-left: 0em !important;
-}
-.syntaxhighlighter.show {
-  display: block !important;
-}
-.syntaxhighlighter.collapsed table {
-  display: none !important;
-}
-.syntaxhighlighter.collapsed .toolbar {
-    display: none;
-/*  padding: 0.1em 0.8em 0em 0.8em !important;
-  font-size: 1em !important;
-  position: static !important;
-  width: auto !important;
-  height: auto !important;*/
-}
-.syntaxhighlighter.collapsed .toolbar span {
-  display: inline !important;
-  margin-right: 1em !important;
-}
-.syntaxhighlighter.collapsed .toolbar span a {
-  padding: 0 !important;
-  display: none !important;
-}
-.syntaxhighlighter.collapsed .toolbar span a.expandSource {
-  display: inline !important;
-}
-.syntaxhighlighter .toolbar {
-    display: none;
-/*  position: absolute !important;
-  right: 1px !important;
-  top: 1px !important;
-  width: 11px !important;
-  height: 11px !important;
-  font-size: 10px !important;
-  z-index: 10 !important;*/
-}
-.syntaxhighlighter .toolbar span.title {
-  display: inline !important;
-}
-.syntaxhighlighter .toolbar a {
-  display: block !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  padding-top: 1px !important;
-}
-.syntaxhighlighter .toolbar a.expandSource {
-  display: none !important;
-}
-.syntaxhighlighter.ie {
-  font-size: .9em !important;
-  padding: 1px 0 1px 0 !important;
-}
-.syntaxhighlighter.ie .toolbar {
-  line-height: 8px !important;
-}
-.syntaxhighlighter.ie .toolbar a {
-  padding-top: 0px !important;
-}
-.syntaxhighlighter.printing .line.alt1 .content,
-.syntaxhighlighter.printing .line.alt2 .content,
-.syntaxhighlighter.printing .line.highlighted .number,
-.syntaxhighlighter.printing .line.highlighted.alt1 .content,
-.syntaxhighlighter.printing .line.highlighted.alt2 .content {
-  background: none !important;
-}
-.syntaxhighlighter.printing .line .number {
-  color: #bbbbbb !important;
-}
-.syntaxhighlighter.printing .line .content {
-  color: black !important;
-}
-.syntaxhighlighter.printing .toolbar {
-  display: none !important;
-}
-.syntaxhighlighter.printing a {
-  text-decoration: none !important;
-}
-.syntaxhighlighter.printing .plain, .syntaxhighlighter.printing .plain a {
-  color: black !important;
-}
-.syntaxhighlighter.printing .comments, .syntaxhighlighter.printing .comments a {
-  color: #008200 !important;
-}
-.syntaxhighlighter.printing .string, .syntaxhighlighter.printing .string a {
-  color: blue !important;
-}
-.syntaxhighlighter.printing .keyword {
-  color: #006699 !important;
-  font-weight: bold !important;
-}
-.syntaxhighlighter.printing .preprocessor {
-  color: gray !important;
-}
-.syntaxhighlighter.printing .variable {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter.printing .value {
-  color: #009900 !important;
-}
-.syntaxhighlighter.printing .functions {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter.printing .constants {
-  color: #0066cc !important;
-}
-.syntaxhighlighter.printing .script {
-  font-weight: bold !important;
-}
-.syntaxhighlighter.printing .color1, .syntaxhighlighter.printing .color1 a {
-  color: gray !important;
-}
-.syntaxhighlighter.printing .color2, .syntaxhighlighter.printing .color2 a {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter.printing .color3, .syntaxhighlighter.printing .color3 a {
-  color: red !important;
-}
-.syntaxhighlighter.printing .break, .syntaxhighlighter.printing .break a {
-  color: black !important;
-}
-</style><style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style><style type="text/css">/**
- * SyntaxHighlighter
- * http://alexgorbatchev.com/SyntaxHighlighter
- *
- * SyntaxHighlighter is donationware. If you are using it, please donate.
- * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
- *
- * @version
- * 3.0.83 (July 02 2010)
- * 
- * @copyright
- * Copyright (C) 2004-2010 Alex Gorbatchev.
- *
- * @license
- * Dual licensed under the MIT and GPL licenses.
- */
-.syntaxhighlighter {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.alt1 {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.alt2 {
-  background-color: transparent !important;
-}
-.syntaxhighlighter .line.highlighted.alt1, .syntaxhighlighter .line.highlighted.alt2 {
-  background-color: #c3defe !important;
-}
-.syntaxhighlighter .line.highlighted.number {
-  color: white !important;
-}
-.syntaxhighlighter table caption {
-  color: black !important;
-}
-.syntaxhighlighter .gutter {
-  color: #787878 !important;
-}
-.syntaxhighlighter .gutter .line {
-  border-right: 3px solid #d4d0c8 !important;
-}
-.syntaxhighlighter .gutter .line.highlighted {
-  background-color: #d4d0c8 !important;
-  color: white !important;
-}
-.syntaxhighlighter.printing .line .content {
-  border: none !important;
-}
-.syntaxhighlighter.collapsed {
-  overflow: visible !important;
-}
-.syntaxhighlighter.collapsed .toolbar {
-  color: #3f5fbf !important;
-  background: white !important;
-  border: 1px solid #d4d0c8 !important;
-}
-.syntaxhighlighter.collapsed .toolbar a {
-  color: #3f5fbf !important;
-}
-.syntaxhighlighter.collapsed .toolbar a:hover {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter .toolbar {
-  color: #a0a0a0 !important;
-  background: #d4d0c8 !important;
-  border: none !important;
-}
-.syntaxhighlighter .toolbar a {
-  color: #a0a0a0 !important;
-}
-.syntaxhighlighter .toolbar a:hover {
-  color: red !important;
-}
-.syntaxhighlighter .plain, .syntaxhighlighter .plain a {
-  color: black !important;
-}
-.syntaxhighlighter .comments, .syntaxhighlighter .comments a {
-  color: #3f5fbf !important;
-}
-.syntaxhighlighter .string, .syntaxhighlighter .string a {
-  color: #2a00ff !important;
-}
-.syntaxhighlighter .keyword {
-  color: #7f0055 !important;
-}
-.syntaxhighlighter .preprocessor {
-  color: #646464 !important;
-}
-.syntaxhighlighter .variable {
-  color: #aa7700 !important;
-}
-.syntaxhighlighter .value {
-  color: #009900 !important;
-}
-.syntaxhighlighter .functions {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter .constants {
-  color: #0066cc !important;
-}
-.syntaxhighlighter .script {
-  font-weight: bold !important;
-  color: #7f0055 !important;
-  background-color: none !important;
-}
-.syntaxhighlighter .color1, .syntaxhighlighter .color1 a {
-  color: gray !important;
-}
-.syntaxhighlighter .color2, .syntaxhighlighter .color2 a {
-  color: #ff1493 !important;
-}
-.syntaxhighlighter .color3, .syntaxhighlighter .color3 a {
-  color: red !important;
-}
-
-.syntaxhighlighter .keyword {
-  font-weight: bold !important;
-}
-.syntaxhighlighter .xml .keyword {
-  color: #3f7f7f !important;
-  font-weight: normal !important;
-}
-.syntaxhighlighter .xml .color1, .syntaxhighlighter .xml .color1 a {
-  color: #7f007f !important;
-}
-.syntaxhighlighter .xml .string {
-  font-style: italic !important;
-  color: #2a00ff !important;
-}
-</style><style type="text/css">html{margin:0;padding:0;}h1{margin:0;padding:0;}h2{margin:0;padding:0;}h3{margin:0;padding:0;}h4{margin:0;padding:0;}a{color:#261A3B;}a:visited{color:#261A3B;}</style><style type="text/css">.header{margin-top:30px;}h1.project-name{font-size:34px;display:inline;}h2.project-version{font-size:18px;margin-top:0;display:inline;margin-left:10px;}.toc-link{font-size:12px;margin-left:10px;color:#252519;text-decoration:none;}.toc-link:hover{color:#5050A6;}.toc h1{font-size:34px;margin:0;}.docs-header{border-bottom:dotted #aaa 1px;padding-bottom:10px;margin-bottom:25px;}.toc h1{font-size:24px;}.toc{border-bottom:solid #bbb 1px;margin-bottom:40px;}.toc ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.toc li{list-style-type:none;padding-left:0;}.dependencies{}.dependencies table{font-size:16px;width:99.99%;border:none;margin-left:20px;}.dependencies td{padding-right:20px;;white-space:nowrap;}.dependencies .dotted{width:99%;}.dependencies .dotted hr{margin-bottom:-6px;noshade:noshade;border-top:none;color:transparent;border-left:none;border-bottom:dotted #bbb 1px;border-right:none;background-color:transparent;height:0;}.dependencies .dep-version{text-align:right;}.plugins ul{margin-left:20px;padding-left:0px;padding-top:0;margin-top:0;}.plugins li{list-style-type:none;padding-left:0;}.header p{margin-left:20px;}</style><style type="text/css">#floating-toc{position:fixed;top:10px;right:20px;height:20px;overflow:hidden;text-align:right;}#floating-toc li{list-style-type:none;margin:0;padding:0;}</style><style type="text/css">body{margin:0;padding:0;font-family:'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;font-size:16px;color:#252519;}h1{font-size:20px;margin-top:0;}a.anchor{text-decoration:none;color:#252519;}a.anchor:hover{color:#5050A6;}table{border-spacing:0;border-bottom:solid #ddd 1px;;margin-bottom:10px;}code{display:inline;}p{margin-top:8px;}tr{margin:0px;padding:0px;}td.docs{width:410px;max-width:410px;vertical-align:top;margin:0px;padding-left:55px;padding-right:20px;border:none;}td.docs pre{font-size:12px;overflow:hidden;}td.codes{border:none;margin:0px;padding-left:20px;width:55%;border-left:solid #E5E5EE 1px;font-size:10pt;vertical-align:top;overflow:hidden;background-color:#F5F5FF;}td.spacer{padding-bottom:40px;}pre code{display:block;padding:4px;}code{background-color:ghostWhite;border:solid #DEDEDE 1px;padding-left:3px;padding-right:3px;font-size:14px;}.syntaxhighlighter code{font-size:13px;}.footer{text-align:center;}</style><title>cljs -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.0.1-SNAPSHOT</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
+</script><title>cljs -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cljs</h1><h2 class="project-version">0.2</h2><br /><p>An experimental Clojure(ish) to Javascript compiler similar to
    <a href="https://github.com/clojure/clojure-contrib/tree/master/clojurescript/">clojurescript</a>. The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!</p>
 
 <p>   # Usage</p>
@@ -2586,24 +2588,90 @@ $(document).ready(function() {
 
 <p>For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p></li>
 </ol>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.5.0-alpha</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.stitch">cljs.stitch</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#leiningen.cljs-watch">leiningen.cljs-watch</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li><li><a href="#cljs.test.stitch">cljs.test.stitch</a></li><li><a href="#cljs.test.watch">cljs.test.watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><strong>cljs</strong></p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">org.clojure/clojure-contrib</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr></table></div><div class="dependencies"><h3>dev dependencies</h3><table><tr><td class="dep-name">swank-clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.2.0</td></tr><tr><td class="dep-name">rhino/js</td><td class="dotted"><hr /></td><td class="dep-version">1.7R2</td></tr><tr><td class="dep-name">lein-clojars</td><td class="dotted"><hr /></td><td class="dep-version">0.6.0</td></tr><tr><td class="dep-name">marginalia</td><td class="dotted"><hr /></td><td class="dep-version">0.5.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cljs.compile">cljs.compile</a></li><li><a href="#cljs.core">cljs.core</a></li><li><a href="#cljs.deps">cljs.deps</a></li><li><a href="#cljs.opts">cljs.opts</a></li><li><a href="#cljs.rhino">cljs.rhino</a></li><li><a href="#cljs.testing">cljs.testing</a></li><li><a href="#cljs.watch">cljs.watch</a></li><li><a href="#cljs.test.compile">cljs.test.compile</a></li><li><a href="#cljs.test.core">cljs.test.core</a></li><li><a href="#cljs.test.deps">cljs.test.deps</a></li><li><a href="#cljs.test.opts">cljs.test.opts</a></li><li><a href="#cljs.test.watch">cljs.test.watch</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.compile" name="cljs.compile"><h1 class="project-name">cljs.compile</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.compile
+  (:use clojure.pprint
+        [clojure.java.io :only (file)])
+  (:require [cljs.opts :as opts]
+            [cljs.deps :as deps]
+            [cljs.core :as core]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn cljs-source
+  "Returns `path` content as string.  Checks both
+   filesystem and classpath."
+  [path]
+  (let [file (file path)]
+    (if (.exists file)
+      (slurp file)
+      (try
+        (-> (.getContextClassLoader (Thread/currentThread))
+            (.getResourceAsStream (.getPath file))
+            (java.io.InputStreamReader.)
+            (slurp))
+        (catch Exception e nil)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn lib [opts analyzed-lib]
+  (let [dep-files (map :file (:deps analyzed-lib))
+        lib-file (:file analyzed-lib)]
+    (->> (concat dep-files [lib-file])
+         (map cljs-source)
+         (map core/compile-cljs-string)
+         (interpose "\n\n\n\n")
+         (apply str)
+         (str core/*core-lib*))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn libs [opts search-paths libs]
+  (doseq [source-lib libs]
+    (let [analyzed (deps/analyze search-paths source-lib)]
+      (println "*" (:name analyzed) "--" (:file analyzed))
+      (println)
+      (println "  deps")
+      (doseq [dep (:deps analyzed)]
+        (println "   " (:name dep) "--" (:file dep)))
+      (print "  Compiling...  ")
+      (let [compiled (lib opts analyzed)
+            out-path (str (:source-output-path opts) "/" (:name analyzed) ".js")]
+        (println "done.  ")
+        (print "  Writing to" (str out-path "...  "))
+        (spit out-path compiled)
+        (println "done.")
+        (println)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn opts [opts]
+  (time
+   (let [source-libs (:source-libs opts)
+         source-search-paths [(:source-path opts)]]
+     (println)
+     (println "-------------------------------")
+     (println "Compiling cljs libs:")
+     (pprint opts)
+     (println)
+     (println "Source Libraries:")
+     (libs opts source-search-paths source-libs)
+     (println)
+     (println "Test Libraries:")
+     (libs opts
+           [(:source-path opts)
+            (:test-path opts)]
+           (:test-libs opts))
+     (println)
+     (println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+     (println (java.util.Date.))))
+  (println))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn project [& [project-file]]
+  (opts (opts/slurp (or project-file "./project.clj"))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.core" name="cljs.core"><h1 class="project-name">cljs.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><strong>cljs</strong></p>
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.core
   (:require [clojure.string :as str]))</pre></tr><tr><td class="docs"><p>Overall, cljs tries to mimic Clojure's rules where possible.</p>
 </td><td class="codes" /></tr><tr><td class="docs"><h2>Identifiers</h2>
 
 <p>Cljs allows you to include several characters which are not allowed
 in javascript identifiers.</p>
-</td><td class="codes" /></tr><tr><td class="docs"><p>Prep-symbol will replace invalid characters in the passed symbol with
-   javascript-compatable replacements.</p>
-
-<pre><code>   foo-bar  &amp;rarr;  foo_bar
-   foo?     &amp;rarr;  foo_QM_
-   foo#     &amp;rarr;  foo_HASH_
-   foo!     &amp;rarr;  foo_BANG_
-   foo/bar  &amp;rarr;  foo.bar
-   foo*     &amp;rarr;  foo_SPLAT_
-</code></pre>
+</td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn prep-symbol
+  "Prep-symbol will replace invalid characters in the passed symbol with
+   javascript-compatable replacements.
+       foo-bar  ->  foo_bar
+       foo?     ->  foo_QM_
+       foo#     ->  foo_HASH_
+       foo!     ->  foo_BANG_
+       foo/bar  ->  foo.bar
+       foo*     ->  foo_SPLAT_"
   [s]
   (-> (str s)
       (str/replace #"-" "_")
@@ -2612,7 +2680,13 @@ in javascript identifiers.</p>
       (str/replace #"!" "_BANG_")
       (str/replace #"/" ".")
       (str/replace #"\*" "_SPLAT_")
+      (str/replace #"=" "_EQ_")
       (symbol)))</pre></tr><tr><td class="docs"><h3>Indenting / Pretty-Printing</h3>
+
+<p>As of now, pretty printing js is the only option.  If you need to
+minify the compiled output, use a tool like <a href="http://code.google.com/closure/compiler/">Google's
+Closure Compiler</a> (which
+may be included in cljs in the future.</p>
 </td><td class="codes" /><pre class="brush: clojure">(def *indent* 0)</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(def nl "\n")</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(declare to-js)
@@ -2631,12 +2705,20 @@ in javascript identifiers.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn inc-ind-str [& body]
   (with-inc-indent
     (apply ind-str body)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn returnable? [el]
+  (cond
+   (coll? el) (let [f (first el)]
+                (not (or (= 'throw f))))
+   (string? el) (not (re-find #"^throw\s+" el))
+   :else true))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn add-return [statements]
   (let [count (dec (count statements))
         before-ret (take count statements)
-        after-ret (drop count statements)
-        with-return (concat before-ret [(apply str "return " after-ret)])]
-    with-return))</pre></tr><tr><td class="docs">
+        after-ret (first (drop count statements))
+        with-return (concat before-ret [(str "return " after-ret)])]
+    (if (returnable? after-ret)
+      with-return
+      statements)))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn interpose-semi-colon [col]
   (interpose ";" col))</pre></tr><tr><td class="docs"><p>Several types of functions follow the pattern `<expr> <op>
 <expr>`. We use the *-op-fn functions to provide a uniform
@@ -2646,13 +2728,11 @@ mechanism for defining these types of operations.</p>
 Structures</a> for more
 info. In fact, just go read the whole thing, it's amazingly
 well-written.</p>
-</td><td class="codes" /></tr><tr><td class="docs"><p><code>strict-eval-op-fn</code> is used to define functions of the above pattern for fuctions such as <code>+</code>, <code>*</code>,   etc.  Cljs special forms defined this way are applyable, such as <code>(apply + [1 2 3])</code>.</p>
-
-<p>   Resulting expressions are wrapped in an anonymous function and, down the line, <code>call</code>ed, like so:</p>
-
-<pre><code>   (+ 1 2 3) &amp;rarr; (function(){...}.call(this, 1 2 3)
-</code></pre>
+</td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn strict-eval-op-fn
+  "`strict-eval-op-fn` is used to define functions of the above pattern for fuctions such as `+`, `*`,   etc.  Cljs special forms defined this way are applyable, such as `(apply + [1 2 3])`.
+   Resulting expressions are wrapped in an anonymous function and, down the line, `call`ed, like so:
+       (+ 1 2 3) -> (function(){...}.call(this, 1 2 3)"
   [op]
   (ind-str
    "(function() {" nl
@@ -2665,11 +2745,10 @@ well-written.</p>
     "}" nl
     "return _out;")
    nl
-   "})"))</pre></tr><tr><td class="docs"><p><code>lazy-eval-op-fn</code> is used for operators whose inputs must be lazily evaluated. Resulting expression   is not <code>apply</code>able.</p>
-
-<pre><code>   (or foo bar baz)  &amp;rarr; (foo || bar || baz)
-</code></pre>
+   "})"))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn lazy-eval-op-fn
+  "`lazy-eval-op-fn` is used for operators whose inputs must be lazily evaluated. Resulting expression   is not `apply`able.
+       (or foo bar baz)  -> (foo || bar || baz)"
   [op stmts]
   (str
    "("
@@ -2826,7 +2905,7 @@ well-written.</p>
            [(str "var _out = " (to-js pivot))]
            (map to-js (map #(concat (vector (first %) '_out) (rest %)) forms))
            ['_out]))))
-       "}.bind(this)())"))))</pre></tr><tr><td class="docs">
+       "}.bind(this))()"))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn handle-->> [[_ pivot & forms]]
   (let [pivot (to-js pivot)
         forms (map #(concat % ['_out])
@@ -2875,8 +2954,10 @@ well-written.</p>
                          ")"))
                   "{" nl
                   (inc-ind-str
-                   "return "
-                   (to-js (second %))
+                   (if (returnable? (second %))
+                     (str "return "
+                          (to-js (second %)))
+                     (to-js (second %)))
                    ";") nl
                   "}"))
            (interpose " else ")
@@ -2917,6 +2998,9 @@ well-written.</p>
   (to-identifier (gensym)))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn handle-gensym-str [_]
   (to-js (str (gensym))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn handle-throw [[_ msg]]
+  (ind-str
+   "throw " (to-js msg) ";"))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn special-forms []
   {'def     handle-def
    'fn      handle-fn
@@ -2945,7 +3029,8 @@ well-written.</p>
    'doseq   handle-doseq
    'instanceof handle-instanceof
    'gensym handle-gensym
-   'gensym-str handle-gensym-str})</pre></tr><tr><td class="docs">
+   'gensym-str handle-gensym-str
+   'throw   handle-throw})</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn apply-able-special-forms []
   {'+       (make-strict-op '+)
    '-       (make-strict-op '-)
@@ -2990,35 +3075,27 @@ well-written.</p>
          clazz
          "("
          (apply str (interpose "," (map to-js args)))
-         "))")))</pre></tr><tr><td class="docs"><p>Sexps are (most of the time) translated into javascript function calls.
+         "))")))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn sexp-to-js
+  "Sexps are (most of the time) translated into javascript function calls.
    The baseline translation works as you would expect, the first form in
    the sexp is moved outside the opening paren, and the remaining forms
-   are passed as arguments:</p>
-
-<pre><code>   (dostuff "foo" "bar" 1  &amp;rarr; alert("foo","bar",1)
-</code></pre>
-
-<p>   However, cljs supports special case sexps to support features like
-   sugared map access and javascript object interop.</p>
-
-<pre><code>    ; object member function
-    (.foo bar "baz") &amp;rarr; foo.bar("baz")
-
-    ; object construction
-    (Foo. "bar" "baz") &amp;rarr; new Foo("bar","baz")
-
-    ; map access
-    (:foo bar) &amp;rarr; bar["foo"]
-</code></pre>
-
-<p>   It is also at this point that calls to special forms are handled by
-   their respective handlers. <code>(fn [] ('alert "hi"))</code> is
-   handled by <code>handle-fn</code>, not passed along to <code>call-fn</code> like user
-   defined functions.</p>
-
-<p>   See <code>cljs.core/special-forms</code> and <code>cljs.core/apply-able-special-forms</code>
-   for symbol to handler mappings.</p>
-</td><td class="codes" /><pre class="brush: clojure">(defn sexp-to-js
+   are passed as arguments:
+       (dostuff \"foo\" \"bar\" 1  -> alert(\"foo\",\"bar\",1)
+   However, cljs supports special case sexps to support features like
+   sugared map access and javascript object interop.
+        ; object member function
+        (.foo bar \"baz\") -> foo.bar(\"baz\")
+        ; object construction
+        (Foo. \"bar\" \"baz\") -> new Foo(\"bar\",\"baz\")
+        ; map access
+        (:foo bar) -> bar[\"foo\"]
+   It is also at this point that calls to special forms are handled by
+   their respective handlers. `(fn [] ('alert \"hi\"))` is
+   handled by `handle-fn`, not passed along to `call-fn` like user
+   defined functions.
+   See `cljs.core/special-forms` and `cljs.core/apply-able-special-forms`
+   for symbol to handler mappings."
   [sexp]
   (cond
    (= 'quote (first sexp)) (str (second sexp))
@@ -3027,19 +3104,48 @@ well-written.</p>
    ((special-forms) (first sexp)) (((special-forms) (first sexp)) sexp)
    ((apply-able-special-forms) (first sexp)) (call-special-form sexp)
    (map-accessor? sexp) (map-accessor-to-js sexp)
-   :else (call-fn sexp)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn map-to-js
-  [m]
+   :else (call-fn sexp)))</pre></tr><tr><td class="docs"><p>hashmap creation is handled in a seemingly convoluted way. A
+temporary object is created to which entries are inserted, instead
+of a direct translation to javascript's map syntax.  This is to
+support using var values as keys.  For example:</p>
+
+<p>var x = "foo"
+var m = {x: "bar"}</p>
+
+<p>would produce an object with a member "x" of value "bar", where the
+desired behavoir is a map with member "foo" of value
+"bar". Therefore we handle map creation as such:</p>
+
+<p>(let [x "foo"]
+{x "bar"})</p>
+
+<p>compiles to</p>
+
+<p>var x = "foo"
+return (function() {
+var _out = {}
+_out[x] = "bar"
+})()</p>
+
+<p>instead of</p>
+
+<p>var x = "foo"
+{x: "bar"}</p>
+
+<p>which more closely mimics clojure's map creation behavior.</p>
+</td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn map-to-js [m]
   (ind-str
-   "({" nl
+   "(function(){" nl
    (inc-ind-str
+    "var _out = {};" nl
     (->> m
-         (map #(str \' (name (key %)) \'
-                    ":"
-                    (to-js (val %))))
-         (interpose (str "," nl (ind)))
-         (apply str)))
-   nl "})"))</pre></tr><tr><td class="docs">
+         (map #(str
+                "_out[" (to-js (key %)) "] = " (to-js (val %)) ";" nl))
+         (apply str))
+    "return _out;")
+   nl
+   "}.bind(this))()"))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn vec-to-js [elements]
   (if (empty? elements) "[]"
       (ind-str
@@ -3067,8 +3173,9 @@ well-written.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn str-to-js [s]
   (-> s
       (str/replace #"\n" "\\\\n")
-      (str/replace #"\ "\\\\\)))</pre></tr><tr><td class="docs"><p>Top-level conversion routine. The form passed to <code>to-js</code> is converted to javascript based on it's type.  Valid input types are lists, vectors, symbols, keywords, strings, numbers, or booleans. Throws an exeption if the passed form is not a valid input type.</p>
+      (str/replace #"\ "\\\\\)))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn to-js
+  "Top-level conversion routine. The form passed to `to-js` is converted to javascript based on it's type.  Valid input types are lists, vectors, symbols, keywords, strings, numbers, or booleans. Throws an exeption if the passed form is not a valid input type."
   [form]
   (cond
    (or (seq? form)
@@ -3080,7 +3187,7 @@ well-written.</p>
    (string? form)     (str \" (str-to-js form) \")
    (number? form)     form
    (boolean? form)    form
-   (nil? form)        ""
+   (nil? form)        
    :else              (throw
                        (Exception.
                         (str
@@ -3205,8 +3312,11 @@ well-written.</p>
         (reduce (fn [col el] (+ col el))  (filter #(.identity _ %) args)))
      '(defn println [& args]
         (.log 'console args))
-     '(defn apply [f args]
-        (.apply f 'this args))
+     '(defn apply [f & args]
+        (let [l (last args)
+              fs (take (dec (count args)) args)
+              flattened (concat fs l)]
+          (.apply f 'this flattened)))
      '(defn filter [f col]
         (if col
           (.filter _ col f)))
@@ -3216,7 +3326,8 @@ well-written.</p>
           (out.push.apply out colb)
           out))
      '(defn take [n col]
-        (.slice col 0 n))
+        (when col
+          (.slice col 0 n)))
      '(defn drop [n col]
         (when col
           (.slice col n)))
@@ -3266,11 +3377,34 @@ well-written.</p>
                   (.push out o)))
               (set! idx (inc idx)))
             out)))
+     '(defn interleave [cola colb]
+        (if (or (= 0 (count cola))
+                (= 0 (count colb)))
+          []
+          (let [len (if (> (count cola) (count colb))
+                      (count cola)
+                      (count colb))]
+            (concat [(first cola) (first colb)]
+                    (interleave (rest cola) (rest colb))))))
      '(defn distinct [col]
         (.uniq '_ col))
      '(defn identity [arg]
         (if arg
-          (.identity '_ arg))))))</pre></tr><tr><td class="docs">
+          (.identity '_ arg)))
+     '(defn empty? [col]
+        (cond
+         (array? col) (= 0 col.length)
+         (object? col) (.isEqual '_ {} col)
+         :else (throw (str "Can't call empty? on " col))))
+     '(defn hash-map [& col]
+        (let [pairs (partition 2 col)]
+          (if (empty? col)
+            {}
+            (reduce (fn [m pair]
+                      (aset m (first pair) (second pair))
+                      m)
+                    {}
+                    pairs)))))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn spit-cljs-core [path]
   (spit path *core-lib*))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-reader [reader]
@@ -3287,7 +3421,117 @@ well-written.</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-string [str]
   (compile-cljs-reader (java.io.StringReader. str)))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn compile-cljs-file [path]
-  (compile-cljs-reader (java.io.FileReader. path)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.rhino" name="cljs.rhino"><h1 class="project-name">cljs.rhino</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Used for testing / debugging of generated javascript.</p>
+  (compile-cljs-reader (java.io.FileReader. path)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.deps" name="cljs.deps"><h1 class="project-name">cljs.deps</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.deps
+  (:use [clojure.java.io :only (file)]
+        [clojure.contrib.seq :only (find-first)])
+  (:require [clojure.string :as str])
+  (:import [clojure.lang LineNumberingPushbackReader]
+           [java.io FileReader]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn read-ns-form [reader]
+  (with-open [rdr (LineNumberingPushbackReader. reader)]
+    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
+      ns-decl)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn retr-ns-form
+  "Check the filesystem and classpath for `file-or-path` and
+   returns the namespace form if found, nill if not."
+  [file-or-path]
+  (let [file (file file-or-path)]
+    (if (.exists file)
+      (read-ns-form (FileReader. file))
+      (try
+        (-> (.getContextClassLoader (Thread/currentThread))
+            (.getResourceAsStream (.getPath file))
+            (java.io.InputStreamReader.)
+            (read-ns-form))
+        (catch Exception e nil)))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn extract-namespaces
+  "Given a ns and a tag (i.e. :use or :require) collect the dependencies
+   as namespace symbols.
+   Usage: (extract-namespaces :use '(ns foo (:use bar)))"
+  [tag ns-form]
+  (->> ns-form
+       (filter coll?)
+       (filter #(= tag (first %)))
+       (map #(drop 1 %))
+       (reduce concat)
+       (map #(if (coll? %)
+               (first %)
+               %))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn parse-ns-form
+  "Parses name, uses, and requires from a ns form."
+  [ns-form]
+  (when ns-form
+    {:name (second ns-form)
+     :uses (extract-namespaces :use ns-form)
+     :requires (extract-namespaces :require ns-form)}))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn find-namespace
+  "Looks in coll search-paths and classpath for file named by `ns-sym`.
+   Returns a map like so:
+       {:name foo
+        :file \"path/to/foo.cljs\"
+        :uses (lib.bar)
+        :requires (lib.baz)}"
+  [search-paths ns-sym]
+  (let [file-name (str (str/replace (str ns-sym) #"\." "/")
+                       ".cljs")
+        guesses (concat (map #(str % "/" file-name) search-paths)
+                        [file-name])]
+    (loop [guesses guesses]
+      (if (= 0 (count guesses))
+        nil
+        (if-let [res (parse-ns-form (retr-ns-form (first guesses)))]
+          (assoc res :file (first guesses))
+          (recur (rest guesses)))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn resolve-deps [search-paths ns-coll]
+  "Given a list of search paths and a list of namespaces representing
+   dependencies, recursively resolve namespaces to files.
+   Results are in the format: `{:name foo.bar :file src/foo/bar.cljs}`"
+  (when (not (empty? ns-coll))
+    (let [deps (->> ns-coll
+                    (map #(find-namespace search-paths %)))
+          dep-deps (reduce #(concat %1 (:uses %2) (:requires %2)) [] deps)]
+      (distinct
+       (concat (resolve-deps search-paths dep-deps)
+               (map #(select-keys % [:name :file]) deps))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn analyze [search-paths ns-name]
+  "Analyzes a cljs lib for dependencies.  Used by compile to collect
+   the dependencies for a library given by `ns-name` and found in either
+   `search-paths` or on the classpath."
+  (let [ns (find-namespace search-paths ns-name)
+        deps (resolve-deps search-paths (concat (:uses ns) (:requires ns)))]
+    (when ns
+      (assoc ns :deps deps))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.opts" name="cljs.opts"><h1 class="project-name">cljs.opts</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Responsible for parsing cljs options from a variety of sources, such as:</p>
+
+<ul>
+<li>Leiningen project.clj</li>
+<li><p>Cake project.clj</p>
+
+<p>See var <code>defaults</code> for default options. </p></li>
+</ul>
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.opts
+  "Responsible for parsing cljs options from a variety of sources, such as:
+   * Leiningen project.clj
+   * Cake project.clj
+   See var `defaults` for default options. "
+  (:use [clojure.java.io :only (file)])
+  (:import [java.io File FileReader]
+           [clojure.lang LineNumberingPushbackReader]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def defaults
+  {:source-path "src/cljs"
+   :source-output-path "resources/public/js"
+   :source-libs []
+   :test-path "test/cljs"
+   :test-output-path "resources/testjs"
+   :test-libs []})</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn slurp [file-or-path]
+  (let [file (file file-or-path)
+        rdr (LineNumberingPushbackReader. (FileReader. file))]
+    (->> (read rdr)
+         (drop 5)
+         (apply hash-map)
+         :cljs
+         (merge defaults))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.rhino" name="cljs.rhino"><h1 class="project-name">cljs.rhino</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Used for testing / debugging of generated javascript.</p>
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.rhino
   (:import (org.mozilla.javascript Context
                                    Scriptable)))</pre></tr><tr><td class="docs">
@@ -3297,7 +3541,7 @@ well-written.</p>
       (.getResourceAsStream resource-name)
       (java.io.InputStreamReader.)
       (slurp)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(def underscore-js-source (slurp-resource "underscore.js"))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(def underscore-js-source (slurp-resource "underscore.min.js"))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn eval-js [snippet]
   (let [cx (Context/enter)
         sc (.initStandardObjects cx)]
@@ -3310,142 +3554,56 @@ well-written.</p>
   (let [obj-ids (seq (.getIds obj))
         vals (map #(.get obj % nil) obj-ids)
         keys (map keyword obj-ids)]
-    (apply hash-map (interleave keys vals))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.stitch" name="cljs.stitch"><h1 class="project-name">cljs.stitch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Stitch is responsible for collecting disparate cljs source files into
-   a single js library.  Js libs are specified in your project.clj file
-   like so:</p>
+    (apply hash-map (interleave keys vals))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.testing" name="cljs.testing"><h1 class="project-name">cljs.testing</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.testing
+  (:require [clojure.string :as str])
+  (:import (com.google.jstestdriver JsTestDriver
+                                    PluginLoader)
+           (com.google.jstestdriver.config CmdFlags
+                                           CmdLineFlagsFactory
+                                           YamlParser)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(comment
+  (use 'clojure.pprint)
 
-<pre><code>   (defproject foo "1.0"
-     :dependencies ...
-     :cljs {:source-path "./src/cljs"
-            :output-path "./resources/public/js"
-            :libs [{:name :out-name
-                    :sources [:one
-                              :subdir.two]}]})
-</code></pre>
+  (defn run [args-str]
+    (let [flags-fac (CmdLineFlagsFactory.)
+          flags (.create flags-fac (into-array String (str/split args-str #"\s+")))
+          base-path (.getBasePath flags)
+          plugins (.getPlugins flags)
+          ploader (PluginLoader.)
+          pmodules (.load ploader plugins)
+          imodules pmodules
+          config (.parse (YamlParser.)
+                         (java.io.FileReader.
+                          (let [cs (.getConfigurationSource flags)
+                                pf (.getParentFile cs)
+                                name (.getName cs)]
+                            (java.io.File. (str (.getAbsolutePath pf)
+                                                "/"
+                                                name)))))
+          ]
+      (pprint config)))
 
-<p>   Stich will stich together <code>src/cljs/one.cljs</code> and <code>src/cljs/subdir/two.cljs</code>
-   into <code>resources/public/js/out-name.js</code>.</p>
-</td><td class="codes" /><pre class="brush: clojure">(ns cljs.stitch
-  (:use [clojure.contrib.string :only (as-str)]
-        [clojure.contrib.find-namespaces :only (read-ns-decl)]
-        [clojure.contrib.seq :only (find-first)]
-        [clojure.pprint :only (pprint)])
-  (:require [clojure.string :as str]
-            [cljs.core :as core]))</pre></tr><tr><td class="docs"><p>Pulls the :cljs map from the specified <code>project-clj</code>.</p>
-</td><td class="codes" /><pre class="brush: clojure">(defn cljs-opts
-  [project-clj]
-  (try
-    (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-clj))]
-      (->> (read rdr)
-           (drop 5)
-           (apply hash-map)
-           :cljs))
-    (catch Exception e
-      (println (str "Problem reading project at " project-clj)))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn ns-to-file [source-root ns-sym]
-  (str
-   source-root
-   "/"
-   (str/replace (str ns-sym) #"\." "/")
-   ".cljs"))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn ns-decl [file]
-  (with-open [rdr (clojure.lang.LineNumberingPushbackReader.
-                   (java.io.FileReader. file))]
-    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
-      ns-decl)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn includes [ns-decl]
-  (->> ns-decl
-       (filter #(or (seq? %) (vector? %)))
-       (filter #(or (= :use (first %))
-                    (= :require (first %))))
-       (map #(drop 1 %))
-       (reduce concat)
-       (map #(if (or (seq? %) (vector? %))
-               (first %)
-               %))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn find-dependencies [source-root source-file]
-  (let [ns-decl (ns-decl source-file)
-        includes (distinct (includes ns-decl))]
-    (distinct
-     (flatten
-      (map #(concat (find-dependencies source-root (ns-to-file source-root %)) [%])
-           includes)))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
-</td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib
-  [source-path output-path name]
-  (println "Stitching" name)
-  (println "  " "input:")
-  (println "  " "output:")
-  (println "    "  (str output-path "/" name ".js"))
-  (->> (concat (find-dependencies source-path (ns-to-file source-path name))
-               [name])
-       (#(do (println %) %))
-       (map #(ns-to-file source-path %))
-       (map core/compile-cljs-file)
-       (interpose "\n\n\n\n")
-       (apply str)
-       (str core/*core-lib* "\n\n\n\n")
-       (spit (str output-path "/" (str name) ".js"))))</pre></tr><tr><td class="docs"><p>Converts and stitches <code>sources</code> into <code>output-path/name.js</code>.</p>
-</td><td class="codes" /><pre class="brush: clojure">(defn stitch-lib-with-sources
-  [source-path output-path name sources]
-  (let [cljs-source-paths (->> sources
-                               (map str)
-                               (map #(str/replace % #"\." "/"))
-                               (map #(str source-path "/" % ".cljs")))]
-    (println "Stitching" name)
-    (println "  " "input:")
-    (doseq [sp cljs-source-paths]
-      (println "    " sp)
-      (when (not (.exists (java.io.File. sp)))
-        (throw (Exception.
-                (str "Couldn't find source path "
-                     sp
-                     " for library "
-                     name)))))
-    (println "  " "output:")
-    (println "    "  (str output-path "/" name ".js"))
-    (->> cljs-source-paths
-         (map core/compile-cljs-file)
-         (interpose "\n\n\n\n")
-         (apply str)
-         (str core/*core-lib* "\n\n\n\n")
-         (spit (str output-path "/" (str name) ".js")))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn stitch-libs [output-path source-path libs]
-  (doseq [lib libs]
-    (if (map? lib)
-      (stitch-lib-with-sources source-path output-path (as-str (:name lib)) (:sources lib))
-      (stitch-lib source-path output-path (as-str lib)))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn prefix-path [prefix path]
-  (str
-   (when prefix
-     prefix)
-   (when prefix
-     "/")
-   path))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn stitch-project [project-clj-path & opts]
-  (time
-   (let [opts (apply hash-map opts)
-         copts (cljs-opts project-clj-path)
-         output-path (prefix-path
-                      (:project-root opts)
-                      (:output-path copts))
-         source-path (prefix-path
-                      (:project-root opts)
-                      (:source-path copts))
-         libs (:libs copts)]
-     (println "Stitching libs with")
-     (pprint copts)
-     (println)
-     (stitch-libs output-path source-path libs))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.watch" name="cljs.watch"><h1 class="project-name">cljs.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Utilities for automatically compiing changed .cjls files.</h1>
+
+  (run "--port 4224 --config ./.jstestdriver")
+
+
+  #_(JsTestDriver/main (into-array String ["--port" "4224"]))
+
+  #_(JsTestDriver/main (into-array String ["--tests" "all" "--config" "./.jstestdriver"])))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.watch" name="cljs.watch"><h1 class="project-name">cljs.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Utilities for automatically compiing changed .cjls files.</h1>
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.watch
   (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
-            [cljs.stitch :as st]))</pre></tr><tr><td class="docs">
+            [cljs.compile :as compile]
+            [cljs.opts :as opts]
+            [clojure.contrib.io :as io]))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn file [file-or-path]
   (if (string? file-or-path)
     (java.io.File. file-or-path)
-    file-or-path))</pre></tr><tr><td class="docs"><p>Returns a seq of java.io.File objects of all .cljs files
-   found in <code>file-or-path</code> including subdirs.</p>
+    file-or-path))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn find-cljs-files
+  "Returns a seq of java.io.File objects of all .cljs files
+   found in `file-or-path` including subdirs."
   [file-or-path]
   (let [f (file file-or-path)]
     (->> (file-seq f)
@@ -3475,10 +3633,18 @@ well-written.</p>
   (let [changed-files (doall (filter #(has-file-changed? % (@*mod-map* %)) f-seq))]
     (reset! *mod-map* (last-mod-map f-seq))
     changed-files))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn check-and-run! [path]
-  (-> (find-cljs-files path)
-      (changed-files!)
-      (run-hooks)))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn check-and-run! [paths]
+  (let [dirs (filter #(.isDirectory (java.io.File. %))
+                     paths)
+        files (map #(java.io.File. %)
+                   (filter #(not (.isDirectory (java.io.File. %)))
+                           paths))
+        cljs-files (concat
+                    (reduce concat (map find-cljs-files dirs))
+                    files)]
+    (-> cljs-files
+        (changed-files!)
+        (run-hooks))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn spit-equiv-js [cljs-file js-out-dir-file]
   (let [cljs-path (.getAbsolutePath cljs-file)
         name (.getName cljs-file)
@@ -3494,11 +3660,11 @@ well-written.</p>
          (println "Compiling" (.getName cljs) "to" out-dir)
          (spit-equiv-js cljs (file out-dir))
          (catch Exception e (println "Problem compiling " (.getAbsolutePath cljs) ": " e)))))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn hook-re-stitch [project-clj-path]
+</td><td class="codes" /><pre class="brush: clojure">(defn hook-re-stitch [cljs-opts]
   (hook-change
    (fn [cljss]
      (if (not (empty? cljss))
-       (st/stitch-project project-clj-path)))))</pre></tr><tr><td class="docs">
+       (compile/opts cljs-opts)))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(def *run* (atom true))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn stop-watch []
   (reset! *run* false))</pre></tr><tr><td class="docs">
@@ -3510,48 +3676,7 @@ well-written.</p>
            (fn []
              (while @*run*
                (check-and-run! watch-path)
-               (Thread/sleep 500))))))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn start-watch-project [project-clj-path]
-  (let [opts (st/cljs-opts project-clj-path)]
-    (when (not opts)
-      (throw (Exception. (str "Couldn't find cljs options in " project-clj-path))))
-    (clear-hooks)
-    (reset! *run* true)
-    (hook-re-stitch project-clj-path)
-    (println "Watching" (:source-path opts) "for changes.")
-    (st/stitch-project project-clj-path)
-    (.start (Thread.
-             (fn []
-               (while @*run*
-                 (try
-                   (check-and-run! (:source-path opts))
-                   (Thread/sleep 500)
-                   (catch Exception e (println e)))))))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#leiningen.cljs-watch" name="leiningen.cljs-watch"><h1 class="project-name">leiningen.cljs-watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><h1>Usage</h1>
-
-<p>   add to your project.clj (ignore periods):</p>
-
-<pre><code>   (defproject my-project "1.0" .
-     :cljs {:source-path "src/cljs" .
-            :output-path "resources/public/js"})
-</code></pre>
-
-<p>   <code>src/cljs</code> and <code>resources/public/js</code> are the defaults.</p>
-
-<p>   Then run <code>lein cljs-watch</code> from your project's root dir
-   to enable automatic compilation of <code>.cljs</code> files when
-   they are changed.</p>
-
-<p>   Conversely, you can override these values from the command
-   line like so:
-   <code>$ lein cljs-watch :source-path ./path/to/cljs :output-path ./path/to/output/</code>.</p>
-</td><td class="codes" /><pre class="brush: clojure">(ns leiningen.cljs-watch
-  (:use [cljs.watch])
-  (:require [clojure.java.io :as io]))</pre></tr><tr><td class="docs"><p>For REPL use</p>
-</td><td class="codes" /><pre class="brush: clojure">(defn parse-cljs-opts
-  ([project-path]
-     (let [rdr (clojure.lang.LineNumberingPushbackReader. (java.io.FileReader. project-path))]
-       (:cljs (apply hash-map (drop 3 (read rdr))))))
-  ([] (parse-cljs-opts "project.clj")))</pre></tr><tr><td class="docs"><p>Stolen from marginalia:</p>
+               (Thread/sleep 500))))))</pre></tr><tr><td class="docs"><p>Stolen from marginalia:</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn ls
   [path]
   (let [file (java.io.File. path)]
@@ -3565,18 +3690,44 @@ well-written.</p>
   [path]
   (when-not (ls path)
     (mkdir path)))</pre></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(defn cljs-watch [project & args]
-  (let [cljs-opts (merge {:source-path "src/cljs"
-                          :output-path "resources/public/js"}
-                         (:cljs project)
-                         (apply hash-map args))
-        src-path (:source-path cljs-opts)
-        out-path (:output-path cljs-opts)]
-    (when-not (ls out-path)
-      (println "Output directory" out-path "not found, creating.")
-      (ensure-directory! out-path))
-    (println "Watching" src-path "for changes...")
-    (start-watch src-path out-path)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.core" name="cljs.test.core"><h1 class="project-name">cljs.test.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn start-watch-opts [opts]
+  (let [test-output-path (:test-output-path opts)
+        source-output-path (:source-output-path opts)]
+    (when (not opts)
+      (throw (Exception. (str "Couldn't find cljs options in project."))))
+    (clear-hooks)
+    (reset! *run* true)
+    (hook-re-stitch opts)
+    (println "Watching" (:source-path opts) " for changes.")
+    (println "Watching" (:test-path opts) " for changes.")
+    (when (not (ls source-output-path))
+      (println "Source output path " source-output-path "not found, creating.")
+      (ensure-directory! source-output-path))
+    (when (not (ls test-output-path))
+      (println "Test output path " test-output-path "not found, creating.")
+      (ensure-directory! test-output-path))
+    (compile/opts opts)
+    (.start (Thread.
+             (fn []
+               (while @*run*
+                 (try
+                   (check-and-run! [(:source-path opts)
+                                    (:test-path opts)
+                                    (when (.exists (file "./project.clj"))
+                                      "./project.clj")])
+                   (Thread/sleep 500)
+                   (catch Exception e (println e)))))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(defn start-watch-project
+  "Starts up a watcher which will re-compile cljs files to javascript
+   when cljs files found in :source-path and :test-path change.  Also re-compiles when
+   your project.clj changes.
+   Usage: `(start-watch-project \"./project.clj\")`"
+  [& [project-path]]
+  (let [opts (opts/slurp (or project-path "./project.clj"))]
+    (start-watch-opts opts)))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.compile" name="cljs.test.compile"><h1 class="project-name">cljs.test.compile</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.compile
+  (:use [cljs.compile] :reload)
+  (:use [clojure.test]))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.core" name="cljs.test.core"><h1 class="project-name">cljs.test.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.core
   (:use [cljs.core] :reload)
   (:use [clojure.test])
@@ -3646,7 +3797,10 @@ well-written.</p>
   (is (eval-js '(def one-two 12)))
   (is (eval-js '(def one? 1)))
   (is (eval-js '(def one! 1)))
-  (is (eval-js '(def *one* 1))))</pre></tr><tr><td class="docs"><p>Special Forms</p>
+  (is (eval-js '(def *one* 1))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-hash-map-objs
+  (is (= {:foo "bar"} (eval-js '(let [asdf "foo"]
+                                  {asdf "bar"})))))</pre></tr><tr><td class="docs"><p>Special Forms</p>
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-def
   (is (= 10 (eval-js '(def x 10) 'x))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-fn
@@ -3685,7 +3839,9 @@ well-written.</p>
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-core-concat
   (is (= [1 2 3 4] (eval-js '(concat [1 2] [3 4])))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-core-take
-  (is (= [1 2] (eval-js '(take 2 [1 2 3 4])))))</pre></tr><tr><td class="docs">
+  (is (= [1 2] (eval-js '(take 2 [1 2 3 4]))))
+  (is (= [1] (eval-js '(take 1 [1 2 3]))))
+  (is (= 1 (count (eval-js '(take 1 [{:foo "bar"} {:baz "bap"}]))))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-core-drop
   (is (= [3 4] (eval-js '(drop 2 [1 2 3 4])))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-core-partition
@@ -3695,13 +3851,62 @@ well-written.</p>
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-interpose
   (is (= [1 0 2 0 3] (eval-js '(interpose 0 [1 2 3])))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-distinct
-  (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.stitch" name="cljs.test.stitch"><h1 class="project-name">cljs.test.stitch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.stitch
-  (:use [cljs.stitch]))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.watch" name="cljs.test.watch"><h1 class="project-name">cljs.test.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+  (is (= [1 2 3] (eval-js '(distinct [1 2 1 2 3 3 2 1])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-empty?
+  (is (eval-js '(empty? [])))
+  (is (not (eval-js '(empty? [1 2 3]))))
+  (is (eval-js '(empty? {})))
+  (is (not (eval-js '(empty? {:foo "bar"})))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-hash-map
+  (is (= {} (eval-js '(hash-map))))
+  (is (= {:foo "bar"} (eval-js '(hash-map :foo "bar"))))
+  (is (= {:foo "bar" :baz "bap"}
+         (eval-js '(apply hash-map [:foo "bar" :baz "bap"])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-apply
+  (is (= 6 (eval-js '(apply + 1 [2 3]))))
+  (is (= 10 (eval-js '(apply + 1 2 [3 4])))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-interleave
+  (is (= [1 "a" 2 "b"] (eval-js '(interleave [1 2] [:a :b]))))
+  (is (= [1 10 2 20 3 30] (eval-js '(interleave [1 2 3] [10 20 30 40])))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.deps" name="cljs.test.deps"><h1 class="project-name">cljs.test.deps</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.deps
+  (:use [cljs.deps] :reload)
+  (:use [clojure.test]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-extract-namespaces
+  (is (= '(bar baz bap)
+         (extract-namespaces :use '(ns foo
+                                     (:use bar baz bap)))))
+  (is (= '(asdf qwer zxcv) (extract-namespaces
+                            :require
+                            '(ns bar
+                               (:require asdf qwer [zxcv :as yay]))))))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-analyze
+  (let [res (analyze ["dev-resources/test-sources"] 'app)]
+    (is (= 3 (count (:deps res))))
+    (is (= "dev-resources/test-sources/app.cljs" (:file res)))
+    (is (= 'app (:name res)))
+    (is (= '(sub.one sub.two) (:uses res)))
+    (is (= '(common) (:requires res)))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.opts" name="cljs.test.opts"><h1 class="project-name">cljs.test.opts</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.opts
+  (:use [cljs.opts] :reload)
+  (:use [clojure.test]))</pre></tr><tr><td class="docs">
+</td><td class="codes" /><pre class="brush: clojure">(deftest test-slurp-opts
+  (let [{:keys [source-path
+                source-output-path
+                source-libs
+                test-path
+                test-output-path
+                test-libs]}
+        (slurp "dev-resources/test-project1.clj")]
+    (is (= "alt-source-path" source-path))
+    (is (= "alt-source-output-path" source-output-path))
+    (is (= [] source-libs))
+    (is (= "alt-test-path" test-path))
+    (is (= "alt-test-output-path" test-output-path))
+    (is (= [] test-libs))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cljs.test.watch" name="cljs.test.watch"><h1 class="project-name">cljs.test.watch</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(ns cljs.test.watch
   (:use [cljs.watch] :reload)
   (:use [clojure.test]))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(deftest test-find-cljs-files
   (is (empty? (filter #(re-find #"\.#" (.getName %))
-                      (find-cljs-files "./resources")))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.stitch">cljs.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_leiningen.cljs-watch">leiningen.cljs-watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li><li class="floating-toc-li" id="floating-toc_cljs.test.stitch">cljs.test.stitch</li><li class="floating-toc-li" id="floating-toc_cljs.test.watch">cljs.test.watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+                      (find-cljs-files "./resources")))))</pre></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cljs.compile">cljs.compile</li><li class="floating-toc-li" id="floating-toc_cljs.core">cljs.core</li><li class="floating-toc-li" id="floating-toc_cljs.deps">cljs.deps</li><li class="floating-toc-li" id="floating-toc_cljs.opts">cljs.opts</li><li class="floating-toc-li" id="floating-toc_cljs.rhino">cljs.rhino</li><li class="floating-toc-li" id="floating-toc_cljs.testing">cljs.testing</li><li class="floating-toc-li" id="floating-toc_cljs.watch">cljs.watch</li><li class="floating-toc-li" id="floating-toc_cljs.test.compile">cljs.test.compile</li><li class="floating-toc-li" id="floating-toc_cljs.test.core">cljs.test.core</li><li class="floating-toc-li" id="floating-toc_cljs.test.deps">cljs.test.deps</li><li class="floating-toc-li" id="floating-toc_cljs.test.opts">cljs.test.opts</li><li class="floating-toc-li" id="floating-toc_cljs.test.watch">cljs.test.watch</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>
