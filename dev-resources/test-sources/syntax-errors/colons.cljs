@@ -1,0 +1,3 @@
+(ns syntax-errors.colons)
+
+: : :

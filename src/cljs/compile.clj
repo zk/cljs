@@ -3,7 +3,19 @@
         [clojure.java.io :only (file)])
   (:require [cljs.opts :as opts]
             [cljs.deps :as deps]
-            [cljs.core :as core]))
+            [cljs.core :as core])
+  (:import [clojure.lang LispReader$ReaderException]))
+
+;; There has to be a better way than inspecting the message
+;; content
+(defn error [e]
+  (let [message (.getMessage e)]
+    (cond
+     (re-find #"EOF while reading" message)
+     (do (println "*** ERROR ***  EOF while reading file, are you missing closing parens?"))
+     :else (do
+             (println "*** ERROR *** " message)
+             (.printStackTrace e)))))
 
 (defn cljs-source
   "Returns `path` content as string.  Checks both
@@ -29,22 +41,27 @@
          (apply str)
          (str core/*core-lib*))))
 
+
+;; Why pass all this duplicate info?!
 (defn libs [opts search-paths libs]
   (doseq [source-lib libs]
     (let [analyzed (deps/analyze search-paths source-lib)]
       (println "*" (:name analyzed) "--" (:file analyzed))
       (println)
-      (println "  deps")
-      (doseq [dep (:deps analyzed)]
-        (println "   " (:name dep) "--" (:file dep)))
+      (when (:deps analyzed)
+        (println "  deps")
+        (doseq [dep (:deps analyzed)]
+          (println "   " (:name dep) "--" (:file dep))))
       (print "  Compiling...  ")
-      (let [compiled (lib opts analyzed)
-            out-path (str (:source-output-path opts) "/" (:name analyzed) ".js")]
-        (println "done.  ")
-        (print "  Writing to" (str out-path "...  "))
-        (spit out-path compiled)
-        (println "done.")
-        (println)))))
+      (try
+        (let [compiled (lib opts analyzed)
+              out-path (str (:source-output-path opts) "/" (:name analyzed) ".js")]
+          (println "done.  ")
+          (print "  Writing to" (str out-path "...  "))
+          (spit out-path compiled)
+          (println "done.")
+          (println))
+        (catch Exception e (error e))))))
 
 (defn opts [opts]
   (time
@@ -70,3 +87,5 @@
 
 (defn project [& [project-file]]
   (opts (opts/slurp (or project-file "./project.clj"))))
+
+
