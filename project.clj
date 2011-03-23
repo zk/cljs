@@ -27,7 +27,7 @@
 
    1. [cljs.watch](#cljs.watch) provides a mechanism for automatic recompilation on source changes. Used by either `lein cljs-watch` or `(use 'cljs.watch) (start-watch-project \"./project.clj\")`. Cljs output is declared in your project.clj file, under the :cljs key.
 
-   2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
+   2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a coherent javascript file.
 
 
    For more examples, please see the [cljs.test.core](#cljs.test.core) namespace."
