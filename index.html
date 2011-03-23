@@ -26,7 +26,7 @@
 
    1. [cljs.watch](#cljs.watch) provides a mechanism for automatic recompilation on source changes. Used by either `lein cljs-watch` or `(use 'cljs.watch) (start-watch-project &quot;./project.clj&quot;)`. Cljs output is declared in your project.clj file, under the :cljs key.
 
-   2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a cohearant javascript file.
+   2. [cljs.stitch](#cljs.stitch) takes care of stitching the collection of source files that make up a library into a coherent javascript file.
 
 
    For more examples, please see the [cljs.test.core](#cljs.test.core) namespace." name="description" /><style type="text/css">/**
@@ -2584,7 +2584,7 @@ $(document).ready(function() {
 
 <ol>
 <li><p><a href="#cljs.watch">cljs.watch</a> provides a mechanism for automatic recompilation on source changes. Used by either <code>lein cljs-watch</code> or <code>(use 'cljs.watch) (start-watch-project "./project.clj")</code>. Cljs output is declared in your project.clj file, under the :cljs key.</p></li>
-<li><p><a href="#cljs.stitch">cljs.stitch</a> takes care of stitching the collection of source files that make up a library into a cohearant javascript file.</p>
+<li><p><a href="#cljs.stitch">cljs.stitch</a> takes care of stitching the collection of source files that make up a library into a coherent javascript file.</p>
 
 <p>For more examples, please see the <a href="#cljs.test.core">cljs.test.core</a> namespace.</p></li>
 </ol>
@@ -2594,7 +2594,17 @@ $(document).ready(function() {
         [clojure.java.io :only (file)])
   (:require [cljs.opts :as opts]
             [cljs.deps :as deps]
-            [cljs.core :as core]))</pre></tr><tr><td class="docs">
+            [cljs.core :as core])
+  (:import [clojure.lang LispReader$ReaderException]))</pre></tr><tr><td class="docs"><p>There has to be a better way than inspecting the message
+content</p>
+</td><td class="codes" /><pre class="brush: clojure">(defn error [e]
+  (let [message (.getMessage e)]
+    (cond
+     (re-find #"EOF while reading" message)
+     (do (println "*** ERROR ***  EOF while reading file, are you missing closing parens?"))
+     :else (do
+             (println "*** ERROR *** " message)
+             (.printStackTrace e)))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn cljs-source
   "Returns `path` content as string.  Checks both
    filesystem and classpath."
@@ -2616,23 +2626,26 @@ $(document).ready(function() {
          (map core/compile-cljs-string)
          (interpose "\n\n\n\n")
          (apply str)
-         (str core/*core-lib*))))</pre></tr><tr><td class="docs">
+         (str core/*core-lib*))))</pre></tr><tr><td class="docs"><p>Why pass all this duplicate info?!</p>
 </td><td class="codes" /><pre class="brush: clojure">(defn libs [opts search-paths libs]
   (doseq [source-lib libs]
     (let [analyzed (deps/analyze search-paths source-lib)]
       (println "*" (:name analyzed) "--" (:file analyzed))
       (println)
-      (println "  deps")
-      (doseq [dep (:deps analyzed)]
-        (println "   " (:name dep) "--" (:file dep)))
+      (when (:deps analyzed)
+        (println "  deps")
+        (doseq [dep (:deps analyzed)]
+          (println "   " (:name dep) "--" (:file dep))))
       (print "  Compiling...  ")
-      (let [compiled (lib opts analyzed)
-            out-path (str (:source-output-path opts) "/" (:name analyzed) ".js")]
-        (println "done.  ")
-        (print "  Writing to" (str out-path "...  "))
-        (spit out-path compiled)
-        (println "done.")
-        (println)))))</pre></tr><tr><td class="docs">
+      (try
+        (let [compiled (lib opts analyzed)
+              out-path (str (:source-output-path opts) "/" (:name analyzed) ".js")]
+          (println "done.  ")
+          (print "  Writing to" (str out-path "...  "))
+          (spit out-path compiled)
+          (println "done.")
+          (println))
+        (catch Exception e (error e))))))</pre></tr><tr><td class="docs">
 </td><td class="codes" /><pre class="brush: clojure">(defn opts [opts]
   (time
    (let [source-libs (:source-libs opts)
