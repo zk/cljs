@@ -181,3 +181,6 @@
 (deftest test-interleave
   (is (= [1 "a" 2 "b"] (eval-js '(interleave [1 2] [:a :b]))))
   (is (= [1 10 2 20 3 30] (eval-js '(interleave [1 2 3] [10 20 30 40])))))
+
+(deftest test-keys
+  (is (= ["foo-bar" "baz-bap"] (eval-js '(keys {:foo-bar 1 :baz-bap 2})))))

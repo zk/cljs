@@ -1,6 +1,7 @@
 (ns cljs.test.opts
   (:use [cljs.opts] :reload)
-  (:use [clojure.test]))
+  (:use [clojure.test])
+  (:refer-clojure :exclude (slurp)))
 
 (deftest test-slurp-opts
   (let [{:keys [source-path

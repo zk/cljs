@@ -7,7 +7,8 @@
    See var `defaults` for default options. "
   (:use [clojure.java.io :only (file)])
   (:import [java.io File FileReader]
-           [clojure.lang LineNumberingPushbackReader]))
+           [clojure.lang LineNumberingPushbackReader])
+  (:refer-clojure :exclude (slurp)))
 
 (def defaults
   {:source-path "src/cljs"

@@ -873,7 +873,16 @@
                       (aset m (first pair) (second pair))
                       m)
                     {}
-                    pairs)))))))
+                    pairs))))
+
+     '(defn keys [m]
+        (when m
+          (.keys '_ m)))
+
+     '(defn values [m]
+        (when m
+          (.values '_ m)))
+     )))
 
 (defn spit-cljs-core [path]
   (spit path *core-lib*))
