@@ -184,3 +184,12 @@
 
 (deftest test-keys
   (is (= ["foo-bar" "baz-bap"] (eval-js '(keys {:foo-bar 1 :baz-bap 2})))))
+
+(deftest test-select-keys
+  (is (= {:foo "bar"} (eval-js '(select-keys [:foo] {:foo "bar" :baz "bap"}))))
+  (is (= {:foo "bar" :hello "world"}
+         (eval-js '(select-keys [:foo :hello] {:foo "bar"
+                                               :baz "bap"
+                                               :hello "world"})))))
+
+

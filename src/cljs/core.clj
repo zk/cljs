@@ -882,6 +882,9 @@
      '(defn values [m]
         (when m
           (.values '_ m)))
+
+     '(defn select-keys [keys m]
+        (reduce #(assoc %1 %2 (aget m %2)) {} keys))
      )))
 
 (defn spit-cljs-core [path]
