@@ -402,6 +402,18 @@
   (ind-str
    "throw " (to-js msg) ";"))
 
+(defn handle-dissoc [[_ m & keys]]
+  (ind-str
+   "(function() {" nl
+   (inc-ind-str
+    "var __map = " (to-js m) ";" nl nl
+    (->> keys
+         (map #(str "delete __map[" (to-js %) "];" nl))
+         (apply str))
+    "return __map;")
+   nl
+   "}.bind(this))()"))
+
 (defn special-forms []
   {'def     handle-def
    'fn      handle-fn
@@ -431,7 +443,8 @@
    'instanceof handle-instanceof
    'gensym handle-gensym
    'gensym-str handle-gensym-str
-   'throw   handle-throw})
+   'throw   handle-throw
+   'dissoc  handle-dissoc})
 
 (defn apply-able-special-forms []
   {'+       (make-strict-op '+)

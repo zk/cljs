@@ -192,4 +192,10 @@
                                                :baz "bap"
                                                :hello "world"})))))
 
+(deftest test-dissoc
+  (is (= {:foo "bar"} (eval-js '(dissoc {:foo "bar"
+                                         :baz "bap"
+                                         :hello "world"}
+                                        :baz :hello)))))
+
 
