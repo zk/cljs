@@ -25,7 +25,7 @@ only for now)
 
 3. Make sure the paths you specify above exist.
 
-4. Add `[cljs "0.2"]` and `[lein-cljs "0.2"]` to your `:dev-dependencies`.
+4. Add `[cljs "0.2.1"]` and `[lein-cljs "0.2.1"]` to your `:dev-dependencies`.
 
 5. Then `lein deps` and `lein cljs watch`.  This will start the watcher,
 which will automatically recompile your cljs libs when cljs source
