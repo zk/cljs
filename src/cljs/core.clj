@@ -892,11 +892,11 @@
         (when m
           (.keys '_ m)))
 
-     '(defn values [m]
+     '(defn vals [m]
         (when m
           (.values '_ m)))
 
-     '(defn select-keys [keys m]
+     '(defn select-keys [m keys]
         (reduce #(assoc %1 %2 (aget m %2)) {} keys))
      )))
 
