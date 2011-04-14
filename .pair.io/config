@@ -1,0 +1,5 @@
+{
+    "size": "micro",
+    "image_id": "us-east-1/ami-7000f019",
+    "inbound_ports": [22, 80, 81, 443, 8080, 8081, 8443]
+}
