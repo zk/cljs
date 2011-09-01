@@ -1,4 +1,4 @@
-(defproject cljs "0.2.1"
+(defproject cljs "0.2.2"
   :description
   "An experimental Clojure(ish) to Javascript compiler similar to
    [clojurescript](https://github.com/clojure/clojure-contrib/tree/master/clojurescript/). The library also provides several tools to assist you with integrating cljs into your workflow.  All this in about 1k lines.  Viva Clojure!
