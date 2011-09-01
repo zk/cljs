@@ -137,7 +137,7 @@
       (println "Test output path " test-output-path "not found, creating.")
       (ensure-directory! test-output-path))
     (compile/opts opts)
-    (.join (.start (Thread.
+    (doto (Thread.
                     (fn []
                       (while @*run*
                         (try
@@ -146,7 +146,9 @@
                                            (when (.exists (file "./project.clj"))
                                              "./project.clj")])
                           (Thread/sleep 500)
-                          (catch Exception e (println e))))))))))
+                          (catch Exception e (println e))))))
+      (.start)
+      (.join))))
 
 (defn start-watch-project
   "Starts up a watcher which will re-compile cljs files to javascript
