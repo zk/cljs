@@ -12,6 +12,7 @@ Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
 
 2. Add a `:cljs` entry to your project.clj:
 
+    
     (defproject...
       :cljs {:source-path "src/cljs"
              :source-output-path "resources/public/js"
@@ -21,9 +22,10 @@ Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
              :test-libs [app-test]})
 
 
-3. Make sure the paths you specify above exist.
 
-4. Add `[cljs "0.2.1"]` and `[lein-cljs "0.2.1"]` to your `:dev-dependencies`.
+3. Verify the above paths exist.
+
+4. Add `[cljs "0.3.0"]` and `[lein-cljs "0.2.1"]` to your `:dev-dependencies`.
 
 5. Then `lein deps` and `lein cljs watch`.  This will start the watcher,
 which will automatically recompile your cljs libs when cljs source
