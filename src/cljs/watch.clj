@@ -3,8 +3,8 @@
   (:use [cljs.core :only (compile-cljs-file)])
   (:require [clojure.string :as str]
             [cljs.compile :as compile]
-            [cljs.opts :as opts]
-            [clojure.contrib.io :as io]))
+            [cljs.opts :as opts])
+  (:import [java.io File]))
 
 (defn file [file-or-path]
   (if (string? file-or-path)
@@ -113,7 +113,7 @@
         [path]))))
 
 (defn mkdir [path]
-  (.mkdirs (io/file path)))
+  (.mkdirs (File. path)))
 
 (defn ensure-directory!
   [path]

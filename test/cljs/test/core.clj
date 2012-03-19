@@ -9,15 +9,28 @@
 
 ;; ## Test helpers
 
-(defn narr-to-seq [narr]
+(defn clean-val
+  "Clean values for comparison in tests. Some values come back from
+  rhino munged (floats instead of integers, etc), and need to be
+  'cleaned' for ease of use in tests."
+  [v]
+  (cond
+   (and (number? v) (= (double v) (Math/floor v))) (int v)
+   :else v))
+
+
+(defn narr-to-seq
+  "Turn a rhino native array into a clojure seq."
+  [narr]
   (->> narr
-    (.getIds)
-    (seq)
-    (map #(.get narr % nil))))
+       (.getIds)
+       seq
+       (map #(.get narr % nil))
+       (map clean-val)))
 
 (defn obj-to-map [obj]
   (let [obj-ids (seq (.getIds obj))
-        vals (map #(.get obj % nil) obj-ids)
+        vals (map (clean-val #(.get obj % nil)) obj-ids)
         keys (map keyword obj-ids)]
     (apply hash-map (interleave keys vals))))
 
@@ -31,6 +44,8 @@
     (cond
      (= NativeArray (class res)) (narr-to-seq res)
      (= NativeObject (class res)) (obj-to-map res)
+     (and (number? res)
+          (= res (Math/floor res))) (int res)
      :else res)))
 
 (deftest test-core
@@ -77,7 +92,7 @@
 
 (deftest test-number
   (is (= 10 (eval-js '10)))
-  (is (= 10.0 (eval-js '10.0))))
+  (is (= 10 (eval-js '10.0))))
 
 (deftest test-identifier-cleaning
   (is (eval-js '(def one-two 12)))

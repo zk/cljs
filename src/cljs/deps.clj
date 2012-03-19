@@ -1,14 +1,12 @@
 (ns cljs.deps
-  (:use [clojure.java.io :only (file)]
-        [clojure.contrib.seq :only (find-first)])
+  (:use [clojure.java.io :only (file)])
   (:require [clojure.string :as str])
   (:import [clojure.lang LineNumberingPushbackReader]
            [java.io FileReader]))
 
-
 (defn read-ns-form [reader]
   (with-open [rdr (LineNumberingPushbackReader. reader)]
-    (let [ns-decl (find-first #(= 'ns (first %)) (repeatedly #(read rdr)))]
+    (let [ns-decl (first (filter #(= 'ns (first %)) (repeatedly #(read rdr))))]
       ns-decl)))
 
 (defn retr-ns-form

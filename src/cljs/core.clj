@@ -34,7 +34,7 @@
 ;; minify the compiled output, use a tool like [Google's
 ;; Closure Compiler](http://code.google.com/closure/compiler/) (which
 ;; may be included in cljs in the future.
-(def *indent* 0)
+(def ^:dynamic *indent* 0)
 
 (def nl "\n")
 
@@ -119,7 +119,7 @@
    ")"))
 
 
-(def *fn-params* #{})
+(def ^:dynamic *fn-params* #{})
 
 (defn to-identifier [sym]
   (when sym

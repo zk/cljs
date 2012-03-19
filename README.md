@@ -4,15 +4,12 @@ An experimental Clojure(ish) to Javascript compiler.
 
 Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
 
-Demo: [http://50.16.182.181:8080/](http://50.16.182.181:8080/) (Chrome
-only for now)
 
 ## Usage
 
 1. `lein new cljs-test`
 
 2. Add a `:cljs` entry to your project.clj:
-
 
     (defproject...
       :cljs {:source-path "src/cljs"
@@ -50,10 +47,12 @@ specifically:
 Be sure to include underscore.js in a script tag before including any
 compiled cljs output.
 
+
 ## Todo
 
 * Integrate Google's Closure Compiler for minifying
 * Integrate js-test-driver for testing
+
 
 ## Missing Features
 
@@ -63,6 +62,7 @@ compiled cljs output.
 * Macros
 
 * TCO -- Possible with CPS? http://eriwen.com/javascript/cps-tail-call-elimination/
+
 
 ## License
 
