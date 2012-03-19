@@ -1,6 +1,6 @@
 <img src="https://secure.travis-ci.org/zkim/cljs.png" align="right" />
 
-# cljs
+<h1 align="left">cljs</h1>
 
 
 An experimental Clojure(ish) to Javascript compiler.
