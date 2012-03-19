@@ -88,7 +88,7 @@
      (if (not (empty? cljss))
        (compile/opts cljs-opts)))))
 
-(def *run* (atom true))
+(def ^:dynamic *run* (atom true))
 
 (defn stop-watch []
   (reset! *run* false))

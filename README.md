@@ -1,9 +1,10 @@
 # cljs
 
+<img src="https://secure.travis-ci.org/zkim/cljs.png" align="right" />
+
 An experimental Clojure(ish) to Javascript compiler.
 
 Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
-
 
 ## Usage
 
