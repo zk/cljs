@@ -34,8 +34,8 @@
           {}
           f-seq))
 
-(def *mod-map* (atom {}))
-(def *handlers* (atom []))
+(def ^:dynamic *mod-map* (atom {}))
+(def ^:dynamic *handlers* (atom []))
 
 (defn hook-change [f]
   (swap! *handlers* (fn [hs] (conj hs f))))
