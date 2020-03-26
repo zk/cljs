@@ -4,7 +4,7 @@
 
 An experimental Clojure(ish) to Javascript compiler.
 
-Docs: [http://zkim.github.com/cljs](http://zkim.github.com/cljs)
+Docs: [http://zk.github.com/cljs](http://zkim.github.com/cljs)
 
 ## Usage
 
